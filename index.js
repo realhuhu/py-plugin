@@ -5,9 +5,9 @@ import path from "path";
 import { _path, config } from "./core/client/client.js";
 
 
-// exec(`${config.pythonPath} ${path.join(_path, "main.py")}`, function(err, stdout, stderr) {
-//   if (err) throw err;
-// });
+exec(`${config.pythonPath} ${path.join(_path, "main.py")}`, function(err, stdout, stderr) {
+  if (err) throw err;
+});
 
 let files = fs.readdirSync(path.join(_path, "apps", "js"));
 let apps = [];
