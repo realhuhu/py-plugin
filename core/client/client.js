@@ -52,13 +52,16 @@ export function StreamToUnary({ file, func, onInit, onData }) {
     function: func,
   });
 
-  onInit();
+  if (onInit) {
+    onInit();
+  }
 
   call.send = (load) => {
     call.write({
       message: load?.message,
     });
   };
+
   return call;
 }
 
@@ -90,6 +93,10 @@ export function StreamToStream({ file, func, onInit, onData, onEnd }) {
     function: func,
   });
 
+  if (onInit) {
+    onInit();
+  }
+
   call.on("data", function(response) {
     onData(response.message.error, response);
   });
@@ -100,7 +107,9 @@ export function StreamToStream({ file, func, onInit, onData, onEnd }) {
     });
   };
 
-  call.on("end", onEnd);
+  if (onEnd) {
+    call.on("end", onEnd);
+  }
   return call;
 }
 

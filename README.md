@@ -14,7 +14,16 @@ Python==3.8.8
 
 ​	googleapis-common-protos
 
-​	
+可在config中配置python解释器路径、rpc地址
+
+```json
+{
+  "version": [1,0,0],
+  "pythonPath": "python",
+  "host": "127.0.0.1",
+  "port": "50051"
+}
+```
 
 # 1.交互格式
 
@@ -51,17 +60,17 @@ message Other {
 }
 ```
 
-event：包含发送者的qq，昵称、群qq号，待完善。可不填
+event：包含发送者的qq，昵称、群qq号，待完善。
 
-file：必填。指定apps/py/中哪个文件处理消息。与function缺一不可
+file：指定apps/py/中哪个文件处理消息。
 
-function：必填。指定file中哪一个函数处理消息。与file缺一不可
+function：指定file中哪一个函数处理消息。
 
-message：键值均为字符串的字典，用来传递字符串消息。可不填
+message：键值均为字符串的字典，用来传递字符串消息。
 
-image：键为字符串、值为Image的字典，用来传递图片，待完善。可不填
+image：键为字符串、值为Image的字典，用来传递图片，待完善。
 
-other：键为字符串、值为Other的字典，用来传递其它二进制数据，待完善。可不填
+other：键为字符串、值为Other的字典，用来传递其它二进制数据，待完善。
 
 ## 1.2 Response
 
