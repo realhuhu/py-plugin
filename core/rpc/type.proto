@@ -1,0 +1,52 @@
+//python -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. .\core\rpc\type.proto
+
+syntax = "proto3";
+
+package hello;
+
+
+service Channel {
+    rpc Option(OptionCode) returns(ResponseCode) {}
+    rpc UnaryToUnary (Request) returns (Response) {}
+    rpc UnaryToStream (Request) returns (stream Response) {}
+    rpc StreamToUnary (stream Request) returns (Response) {}
+    rpc StreamToStream (stream Request) returns (stream Response) {}
+}
+
+message OptionCode {uint32 code = 1;}
+message ResponseCode {uint32 code = 1;}
+
+message Request {
+    Event event = 1;
+    string file = 2;
+    string function = 3;
+    map<string, string> message = 4;
+    map<string, Image> image = 5;
+    map<string, Other> other = 6;
+}
+
+message Response {
+    map<string, string> message = 1;
+    map<string, Image> image = 2;
+    map<string, Other> other = 3;
+}
+
+message Event {
+    User sender = 1;
+    int32 group_qq = 2;
+}
+
+message User {
+    int32 user_qq = 1;
+    string nickname = 2;
+}
+
+message Image {
+    bytes binary = 1;
+    string format = 2;
+}
+
+message Other {
+    bytes binary = 1;
+    map<string, string> context = 2;
+}
