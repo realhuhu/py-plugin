@@ -1,4 +1,4 @@
-import { client } from "../../core/client/client.js";
+import { StreamToStream } from "../../core/client/client.js";
 
 
 export const rule = {
@@ -23,64 +23,76 @@ let current = {};
 export async function startGuessNum(e) {
   if (!e.isGroup) {
     e.reply("只能在群聊中玩猜数游戏");
-    return;
+    return true;
   }
 
   if (current[e.group.group_id]) {
     e.reply("猜数游戏进行中");
-    return;
+    return true;
   }
 
-  let call = client.StreamToStream();
+  let call = StreamToStream({
+    file: "example_StreamToStream",
+    func: "guess",
+    onData: (error, response) => {
+      if (error) {
+        console.log(error);
+        e.reply("出错了!");
+      } else {
+        if (response.message.correct === "true") {
+          e.reply("猜对了！");
+          call.end();
+          delete current[e.group.group_id];
+        } else {
+          e.reply(response.message.res);
+        }
+      }
+    },
+  });
+
   current[e.group.group_id] = call;
   e.reply("快来猜数吧，数字大于等于0且小于100！");
 
-  call.on("data", response => {
-    if (response.message.correct === "true") {
-      e.reply("猜对了！");
-      call.end()
-      delete current[e.group.group_id]
-    }else {
-      e.reply(response.message.res);
-    }
-  });
-
+  return true;
 }
 
 export async function GuessNum(e) {
   if (!e.isGroup) {
     e.reply("只能在群聊中玩猜数游戏");
-    return;
+    return true;
   }
 
   let call = current[e.group.group_id];
   if (!call) {
     e.reply("猜数游戏未开始");
-    return;
+    return true;
+
   }
 
-  call.write({
-    file: "example_StreamToStream",
-    function: "guess",
+  call.send({
     message: {
       num: e.msg.replace("我猜", ""),
     },
   });
+
+  return true;
 }
 
 export async function stopGuessNum(e) {
   if (!e.isGroup) {
     e.reply("只能在群聊中玩猜数游戏");
-    return;
+    return true;
   }
 
   let call = current[e.group.group_id];
   if (!call) {
     e.reply("猜数游戏未开始");
-    return;
+    return true;
   }
 
   call.end();
-  delete current[e.group.group_id]
+  delete current[e.group.group_id];
   e.reply("已结束");
+
+  return true;
 }

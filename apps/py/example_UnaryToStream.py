@@ -1,10 +1,8 @@
 import time
-
-config = {
-    "type": "UnaryToStream"
-}
+from core.lib.decorator import channel
 
 
+@channel.us
 def who(request):
     yield {
         "message": {

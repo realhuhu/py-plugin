@@ -30,112 +30,77 @@ export function createEvent(e) {
   };
 }
 
-// client.UnaryToUnary({
-//   event: {
-//     sender: {
-//       user_qq: 1234,
-//       nickname: "233",
-//     },
-//     group_qq: 245,
-//   },
-//   message:{
-//     hello:"qqq"
-//   }
-// }, function(err, response) {
-//   if (err) {
-//     console.error("Error: ", err);
-//   } else {
-//     console.log(response.message);
-//   }
-// });
+export function UnaryToUnary({ file, func, load, onData }) {
+  return client.UnaryToUnary({
+    file: file,
+    function: func,
+    message: load?.message,
+  }, (err, response) => {
+    err = err || response.message.error;
+    onData(err, response);
+  });
+}
 
-// let call = client.UnaryToStream({
-//   event: {
-//     sender: {
-//       user_qq: 1234,
-//       nickname: "233",
-//     },
-//     group_qq: 245,
-//   },
-//   message: {
-//     hello: "qqq",
-//   },
-// });
-//
-// call.on("data", function(response) {
-//   console.log(response.message);
-// });
-//
-// call.on("end", function() {
-//   console.log("All Salaries have been paid");
-// });
+export function StreamToUnary({ file, func, onInit, onData }) {
+  let call = client.StreamToUnary((err, response) => {
+    err = err || response.message.error;
+    onData(err, response);
+  });
 
-// let call = client.StreamToUnary(function(error, response) {
-//   console.log(error);
-//   console.log("Reports successfully generated for: ", response);
-// });
-// call.write({
-//   event: {
-//     sender: {
-//       user_qq: 1234,
-//       nickname: "233",
-//     },
-//     group_qq: 245,
-//   },
-//   message:{
-//     hello:"qqq"
-//   }
-// });
-// setTimeout(() => {
-//   call.write({
-//     event: {
-//       sender: {
-//         user_qq: 1234,
-//         nickname: "233",
-//       },
-//       group_qq: 245,
-//     },
-//     message:{
-//       hello:"abc"
-//     }
-//   });
-//   call.end();
-// }, 1000);
+  call.write({
+    file: file,
+    function: func,
+  });
 
-// let call = client.StreamToStream();
-//
-// call.on("data", function(response) {
-//   console.log("客户端receive:", response);
-// });
-//
-// call.on("end", function() {
-//   console.log("服务器发送end,客户端关闭");
-// });
-//
-// call.write({
-//   event: {
-//     sender: {
-//       user_qq: 1234,
-//       nickname: "233",
-//     },
-//     group_qq: 245,
-//   },
-//   message: {
-//     hello: "qqq",
-//   },
-// });
-// setTimeout(() => {
-//   call.write({
-//     event: {
-//       sender: {
-//         user_qq: 1234,
-//         nickname: "233",
-//       },
-//       group_qq: 245,
-//     },
-//     message: {
-//       hello: "abc",
-//     },
-//   });
-//   call.end();
-// }, 1000);
+  onInit();
+
+  call.send = (load) => {
+    call.write({
+      message: load?.message,
+    });
+  };
+  return call;
+}
+
+export function UnaryToStream({ file, func, load, onData, onEnd }) {
+  let call = client.UnaryToStream({
+    file: file,
+    function: func,
+    message: load?.message,
+  });
+
+  call.on("data", function(response) {
+    onData(response.message.error, response);
+  });
+
+  if (onEnd) {
+    call.on("end", function(response) {
+      onData(response.message.error, response);
+    });
+  }
+
+  return call;
+}
+
+export function StreamToStream({ file, func, onInit, onData, onEnd }) {
+  let call = client.StreamToStream();
+
+  call.write({
+    file: file,
+    function: func,
+  });
+
+  call.on("data", function(response) {
+    onData(response.message.error, response);
+  });
+
+  call.send = (load) => {
+    call.write({
+      message: load?.message,
+    });
+  };
+
+  call.on("end", onEnd);
+  return call;
+}
+

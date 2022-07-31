@@ -1,4 +1,4 @@
-import { client } from "../../core/client/client.js";
+import { UnaryToStream } from "../../core/client/client.js";
 
 
 export const rule = {
@@ -10,12 +10,19 @@ export const rule = {
 };
 
 export async function who(e) {
-  let call = client.UnaryToStream({
-    file: "example_UnaryToStream",
-    function: "who",
-  });
+  UnaryToStream({
+      file: "example_UnaryToStream",
+      func: "who",
+      onData: (error, response) => {
+        if (error) {
+          console.log(error);
+          e.reply("出错了!");
+        } else {
+          e.reply(response.message.res);
+        }
+      },
+    },
+  );
 
-  call.on("data", function(response) {
-    e.reply(response.message.res);
-  });
+  return true;
 }

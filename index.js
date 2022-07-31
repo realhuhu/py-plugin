@@ -4,7 +4,6 @@ import path from "path";
 
 import { _path, config } from "./core/client/client.js";
 
-
 exec(`${config.pythonPath} ${path.join(_path, "main.py")}`, function(err, stdout, stderr) {
   if (err) throw err;
 });
@@ -32,7 +31,7 @@ export async function proxy(e) {
     for (let key of Object.keys(app.rule)) {
       if (new RegExp(app.rule[key].reg).test(e.msg) || app.rule[key].reg === "noCheck") {
         try {
-          app[key](e);
+          if (app[key](e)) return true;
         } catch (e) {
           console.log(`py-plugin:${app[key]} error:${e}`);
         }

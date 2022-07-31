@@ -1,4 +1,4 @@
-import { client } from "../../core/client/client.js";
+import { StreamToUnary } from "../../core/client/client.js";
 
 
 export const rule = {
@@ -23,23 +23,31 @@ let current = {};
 
 export async function startAdd(e) {
   if (e.isGroup) {
-    return;
+    return true;
   }
 
   if (current[e.user_id]) {
     e.reply("计算进行中!");
-    return;
+    return true;
   }
 
-  current[e.user_id] = client.StreamToUnary((error, response) => {
-    if (error) {
-      console.log(error);
-    } else {
-      e.reply(response?.message?.res ?? "已结束");
-    }
+  current[e.user_id] = StreamToUnary({
+    file: "example_StreamToUnary",
+    func: "add",
+    onInit: () => {
+      e.reply("请依次输入 （加+数字）,如 加3 加4等");
+    },
+    onData: (error, response) => {
+      if (error) {
+        console.log(error);
+        e.reply("出错了！");
+      } else {
+        e.reply(response.message.res);
+      }
+    },
   });
 
-  e.reply("请依次输入 （加+数字）,如 加3 加4等");
+  return true;
 }
 
 export async function addNum(e) {
@@ -47,16 +55,16 @@ export async function addNum(e) {
 
   if (!call) {
     e.reply("计算未开始!");
-    return;
+    return true;
   }
 
-  call.write({
-    file: "example_StreamToUnary",
-    function: "add",
+  call.send({
     message: {
       num: e.msg.replace("加", ""),
     },
   });
+
+  return true;
 }
 
 
@@ -65,9 +73,12 @@ export async function showRes(e) {
 
   if (!call) {
     e.reply("计算未开始!");
-    return;
+    return true;
   }
 
   call.end();
+
   delete current[e.user_id];
+
+  return true;
 }

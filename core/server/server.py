@@ -8,81 +8,85 @@ from core.rpc import type_pb2_grpc, type_pb2
 
 class Servicer(type_pb2_grpc.ChannelServicer):
     def __init__(self, apps, server):
-        self.UnaryToUnaryApps = {}
-        self.StreamToUnaryApps = {}
-        self.UnaryToStreamApps = {}
-        self.StreamToStreamApps = {}
+        self.apps = dict(apps)
         self.server = server
-        for app in apps:
-            name, module = app
-            if not hasattr(module, "config") or not isinstance(module.config, dict):
-                self.UnaryToUnaryApps[name] = module
-            else:
-                channel_type = module.config.get("type")
-                if channel_type == "UnaryToUnary":
-                    self.UnaryToUnaryApps[name] = module
-                elif channel_type == "StreamToUnary":
-                    self.StreamToUnaryApps[name] = module
-                elif channel_type == "UnaryToStream":
-                    self.UnaryToStreamApps[name] = module
-                elif channel_type == "StreamToStream":
-                    self.StreamToStreamApps[name] = module
-                else:
-                    self.UnaryToUnaryApps[name] = module
 
     def UnaryToUnary(self, request, context):
         if not request.file or not request.function:
             return type_pb2.Response(message={"error": "no file or function"})
 
-        handler = getattr(self.UnaryToUnaryApps.get(request.file), request.function)
+        handler = getattr(self.apps.get(request.file), request.function, None)
 
         if not handler:
             return type_pb2.Response(message={"error": "no handler"})
+
+        channel_type = getattr(handler, "__channel_type__", None)
+
+        if channel_type != "UnaryToUnary":
+            return type_pb2.Response(
+                message={"error": f"wrong handler, expect UnaryToUnary function, got {channel_type}"}
+            )
 
         return type_pb2.Response(**handler(request))
 
     def StreamToUnary(self, request_iterator, context):
-        try:
-            head = request_iterator.next()
-        except Exception:
-            return type_pb2.Response()
+        head = request_iterator.next()
 
         if not head.file or not head.function:
             return type_pb2.Response(message={"error": "no file or function"})
 
-        handler = getattr(self.StreamToUnaryApps.get(head.file), head.function)
+        handler = getattr(self.apps.get(head.file), head.function, None)
 
         if not handler:
             return type_pb2.Response(message={"error": "no handler"})
 
-        return type_pb2.Response(**handler(head, request_iterator))
+        channel_type = getattr(handler, "__channel_type__", None)
+
+        if channel_type != "StreamToUnary":
+            return type_pb2.Response(
+                message={"error": f"wrong handler, expect StreamToUnary, got {channel_type}"}
+            )
+
+        return type_pb2.Response(**handler(request_iterator))
 
     def UnaryToStream(self, request, context):
         if not request.file or not request.function:
             return type_pb2.Response(message={"error": "no file or function"})
 
-        handler = getattr(self.UnaryToStreamApps.get(request.file), request.function)
+        handler = getattr(self.apps.get(request.file), request.function, None)
 
         if not handler:
             return type_pb2.Response(message={"error": "no handler"})
+
+        channel_type = getattr(handler, "__channel_type__", None)
+
+        if channel_type != "UnaryToStream":
+            return type_pb2.Response(
+                message={"error": f"wrong handler, expect UnaryToStream, got {channel_type}"}
+            )
 
         for response in handler(request):
             yield type_pb2.Response(**response)
 
     def StreamToStream(self, request_iterator, context):
-        try:
-            head = request_iterator.next()
-        except Exception:
-            return type_pb2.Response()
+        head = request_iterator.next()
 
         if not head.file or not head.function:
             return type_pb2.Response(message={"error": "no file or function"})
 
-        handler = getattr(self.StreamToStreamApps.get(head.file), head.function)
+        handler = getattr(self.apps.get(head.file), head.function, None)
+
         if not handler:
             return type_pb2.Response(message={"error": "no handler"})
 
-        for response in handler(head, request_iterator):
+        channel_type = getattr(handler, "__channel_type__", None)
+
+        if channel_type != "StreamToStream":
+            return type_pb2.Response(
+                message={"error": f"wrong handler, expect StreamToStream, got {channel_type}"}
+            )
+
+        for response in handler(request_iterator):
             yield type_pb2.Response(**response)
 
     def Option(self, request, context):

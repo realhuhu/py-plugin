@@ -1,32 +1,14 @@
 import random
-
-config = {
-    "type": "StreamToStream"
-}
+from core.lib.decorator import channel
 
 
-def guess(head, request_iterator):
+@channel.ss
+def guess(request_iterator):
     num = random.randint(0, 100)
-    guessNum = int(head.message.get("num"))
-
-    if guessNum == num:
-        yield {
-            "message": {
-                "res": "猜对了！",
-                "correct": "true"
-            }
-        }
-        return
-
-    else:
-        yield {
-            "message": {
-                "res": f"猜{'大' if guessNum > num else '小'}了",
-            }
-        }
 
     for i in request_iterator:
         guessNum = int(i.message.get("num"))
+        print(guessNum)
         if guessNum == num:
             yield {
                 "message": {

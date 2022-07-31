@@ -17,12 +17,12 @@ message OptionCode {uint32 code = 1;}
 message ResponseCode {uint32 code = 1;}
 
 message Request {
-    Event event = 1;
-    string file = 2;
-    string function = 3;
-    map<string, string> message = 4;
-    map<string, Image> image = 5;
-    map<string, Other> other = 6;
+    Event event = 2;
+    string file = 3;
+    string function = 4;
+    map<string, string> message = 5;
+    map<string, Image> image = 6;
+    map<string, Other> other = 7;
 }
 
 message Response {

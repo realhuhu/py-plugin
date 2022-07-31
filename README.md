@@ -4,15 +4,15 @@ Python==3.8.8
 
 **nodejs:**
 
-​	@grpc/grpc-js==1.6.8
+​	@grpc/grpc-js
 
-​	@grpc/proto-loader==0.7.0
+​	@grpc/proto-loader
 
 **python:**
 
-​	grpcio==1.48.0
+​	grpcio
 
-​	googleapis-common-protos==1.56.4
+​	googleapis-common-protos
 
 ​	
 
@@ -22,12 +22,32 @@ Python==3.8.8
 
 ```protobuf
 message Request {
-    Event event = 1;
-    string file = 2;
-    string function = 3;
-    map<string, string> message = 4;
-    map<string, Image> image = 5;
-    map<string, Other> other = 6;
+    Event event = 2;
+    string file = 3;
+    string function = 4;
+    map<string, string> message = 5;
+    map<string, Image> image = 6;
+    map<string, Other> other = 7;
+}
+
+message Event {
+    User sender = 1;
+    int32 group_qq = 2;
+}
+
+message User {
+    int32 user_qq = 1;
+    string nickname = 2;
+}
+
+message Image {
+    bytes binary = 1;
+    string format = 2;
+}
+
+message Other {
+    bytes binary = 1;
+    map<string, string> context = 2;
 }
 ```
 
@@ -39,9 +59,9 @@ function：必填。指定file中哪一个函数处理消息。与file缺一不�
 
 message：键值均为字符串的字典，用来传递字符串消息。可不填
 
-image：键为字符串、值为bytes的字典，用来传递图片，待完善。可不填
+image：键为字符串、值为Image的字典，用来传递图片，待完善。可不填
 
-other：键为字符串、值为bytes的字典，用来传递其它二进制数据，待完善。可不填
+other：键为字符串、值为Other的字典，用来传递其它二进制数据，待完善。可不填
 
 ## 1.2 Response
 
@@ -68,55 +88,87 @@ message Response {
 最为主要的调用方式
 
 ```js
+//example_UnaryToUnary.js
+import { UnaryToUnary } from "../../core/client/client.js";
+
+
+export const rule = {
+  upper: {
+    reg: "^#upper",
+    priority: 800,
+    describe: "返回大写",
+  },
+  lower: {
+    reg: "^#lower",
+    priority: 800,
+    describe: "返回小写",
+  },
+};
+
 export async function upper(e) {
-  client.UnaryToUnary({
-    file: "example_UnaryToUnary", //指定example_UnaryToUnary.py
-    function: "upper",//指定upper函数
-    message: {
-      raw: e.msg.replace("#upper", ""),//将消息去掉#upper后发送给example_UnaryToUnary.py的upper函数处理。消息位于message.raw
+  UnaryToUnary({
+    file: "example_UnaryToUnary",
+    func: "upper",
+    load: {
+      message: {
+        raw: e.msg.replace("#upper", ""),
+      },
     },
-  }, (err, response) => {
-    if (err) {
-      console.error("Error: ", err);
-    } else {
-      e.reply(response.message.upper);//接收到结果后返回。消息位于message.upper
-    }
+    onData: (err, response) => {
+      if (err) {
+        e.reply("出错了!");
+        console.error(err);
+      } else {
+        e.reply(response.message.upper);
+      }
+    },
   });
+  return true;
 }
 
 export async function lower(e) {
-  client.UnaryToUnary({
-    file: "example_UnaryToUnary",//指定example_UnaryToUnary.py
-    function: "lower",//指定lower函数
-    message: {
-      raw: e.msg.replace("#lower", ""),
+  UnaryToUnary({
+    file: "example_UnaryToUnary",
+    func: "lower",
+    load: {
+      message: {
+        raw: e.msg.replace("#lower", ""),
+      },
     },
-  }, (err, response) => {
-    if (err) {
-      console.error("Error: ", err);
-    } else {
-      e.reply(response.message.lower);
-    }
+    onData: (err, response) => {
+      if (err) {
+        console.error(err);
+        e.reply("出错了!");
+      } else {
+        e.reply(response.message.lower);
+      }
+    },
   });
+  return true;
 }
 ```
 
 ```python
+#example_UnaryToUnary.py
+from core.lib.decorator import channel
+
+
+@channel.uu
 def upper(request):
     return {
         "message": {
-            "upper": request.message.get("raw").upper()#将消息放在message.upper后返回
+            "upper": request.message.get("raw").upper()
         }
     }
 
 
+@channel.uu
 def lower(request):
     return {
         "message": {
-            "lower": request.message.get("raw").lower()#将消息放在message.lower后返回
+            "lower": request.message.get("raw").lower()
         }
     }
-
 ```
 
 ## 2.2 UnaryToStream
@@ -126,24 +178,44 @@ def lower(request):
 ![image-20220731171833159](README.assets/image-20220731171833159.png)
 
 ```js
-export async function who(e) {
-  let call = client.UnaryToStream({
-    file: "example_UnaryToStream",//指定example_UnaryToStream.py
-    function: "who",//指定who函数
-  });
+//example_UnaryToStream.js
+import { UnaryToStream } from "../../core/client/client.js";
 
-  call.on("data", function(response) {
-    e.reply(response.message.res);//监听服务端，有消息就返回
-  });
+
+export const rule = {
+  who: {
+    reg: "^#你是谁",
+    priority: 800,
+    describe: "你是谁",
+  },
+};
+
+export async function who(e) {
+  UnaryToStream({
+      file: "example_UnaryToStream",
+      func: "who",
+      onData: (error, response) => {
+        if (error) {
+          console.log(error);
+          e.reply("出错了!");
+        } else {
+          e.reply(response.message.res);
+        }
+      },
+    },
+  );
+
+  return true;
 }
 ```
 
 ```python
-config = {
-    "type": "UnaryToStream"#注意指定who函数为UnaryToStream函数，不写默认为UnaryToUnary函数
-}
+#example_UnaryToStream.py
+import time
+from core.lib.decorator import channel
 
-#UnaryToStream函数为生成器
+
+@channel.us
 def who(request):
     yield {
         "message": {
@@ -162,15 +234,20 @@ def who(request):
             "res": "你叠"
         }
     }
+
 ```
 
 ## 2.3 StreamToUnary
 
 用户发送一系列信息，发送完成后告诉服务端，服务端在用户发送完成后返回数据
 
-![image-20220731171744311](README.assets/image-20220731171744311.png)
+![image-20220731224308327](README.assets/image-20220731224308327.png)
 
 ```js
+//example_StreamToUnary.js
+import { StreamToUnary } from "../../core/client/client.js";
+
+
 export const rule = {
   startAdd: {
     reg: "^#开始计算",
@@ -193,24 +270,31 @@ let current = {};
 
 export async function startAdd(e) {
   if (e.isGroup) {
-    return;
+    return true;
   }
 
   if (current[e.user_id]) {
     e.reply("计算进行中!");
-    return;
+    return true;
   }
 
-  current[e.user_id] = client.StreamToUnary((error, response) => {
-    //回调函数在用户结束发送时触发
-    if (error) {
-      console.log(error);
-    } else {
-      e.reply(response?.message?.res ?? "已结束");
-    }
+  current[e.user_id] = StreamToUnary({
+    file: "example_StreamToUnary",
+    func: "add",
+    onInit: () => {
+      e.reply("请依次输入 （加+数字）,如 加3 加4等");
+    },
+    onData: (error, response) => {
+      if (error) {
+        console.log(error);
+        e.reply("出错了！");
+      } else {
+        e.reply(response.message.res);
+      }
+    },
   });
 
-  e.reply("请依次输入 （加+数字）,如 加3 加4等");
+  return true;
 }
 
 export async function addNum(e) {
@@ -218,16 +302,16 @@ export async function addNum(e) {
 
   if (!call) {
     e.reply("计算未开始!");
-    return;
+    return true;
   }
 
-  call.write({
-    file: "example_StreamToUnary",
-    function: "add",
+  call.send({
     message: {
       num: e.msg.replace("加", ""),
     },
   });
+
+  return true;
 }
 
 
@@ -236,24 +320,28 @@ export async function showRes(e) {
 
   if (!call) {
     e.reply("计算未开始!");
-    return;
+    return true;
   }
 
-  call.end();//用户结束发送，之后服务端返回结果
+  call.end();
+
   delete current[e.user_id];
+
+  return true;
 }
 ```
 
 ```python
-config = {
-    "type": "StreamToUnary"#指定add为StreamToUnary函数
-}
+from core.lib.decorator import channel
 
-#head为用户发送的第一天信息，request_iterator为迭代器，可获取用户之后的消息
-def add(head, request_iterator):
-    nums = [int(head.message.get("num"))]
+
+@channel.su
+def add(request_iterator):
+    nums = []
+
     for i in request_iterator:
         nums.append(int(i.message.get("num")))
+
     return {
         "message": {
             "res": f"{'+'.join(map(str, nums))}={sum(nums)}"
@@ -269,6 +357,10 @@ def add(head, request_iterator):
 ![image-20220731172004381](README.assets/image-20220731172004381.png)
 
 ```js
+#example_StreamToStream.js
+import { StreamToStream } from "../../core/client/client.js";
+
+
 export const rule = {
   startGuessNum: {
     reg: "^#开始猜数字",
@@ -291,100 +383,94 @@ let current = {};
 export async function startGuessNum(e) {
   if (!e.isGroup) {
     e.reply("只能在群聊中玩猜数游戏");
-    return;
+    return true;
   }
 
   if (current[e.group.group_id]) {
     e.reply("猜数游戏进行中");
-    return;
+    return true;
   }
 
-  let call = client.StreamToStream();
+  let call = StreamToStream({
+    file: "example_StreamToStream",
+    func: "guess",
+    onData: (error, response) => {
+      if (error) {
+        console.log(error);
+        e.reply("出错了!");
+      } else {
+        if (response.message.correct === "true") {
+          e.reply("猜对了！");
+          call.end();
+          delete current[e.group.group_id];
+        } else {
+          e.reply(response.message.res);
+        }
+      }
+    },
+  });
+
   current[e.group.group_id] = call;
   e.reply("快来猜数吧，数字大于等于0且小于100！");
 
-  call.on("data", response => {
-    //监听服务端消息，根据是否猜对进行相应的处理
-    if (response.message.correct === "true") {
-      e.reply("猜对了！");
-      call.end()//客户端主动关闭
-      delete current[e.group.group_id]
-    }else {
-      e.reply(response.message.res);
-    }
-  });
-
+  return true;
 }
 
 export async function GuessNum(e) {
   if (!e.isGroup) {
     e.reply("只能在群聊中玩猜数游戏");
-    return;
+    return true;
   }
 
   let call = current[e.group.group_id];
   if (!call) {
     e.reply("猜数游戏未开始");
-    return;
+    return true;
+
   }
 
-  call.write({
-    //发送猜的数，注意指定py文件和函数
-    file: "example_StreamToStream",
-    function: "guess",
+  call.send({
     message: {
       num: e.msg.replace("我猜", ""),
     },
   });
+
+  return true;
 }
 
 export async function stopGuessNum(e) {
   if (!e.isGroup) {
     e.reply("只能在群聊中玩猜数游戏");
-    return;
+    return true;
   }
 
   let call = current[e.group.group_id];
   if (!call) {
     e.reply("猜数游戏未开始");
-    return;
+    return true;
   }
 
-  call.end();//用户主动关闭
-  delete current[e.group.group_id]
+  call.end();
+  delete current[e.group.group_id];
   e.reply("已结束");
+
+  return true;
 }
 ```
 
 ```python
-config = {
-    "type": "StreamToStream"#指定guess函数为StreamToStream函数
-}
+#example_StreamToStream.py
+import random
+from core.lib.decorator import channel
 
-#StreamToStream参数是生成器，返回值也是生成器
-def guess(head, request_iterator):
-    #head为第一条信息，request_iterator为之后的消息
+
+@channel.ss
+def guess(request_iterator):
     num = random.randint(0, 100)
-    guessNum = int(head.message.get("num"))
-
-    if guessNum == num:
-        yield {
-            "message": {
-                "res": "猜对了！",
-                "correct": "true"
-            }
-        }
-        return
-
-    else:
-        yield {
-            "message": {
-                "res": f"猜{'大' if guessNum > num else '小'}了",
-            }
-        }
 
     for i in request_iterator:
         guessNum = int(i.message.get("num"))
+        print(guessNum)
         if guessNum == num:
             yield {
                 "message": {

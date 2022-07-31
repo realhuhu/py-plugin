@@ -1,4 +1,4 @@
-import { client } from "../../core/client/client.js";
+import { UnaryToUnary } from "../../core/client/client.js";
 
 
 export const rule = {
@@ -15,33 +15,43 @@ export const rule = {
 };
 
 export async function upper(e) {
-  client.UnaryToUnary({
+  UnaryToUnary({
     file: "example_UnaryToUnary",
-    function: "upper",
-    message: {
-      raw: e.msg.replace("#upper", ""),
+    func: "upper",
+    load: {
+      message: {
+        raw: e.msg.replace("#upper", ""),
+      },
     },
-  }, (err, response) => {
-    if (err) {
-      console.error("Error: ", err);
-    } else {
-      e.reply(response.message.upper);
-    }
+    onData: (err, response) => {
+      if (err) {
+        e.reply("出错了!");
+        console.error(err);
+      } else {
+        e.reply(response.message.upper);
+      }
+    },
   });
+  return true;
 }
 
 export async function lower(e) {
-  client.UnaryToUnary({
+  UnaryToUnary({
     file: "example_UnaryToUnary",
-    function: "lower",
-    message: {
-      raw: e.msg.replace("#lower", ""),
+    func: "lower",
+    load: {
+      message: {
+        raw: e.msg.replace("#lower", ""),
+      },
     },
-  }, (err, response) => {
-    if (err) {
-      console.error("Error: ", err);
-    } else {
-      e.reply(response.message.lower);
-    }
+    onData: (err, response) => {
+      if (err) {
+        console.error(err);
+        e.reply("出错了!");
+      } else {
+        e.reply(response.message.lower);
+      }
+    },
   });
+  return true;
 }

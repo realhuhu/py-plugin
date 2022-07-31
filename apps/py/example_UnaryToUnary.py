@@ -1,3 +1,7 @@
+from core.lib.decorator import channel
+
+
+@channel.uu
 def upper(request):
     return {
         "message": {
@@ -6,6 +10,7 @@ def upper(request):
     }
 
 
+@channel.uu
 def lower(request):
     return {
         "message": {
