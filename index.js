@@ -4,9 +4,11 @@ import path from "path";
 
 import { _path, config } from "./core/client/client.js";
 
-exec(`${config.pythonPath} ${path.join(_path, "main.py")}`, function(err, stdout, stderr) {
-  if (err) throw err;
-});
+// exec(`${config.pythonPath} ${path.join(_path, "main.py")}`, function(err, stdout, stderr) {
+//   if (err) throw err;
+//   console.log(stdout);
+//   console.error(stderr);
+// });
 
 let files = fs.readdirSync(path.join(_path, "apps", "js"));
 let apps = [];
@@ -31,9 +33,11 @@ export async function proxy(e) {
     for (let key of Object.keys(app.rule)) {
       if (new RegExp(app.rule[key].reg).test(e.msg) || app.rule[key].reg === "noCheck") {
         try {
-          if (app[key](e)) return true;
+          let stop = app[key](e);
+          console.log(`py-plugin:${app[key].name}`);
+          if (stop) return true;
         } catch (e) {
-          console.log(`py-plugin:${app[key]} error:${e}`);
+          console.log(`py-plugin:${app[key].name} error:${e}`);
         }
       }
     }

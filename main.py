@@ -1,5 +1,4 @@
 import os
-import time
 import importlib
 
 from core.server.server import startServer
@@ -11,7 +10,7 @@ apps = map(
     map(lambda x: x.replace(".py", ""), os.listdir(os.path.join(root, "apps", "py")))
 )
 
-server, servicer = startServer(os.path.join(root, "config.json"), apps)
-
-while servicer.server:
-    time.sleep(5)
+server = startServer(os.path.join(root, "config.json"), apps)
+print("Python server start")
+server.wait_for_termination()
+print("Python server stop")

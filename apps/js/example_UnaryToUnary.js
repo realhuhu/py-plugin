@@ -26,7 +26,7 @@ export async function upper(e) {
     onData: (err, response) => {
       if (err) {
         e.reply("出错了!");
-        console.error(err);
+        console.log(err);
       } else {
         e.reply(response.message.upper);
       }
@@ -46,7 +46,7 @@ export async function lower(e) {
     },
     onData: (err, response) => {
       if (err) {
-        console.error(err);
+        console.log(err);
         e.reply("出错了!");
       } else {
         e.reply(response.message.lower);

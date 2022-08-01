@@ -20,15 +20,14 @@ const channel = protoDescriptor.hello;
 
 export const client = new channel.Channel(`${config.host}:${config.port}`, grpc.credentials.createInsecure());
 
-export function createEvent(e) {
-  return {
-    sender: {
-      user_qq: e.user_id,
-      nickname: e.nickname,
-    },
-    group_qq: e?.group?.group_id ?? 0,
+function send(call) {
+  return load => {
+    call.write({
+      message: load?.message,
+    });
   };
 }
+
 
 export function UnaryToUnary({ file, func, load, onData }) {
   return client.UnaryToUnary({
@@ -36,15 +35,15 @@ export function UnaryToUnary({ file, func, load, onData }) {
     function: func,
     message: load?.message,
   }, (err, response) => {
-    err = err || response.message.error;
-    onData(err, response);
+    let error = err || response.error;
+    onData(error, response);
   });
 }
 
 export function StreamToUnary({ file, func, onInit, onData }) {
   let call = client.StreamToUnary((err, response) => {
-    err = err || response.message.error;
-    onData(err, response);
+    let error = err || response.error;
+    onData(error, response);
   });
 
   call.write({
@@ -56,11 +55,7 @@ export function StreamToUnary({ file, func, onInit, onData }) {
     onInit();
   }
 
-  call.send = (load) => {
-    call.write({
-      message: load?.message,
-    });
-  };
+  call.send = send(call);
 
   return call;
 }
@@ -73,14 +68,10 @@ export function UnaryToStream({ file, func, load, onData, onEnd }) {
   });
 
   call.on("data", function(response) {
-    onData(response.message.error, response);
+    onData(response.error, response);
   });
 
-  if (onEnd) {
-    call.on("end", function(response) {
-      onData(response.message.error, response);
-    });
-  }
+  if (onEnd) call.on("end", onEnd);
 
   return call;
 }
@@ -97,19 +88,14 @@ export function StreamToStream({ file, func, onInit, onData, onEnd }) {
     onInit();
   }
 
-  call.on("data", function(response) {
-    onData(response.message.error, response);
+  call.on("data", (response) => {
+    onData(response.error, response);
   });
 
-  call.send = (load) => {
-    call.write({
-      message: load?.message,
-    });
-  };
+  call.send = send(call);
 
-  if (onEnd) {
-    call.on("end", onEnd);
-  }
+  if (onEnd) call.on("end", onEnd);
+
   return call;
 }
 
