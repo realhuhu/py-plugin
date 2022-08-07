@@ -10,7 +10,6 @@ from core.lib.exception import *
 class Servicer(type_pb2_grpc.ChannelServicer):
     def __init__(self, apps, server):
         self.apps = dict(apps)
-        print(self.apps)
         self.server = server
 
     async def FrameToFrame(self, request, context):

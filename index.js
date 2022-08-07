@@ -17,6 +17,7 @@ for (let file of files) {
   }
 }
 
+
 export const rule = {
   proxy: {
     reg: "noCheck",
@@ -40,3 +41,4 @@ export async function proxy(e) {
     }
   }
 }
+

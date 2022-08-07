@@ -3,11 +3,11 @@ import asyncio
 import importlib
 
 import nonebot
+
 nonebot.init()
 
 from core.server.server import startServer
 from core import logger
-
 
 root = os.path.dirname(os.path.abspath(__file__))
 
