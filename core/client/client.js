@@ -6,7 +6,16 @@ import { imageUrlToBuffer } from "../util/transform.js";
 
 export const _path = path.join(process.cwd(), "plugins", "py-plugin");
 
-export const config = JSON.parse(fs.readFileSync(path.join(_path, "config.json")).toString());
+let _config;
+
+try {
+  _config = JSON.parse(fs.readFileSync(path.join(_path, "config.json")).toString());
+} catch (e) {
+  fs.copyFileSync(path.join(_path, "config_default.json"), path.join(_path, "config.json"));
+  _config = JSON.parse(fs.readFileSync(path.join(_path, "config.json")).toString());
+}
+
+export const config = _config;
 
 const packageDefinition = protoLoader.loadSync(path.join(_path, "core", "rpc", "type.proto"), {
   keepCase: true,
