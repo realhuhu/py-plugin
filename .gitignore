@@ -2,3 +2,7 @@
 __pycache__
 .idea/
 config.json
+!apps/js
+!apps/py
+apps/js/*
+apps/py/*
