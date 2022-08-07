@@ -1,6 +1,5 @@
 import json
 import traceback
-from concurrent import futures
 
 import grpc
 
@@ -11,125 +10,106 @@ from core.lib.exception import *
 class Servicer(type_pb2_grpc.ChannelServicer):
     def __init__(self, apps, server):
         self.apps = dict(apps)
+        print(self.apps)
         self.server = server
 
-    def UnaryToUnary(self, request, context):
+    async def FrameToFrame(self, request, context):
         try:
-            if not request.file or not request.function:
-                raise Exception("no file or function")
+            handler = self._get_handler(request, "FrameToFrame")
 
-            handler = getattr(self.apps.get(request.file), request.function, None)
-
-            if not handler:
-                raise Exception("no handler")
-
-            channel_type = getattr(handler, "__channel_type__", None)
-
-            if channel_type != "UnaryToUnary":
-                raise Exception(f"wrong handler, expect UnaryToUnary function, got {channel_type}")
-
-            return type_pb2.Response(**handler(request))
+            return await handler(request)
 
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)
-            raise context.set_details(traceback.format_exc())
+            context.set_details(traceback.format_exc())
 
-    def StreamToUnary(self, request_iterator, context):
+    async def StreamToFrame(self, request_iterator, context):
         try:
             try:
-                head = request_iterator.next()
+                head = await request_iterator.__anext__()
             except Exception:
                 raise StreamInitException(traceback.format_exc())
 
-            if not head.file or not head.function:
-                raise Exception("no file or function")
+            handler = self._get_handler(head, "StreamToFrame")
 
-            handler = getattr(self.apps.get(head.file), head.function, None)
-
-            if not handler:
-                raise Exception("no handler")
-
-            channel_type = getattr(handler, "__channel_type__", None)
-
-            if channel_type != "StreamToUnary":
-                raise Exception(f"wrong handler, expect StreamToUnary, got {channel_type}")
-
-            return type_pb2.Response(**handler(request_iterator))
+            return await handler(request_iterator)
 
         except StreamInitException as e:
             context.set_code(grpc.StatusCode.INTERNAL)
-            raise context.set_details(e.stack)
+            context.set_details(e.stack)
+
 
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)
-            raise context.set_details(traceback.format_exc())
+            context.set_details(traceback.format_exc())
 
-    def UnaryToStream(self, request, context):
+    async def FrameToStream(self, request, context):
         try:
-            if not request.file or not request.function:
-                raise Exception("no file or function")
-
-            handler = getattr(self.apps.get(request.file), request.function, None)
-
-            if not handler:
-                raise Exception("no handler")
-
-            channel_type = getattr(handler, "__channel_type__", None)
-
-            if channel_type != "UnaryToStream":
-                raise Exception(f"wrong handler, expect UnaryToStream, got {channel_type}")
-
-            for response in handler(request):
-                yield type_pb2.Response(**response)
+            handler = self._get_handler(request, "FrameToStream")
+            async for response in handler(request):
+                await context.write(response)
 
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)
-            raise context.set_details(traceback.format_exc())
+            context.set_details(traceback.format_exc())
 
-    def StreamToStream(self, request_iterator, context):
+    async def StreamToStream(self, request_iterator, context):
         try:
             try:
-                head = request_iterator.next()
+                head = await request_iterator.__anext__()
             except Exception:
                 raise StreamInitException(traceback.format_exc())
 
-            if not head.file or not head.function:
-                raise Exception("no file or function")
+            handler = self._get_handler(head, "StreamToStream")
 
-            handler = getattr(self.apps.get(head.file), head.function, None)
-
-            if not handler:
-                raise Exception("no handler")
-
-            channel_type = getattr(handler, "__channel_type__", None)
-
-            if channel_type != "StreamToStream":
-                raise Exception(f"wrong handler, expect StreamToStream, got {channel_type}")
-
-            for response in handler(request_iterator):
-                yield type_pb2.Response(**response)
+            async for response in handler(request_iterator):
+                await context.write(response)
 
         except StreamInitException as e:
             context.set_code(grpc.StatusCode.INTERNAL)
-            raise context.set_details(e.stack)
+            context.set_details(e.stack)
+
 
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)
-            raise context.set_details(traceback.format_exc())
+            context.set_details(traceback.format_exc())
+            raise context
 
-    def Option(self, request, context):
+    async def Option(self, request, context):
         if request.code == 1:
-            self.server.stop(0)
-            self.server = None
+            await self.server.stop(0)
+
         return type_pb2.ResponseCode(code=request.code)
 
+    def _get_handler(self, frame, handler_type):
 
-def startServer(path, apps):
+        if not frame.package or not frame.handler:
+            raise Exception("没有指定package或handler")
+
+        package = self.apps.get(frame.package)
+
+        if not package:
+            raise Exception(f"package不存在:{frame.package}")
+
+        handler = getattr(package, frame.handler, None)
+
+        if not handler:
+            raise Exception(f"package {frame.package}中没有该handler:{frame.handler}")
+
+        __type__ = getattr(handler, "__type__", None)
+
+        if __type__ != handler_type:
+            raise Exception(f"您采用的是{handler_type}调用，但您指定的handler是{__type__}函数，调用失败")
+
+        return handler
+
+
+async def startServer(path, apps):
     with open(path, "r", encoding="utf-8") as f:
         config = json.load(f)
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.aio.server()
+    server.add_insecure_port(f'{config.get("host", "127.0.0.1")}:{config.get("port", 50051)}')
+
     servicer = Servicer(apps, server)
     type_pb2_grpc.add_ChannelServicer_to_server(servicer, server)
-    server.add_insecure_port(f'{config.get("host", "127.0.0.1")}:{config.get("port", 50051)}')
-    server.start()
     return server

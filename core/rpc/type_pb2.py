@@ -14,23 +14,23 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x63ore/rpc/type.proto\x12\x05hello\"\x1a\n\nOptionCode\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\"\x1c\n\x0cResponseCode\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\"\xf0\x02\n\x07Request\x12\x1b\n\x05\x65vent\x18\x02 \x01(\x0b\x32\x0c.hello.Event\x12\x0c\n\x04\x66ile\x18\x03 \x01(\t\x12\x10\n\x08\x66unction\x18\x04 \x01(\t\x12,\n\x07message\x18\x05 \x03(\x0b\x32\x1b.hello.Request.MessageEntry\x12(\n\x05image\x18\x06 \x03(\x0b\x32\x19.hello.Request.ImageEntry\x12(\n\x05other\x18\x07 \x03(\x0b\x32\x19.hello.Request.OtherEntry\x1a.\n\x0cMessageEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a:\n\nImageEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1b\n\x05value\x18\x02 \x01(\x0b\x32\x0c.hello.Image:\x02\x38\x01\x1a:\n\nOtherEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1b\n\x05value\x18\x02 \x01(\x0b\x32\x0c.hello.Other:\x02\x38\x01\"\xb7\x02\n\x08Response\x12-\n\x07message\x18\x01 \x03(\x0b\x32\x1c.hello.Response.MessageEntry\x12)\n\x05image\x18\x02 \x03(\x0b\x32\x1a.hello.Response.ImageEntry\x12)\n\x05other\x18\x03 \x03(\x0b\x32\x1a.hello.Response.OtherEntry\x1a.\n\x0cMessageEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a:\n\nImageEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1b\n\x05value\x18\x02 \x01(\x0b\x32\x0c.hello.Image:\x02\x38\x01\x1a:\n\nOtherEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1b\n\x05value\x18\x02 \x01(\x0b\x32\x0c.hello.Other:\x02\x38\x01\"6\n\x05\x45vent\x12\x1b\n\x06sender\x18\x01 \x01(\x0b\x32\x0b.hello.User\x12\x10\n\x08group_qq\x18\x02 \x01(\x05\")\n\x04User\x12\x0f\n\x07user_qq\x18\x01 \x01(\x05\x12\x10\n\x08nickname\x18\x02 \x01(\t\"\'\n\x05Image\x12\x0e\n\x06\x62inary\x18\x01 \x01(\x0c\x12\x0e\n\x06\x66ormat\x18\x02 \x01(\t\"s\n\x05Other\x12\x0e\n\x06\x62inary\x18\x01 \x01(\x0c\x12*\n\x07\x63ontext\x18\x02 \x03(\x0b\x32\x19.hello.Other.ContextEntry\x1a.\n\x0c\x43ontextEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x32\x95\x02\n\x07\x43hannel\x12\x32\n\x06Option\x12\x11.hello.OptionCode\x1a\x13.hello.ResponseCode\"\x00\x12\x31\n\x0cUnaryToUnary\x12\x0e.hello.Request\x1a\x0f.hello.Response\"\x00\x12\x34\n\rUnaryToStream\x12\x0e.hello.Request\x1a\x0f.hello.Response\"\x00\x30\x01\x12\x34\n\rStreamToUnary\x12\x0e.hello.Request\x1a\x0f.hello.Response\"\x00(\x01\x12\x37\n\x0eStreamToStream\x12\x0e.hello.Request\x1a\x0f.hello.Response\"\x00(\x01\x30\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x63ore/rpc/type.proto\x12\x05hello\"\x1a\n\nOptionCode\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\"\x1c\n\x0cResponseCode\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\"\x8e\x04\n\x07Request\x12\x0f\n\x07package\x18\x01 \x01(\t\x12\x0f\n\x07handler\x18\x02 \x01(\t\x12\x1b\n\x05\x65vent\x18\x03 \x01(\x0b\x32\x0c.hello.Event\x12\x0f\n\x07message\x18\x04 \x01(\t\x12\x13\n\x0bmessageList\x18\x05 \x03(\t\x12\x34\n\x0bmessageDict\x18\x06 \x03(\x0b\x32\x1f.hello.Request.MessageDictEntry\x12\r\n\x05image\x18\x07 \x01(\x0c\x12\x11\n\timageList\x18\x08 \x03(\x0c\x12\x30\n\timageDict\x18\t \x03(\x0b\x32\x1d.hello.Request.ImageDictEntry\x12\x1b\n\x05other\x18\n \x01(\x0b\x32\x0c.hello.Other\x12\x1f\n\totherList\x18\x0b \x03(\x0b\x32\x0c.hello.Other\x12\x30\n\totherDict\x18\x0c \x03(\x0b\x32\x1d.hello.Request.OtherDictEntry\x1a\x32\n\x10MessageDictEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a\x30\n\x0eImageDictEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c:\x02\x38\x01\x1a>\n\x0eOtherDictEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1b\n\x05value\x18\x02 \x01(\x0b\x32\x0c.hello.Other:\x02\x38\x01\"\xd3\x03\n\x08Response\x12\x0f\n\x07message\x18\x01 \x01(\t\x12\x13\n\x0bmessageList\x18\x02 \x03(\t\x12\x35\n\x0bmessageDict\x18\x03 \x03(\x0b\x32 .hello.Response.MessageDictEntry\x12\r\n\x05image\x18\x04 \x01(\x0c\x12\x11\n\timageList\x18\x05 \x03(\x0c\x12\x31\n\timageDict\x18\x06 \x03(\x0b\x32\x1e.hello.Response.ImageDictEntry\x12\x1b\n\x05other\x18\x07 \x01(\x0b\x32\x0c.hello.Other\x12\x1f\n\totherList\x18\x08 \x03(\x0b\x32\x0c.hello.Other\x12\x31\n\totherDict\x18\t \x03(\x0b\x32\x1e.hello.Response.OtherDictEntry\x1a\x32\n\x10MessageDictEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a\x30\n\x0eImageDictEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c:\x02\x38\x01\x1a>\n\x0eOtherDictEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1b\n\x05value\x18\x02 \x01(\x0b\x32\x0c.hello.Other:\x02\x38\x01\"~\n\x05\x45vent\x12\x0b\n\x03msg\x18\x01 \x01(\t\x12\x1b\n\x06sender\x18\x02 \x01(\x0b\x32\x0b.hello.User\x12\x1b\n\x05group\x18\x03 \x01(\x0b\x32\x0c.hello.Group\x12\x1b\n\x06\x61tList\x18\x04 \x03(\x0b\x32\x0b.hello.User\x12\x11\n\timageList\x18\x05 \x03(\x0c\" \n\x04User\x12\n\n\x02qq\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"!\n\x05Group\x12\n\n\x02qq\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"s\n\x05Other\x12\x0e\n\x06\x62inary\x18\x01 \x01(\x0c\x12*\n\x07\x63ontext\x18\x02 \x03(\x0b\x32\x19.hello.Other.ContextEntry\x1a.\n\x0c\x43ontextEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x32\x95\x02\n\x07\x43hannel\x12\x32\n\x06Option\x12\x11.hello.OptionCode\x1a\x13.hello.ResponseCode\"\x00\x12\x31\n\x0c\x46rameToFrame\x12\x0e.hello.Request\x1a\x0f.hello.Response\"\x00\x12\x34\n\rFrameToStream\x12\x0e.hello.Request\x1a\x0f.hello.Response\"\x00\x30\x01\x12\x34\n\rStreamToFrame\x12\x0e.hello.Request\x1a\x0f.hello.Response\"\x00(\x01\x12\x37\n\x0eStreamToStream\x12\x0e.hello.Request\x1a\x0f.hello.Response\"\x00(\x01\x30\x01\x62\x06proto3')
 
 
 
 _OPTIONCODE = DESCRIPTOR.message_types_by_name['OptionCode']
 _RESPONSECODE = DESCRIPTOR.message_types_by_name['ResponseCode']
 _REQUEST = DESCRIPTOR.message_types_by_name['Request']
-_REQUEST_MESSAGEENTRY = _REQUEST.nested_types_by_name['MessageEntry']
-_REQUEST_IMAGEENTRY = _REQUEST.nested_types_by_name['ImageEntry']
-_REQUEST_OTHERENTRY = _REQUEST.nested_types_by_name['OtherEntry']
+_REQUEST_MESSAGEDICTENTRY = _REQUEST.nested_types_by_name['MessageDictEntry']
+_REQUEST_IMAGEDICTENTRY = _REQUEST.nested_types_by_name['ImageDictEntry']
+_REQUEST_OTHERDICTENTRY = _REQUEST.nested_types_by_name['OtherDictEntry']
 _RESPONSE = DESCRIPTOR.message_types_by_name['Response']
-_RESPONSE_MESSAGEENTRY = _RESPONSE.nested_types_by_name['MessageEntry']
-_RESPONSE_IMAGEENTRY = _RESPONSE.nested_types_by_name['ImageEntry']
-_RESPONSE_OTHERENTRY = _RESPONSE.nested_types_by_name['OtherEntry']
+_RESPONSE_MESSAGEDICTENTRY = _RESPONSE.nested_types_by_name['MessageDictEntry']
+_RESPONSE_IMAGEDICTENTRY = _RESPONSE.nested_types_by_name['ImageDictEntry']
+_RESPONSE_OTHERDICTENTRY = _RESPONSE.nested_types_by_name['OtherDictEntry']
 _EVENT = DESCRIPTOR.message_types_by_name['Event']
 _USER = DESCRIPTOR.message_types_by_name['User']
-_IMAGE = DESCRIPTOR.message_types_by_name['Image']
+_GROUP = DESCRIPTOR.message_types_by_name['Group']
 _OTHER = DESCRIPTOR.message_types_by_name['Other']
 _OTHER_CONTEXTENTRY = _OTHER.nested_types_by_name['ContextEntry']
 OptionCode = _reflection.GeneratedProtocolMessageType('OptionCode', (_message.Message,), {
@@ -49,24 +49,24 @@ _sym_db.RegisterMessage(ResponseCode)
 
 Request = _reflection.GeneratedProtocolMessageType('Request', (_message.Message,), {
 
-  'MessageEntry' : _reflection.GeneratedProtocolMessageType('MessageEntry', (_message.Message,), {
-    'DESCRIPTOR' : _REQUEST_MESSAGEENTRY,
+  'MessageDictEntry' : _reflection.GeneratedProtocolMessageType('MessageDictEntry', (_message.Message,), {
+    'DESCRIPTOR' : _REQUEST_MESSAGEDICTENTRY,
     '__module__' : 'core.rpc.type_pb2'
-    # @@protoc_insertion_point(class_scope:hello.Request.MessageEntry)
+    # @@protoc_insertion_point(class_scope:hello.Request.MessageDictEntry)
     })
   ,
 
-  'ImageEntry' : _reflection.GeneratedProtocolMessageType('ImageEntry', (_message.Message,), {
-    'DESCRIPTOR' : _REQUEST_IMAGEENTRY,
+  'ImageDictEntry' : _reflection.GeneratedProtocolMessageType('ImageDictEntry', (_message.Message,), {
+    'DESCRIPTOR' : _REQUEST_IMAGEDICTENTRY,
     '__module__' : 'core.rpc.type_pb2'
-    # @@protoc_insertion_point(class_scope:hello.Request.ImageEntry)
+    # @@protoc_insertion_point(class_scope:hello.Request.ImageDictEntry)
     })
   ,
 
-  'OtherEntry' : _reflection.GeneratedProtocolMessageType('OtherEntry', (_message.Message,), {
-    'DESCRIPTOR' : _REQUEST_OTHERENTRY,
+  'OtherDictEntry' : _reflection.GeneratedProtocolMessageType('OtherDictEntry', (_message.Message,), {
+    'DESCRIPTOR' : _REQUEST_OTHERDICTENTRY,
     '__module__' : 'core.rpc.type_pb2'
-    # @@protoc_insertion_point(class_scope:hello.Request.OtherEntry)
+    # @@protoc_insertion_point(class_scope:hello.Request.OtherDictEntry)
     })
   ,
   'DESCRIPTOR' : _REQUEST,
@@ -74,30 +74,30 @@ Request = _reflection.GeneratedProtocolMessageType('Request', (_message.Message,
   # @@protoc_insertion_point(class_scope:hello.Request)
   })
 _sym_db.RegisterMessage(Request)
-_sym_db.RegisterMessage(Request.MessageEntry)
-_sym_db.RegisterMessage(Request.ImageEntry)
-_sym_db.RegisterMessage(Request.OtherEntry)
+_sym_db.RegisterMessage(Request.MessageDictEntry)
+_sym_db.RegisterMessage(Request.ImageDictEntry)
+_sym_db.RegisterMessage(Request.OtherDictEntry)
 
 Response = _reflection.GeneratedProtocolMessageType('Response', (_message.Message,), {
 
-  'MessageEntry' : _reflection.GeneratedProtocolMessageType('MessageEntry', (_message.Message,), {
-    'DESCRIPTOR' : _RESPONSE_MESSAGEENTRY,
+  'MessageDictEntry' : _reflection.GeneratedProtocolMessageType('MessageDictEntry', (_message.Message,), {
+    'DESCRIPTOR' : _RESPONSE_MESSAGEDICTENTRY,
     '__module__' : 'core.rpc.type_pb2'
-    # @@protoc_insertion_point(class_scope:hello.Response.MessageEntry)
+    # @@protoc_insertion_point(class_scope:hello.Response.MessageDictEntry)
     })
   ,
 
-  'ImageEntry' : _reflection.GeneratedProtocolMessageType('ImageEntry', (_message.Message,), {
-    'DESCRIPTOR' : _RESPONSE_IMAGEENTRY,
+  'ImageDictEntry' : _reflection.GeneratedProtocolMessageType('ImageDictEntry', (_message.Message,), {
+    'DESCRIPTOR' : _RESPONSE_IMAGEDICTENTRY,
     '__module__' : 'core.rpc.type_pb2'
-    # @@protoc_insertion_point(class_scope:hello.Response.ImageEntry)
+    # @@protoc_insertion_point(class_scope:hello.Response.ImageDictEntry)
     })
   ,
 
-  'OtherEntry' : _reflection.GeneratedProtocolMessageType('OtherEntry', (_message.Message,), {
-    'DESCRIPTOR' : _RESPONSE_OTHERENTRY,
+  'OtherDictEntry' : _reflection.GeneratedProtocolMessageType('OtherDictEntry', (_message.Message,), {
+    'DESCRIPTOR' : _RESPONSE_OTHERDICTENTRY,
     '__module__' : 'core.rpc.type_pb2'
-    # @@protoc_insertion_point(class_scope:hello.Response.OtherEntry)
+    # @@protoc_insertion_point(class_scope:hello.Response.OtherDictEntry)
     })
   ,
   'DESCRIPTOR' : _RESPONSE,
@@ -105,9 +105,9 @@ Response = _reflection.GeneratedProtocolMessageType('Response', (_message.Messag
   # @@protoc_insertion_point(class_scope:hello.Response)
   })
 _sym_db.RegisterMessage(Response)
-_sym_db.RegisterMessage(Response.MessageEntry)
-_sym_db.RegisterMessage(Response.ImageEntry)
-_sym_db.RegisterMessage(Response.OtherEntry)
+_sym_db.RegisterMessage(Response.MessageDictEntry)
+_sym_db.RegisterMessage(Response.ImageDictEntry)
+_sym_db.RegisterMessage(Response.OtherDictEntry)
 
 Event = _reflection.GeneratedProtocolMessageType('Event', (_message.Message,), {
   'DESCRIPTOR' : _EVENT,
@@ -123,12 +123,12 @@ User = _reflection.GeneratedProtocolMessageType('User', (_message.Message,), {
   })
 _sym_db.RegisterMessage(User)
 
-Image = _reflection.GeneratedProtocolMessageType('Image', (_message.Message,), {
-  'DESCRIPTOR' : _IMAGE,
+Group = _reflection.GeneratedProtocolMessageType('Group', (_message.Message,), {
+  'DESCRIPTOR' : _GROUP,
   '__module__' : 'core.rpc.type_pb2'
-  # @@protoc_insertion_point(class_scope:hello.Image)
+  # @@protoc_insertion_point(class_scope:hello.Group)
   })
-_sym_db.RegisterMessage(Image)
+_sym_db.RegisterMessage(Group)
 
 Other = _reflection.GeneratedProtocolMessageType('Other', (_message.Message,), {
 
@@ -149,18 +149,18 @@ _CHANNEL = DESCRIPTOR.services_by_name['Channel']
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _REQUEST_MESSAGEENTRY._options = None
-  _REQUEST_MESSAGEENTRY._serialized_options = b'8\001'
-  _REQUEST_IMAGEENTRY._options = None
-  _REQUEST_IMAGEENTRY._serialized_options = b'8\001'
-  _REQUEST_OTHERENTRY._options = None
-  _REQUEST_OTHERENTRY._serialized_options = b'8\001'
-  _RESPONSE_MESSAGEENTRY._options = None
-  _RESPONSE_MESSAGEENTRY._serialized_options = b'8\001'
-  _RESPONSE_IMAGEENTRY._options = None
-  _RESPONSE_IMAGEENTRY._serialized_options = b'8\001'
-  _RESPONSE_OTHERENTRY._options = None
-  _RESPONSE_OTHERENTRY._serialized_options = b'8\001'
+  _REQUEST_MESSAGEDICTENTRY._options = None
+  _REQUEST_MESSAGEDICTENTRY._serialized_options = b'8\001'
+  _REQUEST_IMAGEDICTENTRY._options = None
+  _REQUEST_IMAGEDICTENTRY._serialized_options = b'8\001'
+  _REQUEST_OTHERDICTENTRY._options = None
+  _REQUEST_OTHERDICTENTRY._serialized_options = b'8\001'
+  _RESPONSE_MESSAGEDICTENTRY._options = None
+  _RESPONSE_MESSAGEDICTENTRY._serialized_options = b'8\001'
+  _RESPONSE_IMAGEDICTENTRY._options = None
+  _RESPONSE_IMAGEDICTENTRY._serialized_options = b'8\001'
+  _RESPONSE_OTHERDICTENTRY._options = None
+  _RESPONSE_OTHERDICTENTRY._serialized_options = b'8\001'
   _OTHER_CONTEXTENTRY._options = None
   _OTHER_CONTEXTENTRY._serialized_options = b'8\001'
   _OPTIONCODE._serialized_start=30
@@ -168,31 +168,31 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _RESPONSECODE._serialized_start=58
   _RESPONSECODE._serialized_end=86
   _REQUEST._serialized_start=89
-  _REQUEST._serialized_end=457
-  _REQUEST_MESSAGEENTRY._serialized_start=291
-  _REQUEST_MESSAGEENTRY._serialized_end=337
-  _REQUEST_IMAGEENTRY._serialized_start=339
-  _REQUEST_IMAGEENTRY._serialized_end=397
-  _REQUEST_OTHERENTRY._serialized_start=399
-  _REQUEST_OTHERENTRY._serialized_end=457
-  _RESPONSE._serialized_start=460
-  _RESPONSE._serialized_end=771
-  _RESPONSE_MESSAGEENTRY._serialized_start=291
-  _RESPONSE_MESSAGEENTRY._serialized_end=337
-  _RESPONSE_IMAGEENTRY._serialized_start=339
-  _RESPONSE_IMAGEENTRY._serialized_end=397
-  _RESPONSE_OTHERENTRY._serialized_start=399
-  _RESPONSE_OTHERENTRY._serialized_end=457
-  _EVENT._serialized_start=773
-  _EVENT._serialized_end=827
-  _USER._serialized_start=829
-  _USER._serialized_end=870
-  _IMAGE._serialized_start=872
-  _IMAGE._serialized_end=911
-  _OTHER._serialized_start=913
-  _OTHER._serialized_end=1028
-  _OTHER_CONTEXTENTRY._serialized_start=982
-  _OTHER_CONTEXTENTRY._serialized_end=1028
-  _CHANNEL._serialized_start=1031
-  _CHANNEL._serialized_end=1308
+  _REQUEST._serialized_end=615
+  _REQUEST_MESSAGEDICTENTRY._serialized_start=451
+  _REQUEST_MESSAGEDICTENTRY._serialized_end=501
+  _REQUEST_IMAGEDICTENTRY._serialized_start=503
+  _REQUEST_IMAGEDICTENTRY._serialized_end=551
+  _REQUEST_OTHERDICTENTRY._serialized_start=553
+  _REQUEST_OTHERDICTENTRY._serialized_end=615
+  _RESPONSE._serialized_start=618
+  _RESPONSE._serialized_end=1085
+  _RESPONSE_MESSAGEDICTENTRY._serialized_start=451
+  _RESPONSE_MESSAGEDICTENTRY._serialized_end=501
+  _RESPONSE_IMAGEDICTENTRY._serialized_start=503
+  _RESPONSE_IMAGEDICTENTRY._serialized_end=551
+  _RESPONSE_OTHERDICTENTRY._serialized_start=553
+  _RESPONSE_OTHERDICTENTRY._serialized_end=615
+  _EVENT._serialized_start=1087
+  _EVENT._serialized_end=1213
+  _USER._serialized_start=1215
+  _USER._serialized_end=1247
+  _GROUP._serialized_start=1249
+  _GROUP._serialized_end=1282
+  _OTHER._serialized_start=1284
+  _OTHER._serialized_end=1399
+  _OTHER_CONTEXTENTRY._serialized_start=1353
+  _OTHER_CONTEXTENTRY._serialized_end=1399
+  _CHANNEL._serialized_start=1402
+  _CHANNEL._serialized_end=1679
 # @@protoc_insertion_point(module_scope)

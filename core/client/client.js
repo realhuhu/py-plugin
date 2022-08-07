@@ -2,6 +2,7 @@ import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
 import path from "path";
 import fs from "fs";
+import { imageUrlToBuffer } from "../util/transform.js";
 
 export const _path = path.join(process.cwd(), "plugins", "py-plugin");
 
@@ -21,34 +22,32 @@ const channel = protoDescriptor.hello;
 export const client = new channel.Channel(`${config.host}:${config.port}`, grpc.credentials.createInsecure());
 
 function send(call) {
-  return load => {
-    call.write({
-      message: load?.message,
-    });
+  return params => {
+    call.write(params);
   };
 }
 
 
-export function UnaryToUnary({ file, func, load, onData }) {
-  return client.UnaryToUnary({
-    file: file,
-    function: func,
-    message: load?.message,
+export function FrameToFrame({ _package, _handler, params, onData }) {
+  return client.FrameToFrame({
+    package: _package,
+    handler: _handler,
+    ...params,
   }, (err, response) => {
     let error = err || response.error;
     onData(error, response);
   });
 }
 
-export function StreamToUnary({ file, func, onInit, onData }) {
-  let call = client.StreamToUnary((err, response) => {
+export function StreamToFrame({ _package, _handler, onInit, onData }) {
+  let call = client.StreamToFrame((err, response) => {
     let error = err || response.error;
     onData(error, response);
   });
 
   call.write({
-    file: file,
-    function: func,
+    package: _package,
+    handler: _handler,
   });
 
   if (onInit) {
@@ -60,14 +59,14 @@ export function StreamToUnary({ file, func, onInit, onData }) {
   return call;
 }
 
-export function UnaryToStream({ file, func, load, onData, onEnd }) {
-  let call = client.UnaryToStream({
-    file: file,
-    function: func,
-    message: load?.message,
+export function FrameToStream({ _package, _handler, params, onData, onEnd }) {
+  let call = client.FrameToStream({
+    package: _package,
+    handler: _handler,
+    ...params,
   });
 
-  call.on("data", function(response) {
+  call.on("data", response => {
     onData(response.error, response);
   });
 
@@ -76,12 +75,12 @@ export function UnaryToStream({ file, func, load, onData, onEnd }) {
   return call;
 }
 
-export function StreamToStream({ file, func, onInit, onData, onEnd }) {
+export function StreamToStream({ _package, _handler, onInit, onData, onEnd }) {
   let call = client.StreamToStream();
 
   call.write({
-    file: file,
-    function: func,
+    package: _package,
+    handler: _handler,
   });
 
   if (onInit) {
@@ -97,5 +96,34 @@ export function StreamToStream({ file, func, onInit, onData, onEnd }) {
   if (onEnd) call.on("end", onEnd);
 
   return call;
+}
+
+export async function createEvent(e) {
+  let imageList = [];
+
+  for (let val of e.message) {
+    if ("image" === val.type) {
+      imageList.push(await imageUrlToBuffer(val.url));
+    }
+  }
+
+  return {
+    msg: e.msg,
+    sender: {
+      qq: e.sender.user_id.toString(),
+      name: e.sender.nickname,
+    },
+    group: e.isGroup && {
+      qq: e.group_id.toString(),
+      name: e.group_name,
+    },
+    atList: e.message.filter(x => x.type === "at").map(x => {
+      return {
+        qq: x.qq.toString(),
+        name: x.text.replace("@", ""),
+      };
+    }),
+    imageList: imageList,
+  };
 }
 

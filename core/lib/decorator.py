@@ -1,32 +1,32 @@
-class channel:
+class Handler:
     @staticmethod
-    def us(func):
+    def FrameToStream(func):
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
 
-        wrapper.__channel_type__ = "UnaryToStream"
+        wrapper.__type__ = "FrameToStream"
         return wrapper
 
     @staticmethod
-    def uu(func):
+    def FrameToFrame(func):
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
 
-        wrapper.__channel_type__ = "UnaryToUnary"
+        wrapper.__type__ = "FrameToFrame"
         return wrapper
 
     @staticmethod
-    def su(func):
+    def StreamToFrame(func):
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
 
-        wrapper.__channel_type__ = "StreamToUnary"
+        wrapper.__type__ = "StreamToFrame"
         return wrapper
 
     @staticmethod
-    def ss(func):
+    def StreamToStream(func):
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
 
-        wrapper.__channel_type__ = "StreamToStream"
+        wrapper.__type__ = "StreamToStream"
         return wrapper

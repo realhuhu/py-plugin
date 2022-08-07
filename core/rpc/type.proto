@@ -7,9 +7,9 @@ package hello;
 
 service Channel {
     rpc Option(OptionCode) returns(ResponseCode) {}
-    rpc UnaryToUnary (Request) returns (Response) {}
-    rpc UnaryToStream (Request) returns (stream Response) {}
-    rpc StreamToUnary (stream Request) returns (Response) {}
+    rpc FrameToFrame (Request) returns (Response) {}
+    rpc FrameToStream (Request) returns (stream Response) {}
+    rpc StreamToFrame (stream Request) returns (Response) {}
     rpc StreamToStream (stream Request) returns (stream Response) {}
 }
 
@@ -17,33 +17,54 @@ message OptionCode {uint32 code = 1;}
 message ResponseCode {uint32 code = 1;}
 
 message Request {
-    Event event = 2;
-    string file = 3;
-    string function = 4;
-    map<string, string> message = 5;
-    map<string, Image> image = 6;
-    map<string, Other> other = 7;
+    string package = 1;
+    string handler = 2;
+
+    Event event = 3;
+
+    string message = 4;
+    repeated string messageList = 5;
+    map<string, string> messageDict = 6;
+
+    bytes image = 7;
+    repeated  bytes imageList = 8;
+    map<string, bytes> imageDict = 9;
+
+    Other other = 10;
+    repeated Other otherList = 11;
+    map<string, Other> otherDict = 12;
 }
 
 message Response {
-    map<string, string> message = 1;
-    map<string, Image> image = 2;
-    map<string, Other> other = 3;
+    string message = 1;
+    repeated string messageList = 2;
+    map<string, string> messageDict = 3;
+
+    bytes image = 4;
+    repeated  bytes imageList = 5;
+    map<string, bytes> imageDict = 6;
+
+    Other other = 7;
+    repeated Other otherList = 8;
+    map<string, Other> otherDict = 9;
 }
 
 message Event {
-    User sender = 1;
-    int32 group_qq = 2;
+    string msg = 1;
+    User sender = 2;
+    Group group = 3;
+    repeated User atList = 4;
+    repeated bytes imageList = 5;
 }
 
 message User {
-    int32 user_qq = 1;
-    string nickname = 2;
+    int32 qq = 1;
+    string name = 2;
 }
 
-message Image {
-    bytes binary = 1;
-    string format = 2;
+message Group {
+    int32 qq = 1;
+    string name = 2;
 }
 
 message Other {

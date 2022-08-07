@@ -158,7 +158,7 @@ export async function lower(e) {
 ```
 
 ```python
-#example_UnaryToUnary.py
+#example_FrameToFrame.py
 from core.lib.decorator import channel
 
 
@@ -219,7 +219,7 @@ export async function who(e) {
 ```
 
 ```python
-#example_UnaryToStream.py
+#example_FrameToStream.py
 import time
 from core.lib.decorator import channel
 

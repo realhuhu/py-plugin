@@ -19,18 +19,18 @@ class ChannelStub(object):
                 request_serializer=core_dot_rpc_dot_type__pb2.OptionCode.SerializeToString,
                 response_deserializer=core_dot_rpc_dot_type__pb2.ResponseCode.FromString,
                 )
-        self.UnaryToUnary = channel.unary_unary(
-                '/hello.Channel/UnaryToUnary',
+        self.FrameToFrame = channel.unary_unary(
+                '/hello.Channel/FrameToFrame',
                 request_serializer=core_dot_rpc_dot_type__pb2.Request.SerializeToString,
                 response_deserializer=core_dot_rpc_dot_type__pb2.Response.FromString,
                 )
-        self.UnaryToStream = channel.unary_stream(
-                '/hello.Channel/UnaryToStream',
+        self.FrameToStream = channel.unary_stream(
+                '/hello.Channel/FrameToStream',
                 request_serializer=core_dot_rpc_dot_type__pb2.Request.SerializeToString,
                 response_deserializer=core_dot_rpc_dot_type__pb2.Response.FromString,
                 )
-        self.StreamToUnary = channel.stream_unary(
-                '/hello.Channel/StreamToUnary',
+        self.StreamToFrame = channel.stream_unary(
+                '/hello.Channel/StreamToFrame',
                 request_serializer=core_dot_rpc_dot_type__pb2.Request.SerializeToString,
                 response_deserializer=core_dot_rpc_dot_type__pb2.Response.FromString,
                 )
@@ -50,19 +50,19 @@ class ChannelServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def UnaryToUnary(self, request, context):
+    def FrameToFrame(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def UnaryToStream(self, request, context):
+    def FrameToStream(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def StreamToUnary(self, request_iterator, context):
+    def StreamToFrame(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -82,18 +82,18 @@ def add_ChannelServicer_to_server(servicer, server):
                     request_deserializer=core_dot_rpc_dot_type__pb2.OptionCode.FromString,
                     response_serializer=core_dot_rpc_dot_type__pb2.ResponseCode.SerializeToString,
             ),
-            'UnaryToUnary': grpc.unary_unary_rpc_method_handler(
-                    servicer.UnaryToUnary,
+            'FrameToFrame': grpc.unary_unary_rpc_method_handler(
+                    servicer.FrameToFrame,
                     request_deserializer=core_dot_rpc_dot_type__pb2.Request.FromString,
                     response_serializer=core_dot_rpc_dot_type__pb2.Response.SerializeToString,
             ),
-            'UnaryToStream': grpc.unary_stream_rpc_method_handler(
-                    servicer.UnaryToStream,
+            'FrameToStream': grpc.unary_stream_rpc_method_handler(
+                    servicer.FrameToStream,
                     request_deserializer=core_dot_rpc_dot_type__pb2.Request.FromString,
                     response_serializer=core_dot_rpc_dot_type__pb2.Response.SerializeToString,
             ),
-            'StreamToUnary': grpc.stream_unary_rpc_method_handler(
-                    servicer.StreamToUnary,
+            'StreamToFrame': grpc.stream_unary_rpc_method_handler(
+                    servicer.StreamToFrame,
                     request_deserializer=core_dot_rpc_dot_type__pb2.Request.FromString,
                     response_serializer=core_dot_rpc_dot_type__pb2.Response.SerializeToString,
             ),
@@ -130,7 +130,7 @@ class Channel(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def UnaryToUnary(request,
+    def FrameToFrame(request,
             target,
             options=(),
             channel_credentials=None,
@@ -140,14 +140,14 @@ class Channel(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/hello.Channel/UnaryToUnary',
+        return grpc.experimental.unary_unary(request, target, '/hello.Channel/FrameToFrame',
             core_dot_rpc_dot_type__pb2.Request.SerializeToString,
             core_dot_rpc_dot_type__pb2.Response.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def UnaryToStream(request,
+    def FrameToStream(request,
             target,
             options=(),
             channel_credentials=None,
@@ -157,14 +157,14 @@ class Channel(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/hello.Channel/UnaryToStream',
+        return grpc.experimental.unary_stream(request, target, '/hello.Channel/FrameToStream',
             core_dot_rpc_dot_type__pb2.Request.SerializeToString,
             core_dot_rpc_dot_type__pb2.Response.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def StreamToUnary(request_iterator,
+    def StreamToFrame(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -174,7 +174,7 @@ class Channel(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/hello.Channel/StreamToUnary',
+        return grpc.experimental.stream_unary(request_iterator, target, '/hello.Channel/StreamToFrame',
             core_dot_rpc_dot_type__pb2.Request.SerializeToString,
             core_dot_rpc_dot_type__pb2.Response.FromString,
             options, channel_credentials,
