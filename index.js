@@ -3,11 +3,13 @@ import fs from "fs";
 import path from "path";
 import { _path, config } from "./core/client/client.js";
 
-exec(`${config.pythonPath} ${path.join(_path, "main.py")}`, function(err, stdout, stderr) {
-  if (err) throw err;
-});
+if (config.host === "127.0.0.1") {
+  exec(`${config.pythonPath} ${path.join(_path, "main.py")}`, function(err, stdout, stderr) {
+    if (err) throw err;
+  });
+}
 
-let files = fs.readdirSync(path.join(_path, "apps", "js")).filter(x=>x.endsWith(".js"));
+let files = fs.readdirSync(path.join(_path, "apps", "js")).filter(x => x.endsWith(".js"));
 let apps = [];
 
 for (let file of files) {
@@ -32,7 +34,7 @@ export async function proxy(e) {
       if (new RegExp(app.rule[key].reg).test(e.msg) || app.rule[key].reg === "noCheck") {
         try {
           let stop = app[key](e);
-          if(app.rule[key].reg !== "noCheck")console.log(`py-plugin:${app[key].name}`);
+          if (app.rule[key].reg !== "noCheck") console.log(`py-plugin:${app[key].name}`);
           if (stop) return true;
         } catch (e) {
           console.log(`py-plugin:${app[key].name} error:${e}`);
@@ -43,10 +45,10 @@ export async function proxy(e) {
 }
 
 export class Proxy {
-  name = "py-plugin"
-  event = 'message'
-  priority = 5000
-  task = {}
-  rule = [{reg: '.*', fnc: 'v3_proxy'}]
-  v3_proxy = proxy
+  name = "py-plugin";
+  event = "message";
+  priority = 5000;
+  task = {};
+  rule = [{ reg: ".*", fnc: "v3_proxy" }];
+  v3_proxy = proxy;
 }
