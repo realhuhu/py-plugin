@@ -9,7 +9,7 @@ from nonebot import get_driver
 from nonebot_plugin_imageutils import BuildImage
 from nonebot_plugin_imageutils.fonts import add_font
 
-data_path = Path() / "apps" / "py" / "petpet" / "resources"
+data_path = Path() / "plugins" / "py-plugin" / "apps" / "py" / "petpet" / "resources"
 
 
 def load_image(path: str) -> BuildImage:

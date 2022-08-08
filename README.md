@@ -114,24 +114,54 @@ Creating virtualenv py-plugin-8_cve6GP-py3.8 in /root/.cache/pypoetry/virtualenv
 
 ​	进入py-plugin文件夹，将config_default.json复制一份，命名为config.json
 
-​	输入`poetry env list --full-path`	
+​	输入`poetry env list --full-path`结果一般如下
 
-​	将带有Activated的路径复制，替换config.json中的pythonPath
+​	**linux**
 
-​	注意，windows系统的路径是\，需要进行转义，类似
+```shell
+/root/.cache/pypoetry/virtualenvs/py-plugin-8_cve6GP-py3.8
+```
+
+​	则用
+
+```shell
+/root/.cache/pypoetry/virtualenvs/py-plugin-8_cve6GP-py3.8/bin/python
+```
+
+​	替换config.json中的pythonPath，config如下所示
 
 ```json
 {
-  "version": [
-    1,
-    0,
-    0
-  ],
+  "version": [1,0,0],
+  "pythonPath": "/root/.cache/pypoetry/virtualenvs/py-plugin-8_cve6GP-py3.8/bin/python",
+  "host": "127.0.0.1",
+  "port": "50051"
+}
+```
+
+​	**windows**
+
+```shell
+C:\Users\huhu\AppData\Local\pypoetry\Cache\virtualenvs\py-plugin-Q1-OsYmF-py3.8
+```
+
+​	则用
+
+```shell
+C:\\Users\\huhu\\AppData\\Local\\pypoetry\\Cache\\virtualenvs\\py-plugin-ZwhPn4_3-py3.8\\Scripts\\python.exe
+```
+
+​	替换config.json中的pythonPath
+
+​	注意，windows系统的路径是\，需要进行转义，config如下所示
+
+```json
+{
+  "version": [1,0,0],
   "pythonPath": "C:\\Users\\huhu\\AppData\\Local\\pypoetry\\Cache\\virtualenvs\\py-plugin-ZwhPn4_3-py3.8\\Scripts\\python.exe",
   "host": "127.0.0.1",
   "port": "50051"
 }
-
 ```
 
 之后重启云崽
