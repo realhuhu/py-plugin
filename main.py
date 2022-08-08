@@ -17,7 +17,7 @@ apps = map(
         lambda x: hasattr(x, "package"),
         map(
             lambda x: importlib.import_module(f"apps.py.{x.replace('.py', '')}"),
-            os.listdir(os.path.join(root, "apps", "py"))
+            filter(lambda x: "." not in x or x.endswith(".py"), os.listdir(os.path.join(root, "apps", "py")))
         )
     )
 

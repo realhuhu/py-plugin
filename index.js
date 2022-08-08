@@ -42,3 +42,11 @@ export async function proxy(e) {
   }
 }
 
+export class Proxy {
+  name = "py-plugin"
+  event = 'message'
+  priority = 5000
+  task = {}
+  rule = [{reg: '.*', fnc: 'v3_proxy'}]
+  v3_proxy = proxy
+}

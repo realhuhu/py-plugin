@@ -1,4 +1,0 @@
-grpcio
-nonebot2
-googleapis-common-protos
-nonebot_plugin_imageutils

@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "py-plugin"
+version = "0.1.0"
+description = ""
+authors = ["realhuhu <2661467107@qq.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+nonebot-plugin-imageutils = "^0.1.7"
+grpcio = "^1.48.0"
+nonebot2 = "^2.0.0-beta.5"
+googleapis-common-protos = "^1.56.4"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.source]]
+name = "tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
