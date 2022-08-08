@@ -7,7 +7,7 @@ exec(`${config.pythonPath} ${path.join(_path, "main.py")}`, function(err, stdout
   if (err) throw err;
 });
 
-let files = fs.readdirSync(path.join(_path, "apps", "js"));
+let files = fs.readdirSync(path.join(_path, "apps", "js")).filter(x=>x.endsWith(".js"));
 let apps = [];
 
 for (let file of files) {
