@@ -10,6 +10,7 @@ nonebot-plugin-imageutils = "^0.1.7"
 grpcio = "^1.48.0"
 nonebot2 = "^2.0.0-beta.5"
 googleapis-common-protos = "^1.56.4"
+imageio = "^2.21.0"
 
 [tool.poetry.dev-dependencies]
 

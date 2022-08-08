@@ -6,3 +6,6 @@ apps/js/*
 apps/py/*
 !apps/js/README.md
 !apps/py/README.md
+!apps/js/petpet.js
+!apps/py/petpet
+data

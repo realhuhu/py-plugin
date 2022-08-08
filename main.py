@@ -34,5 +34,5 @@ async def main():
 if __name__ == '__main__':
     try:
         asyncio.run(main())
-    except asyncio.exceptions.CancelledError:
+    except asyncio.exceptions.CancelledError or KeyboardInterrupt:
         logger.success("Python server stop")
