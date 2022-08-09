@@ -28,7 +28,10 @@ const packageDefinition = protoLoader.loadSync(path.join(_path, "core", "rpc", "
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
 const channel = protoDescriptor.hello;
 
-export const client = new channel.Channel(`${config.host}:${config.port}`, grpc.credentials.createInsecure());
+export const client = new channel.Channel(`${config.host}:${config.port}`, grpc.credentials.createInsecure(), {
+  "grpc.max_receive_message_length": 1024 * 1024 * 128,
+  "grpc.max_send_message_length": 1024 * 1024 * 128,
+});
 
 function send(call) {
   return params => {

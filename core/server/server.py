@@ -106,7 +106,10 @@ class Servicer(type_pb2_grpc.ChannelServicer):
 async def startServer(path, apps):
     with open(path, "r", encoding="utf-8") as f:
         config = json.load(f)
-    server = grpc.aio.server()
+    server = grpc.aio.server(options=[
+        ('grpc.max_send_message_length', 256 * 1024 * 1024),
+        ('grpc.max_receive_message_length', 256 * 1024 * 1024),
+    ])
     server.add_insecure_port(f'{config.get("host", "127.0.0.1")}:{config.get("port", 50051)}')
 
     servicer = Servicer(apps, server)

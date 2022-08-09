@@ -32,7 +32,7 @@ for (let file of files) {
 export const rule = {
   proxy: {
     reg: "noCheck",
-    priority: 800,
+    priority: 0,
     describe: "proxy",
   },
 };

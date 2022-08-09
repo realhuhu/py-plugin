@@ -58,12 +58,12 @@ message Event {
 }
 
 message User {
-    int32 qq = 1;
+    string qq = 1;
     string name = 2;
 }
 
 message Group {
-    int32 qq = 1;
+    string qq = 1;
     string name = 2;
 }
 
