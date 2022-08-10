@@ -4,6 +4,8 @@ import path from "path";
 import fs from "fs";
 import { imageUrlToBuffer } from "../util/transform.js";
 
+export const __version__ = [1, 0, 1];
+
 export const _path = path.join(process.cwd(), "plugins", "py-plugin");
 
 let _config;
@@ -11,8 +13,7 @@ let _config;
 try {
   _config = JSON.parse(fs.readFileSync(path.join(_path, "config.json")).toString());
 } catch (e) {
-  fs.copyFileSync(path.join(_path, "config_default.json"), path.join(_path, "config.json"));
-  _config = JSON.parse(fs.readFileSync(path.join(_path, "config.json")).toString());
+  _config = JSON.parse(fs.readFileSync(path.join(_path, "config_default.json")).toString());
 }
 
 export const config = _config;

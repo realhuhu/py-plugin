@@ -103,9 +103,14 @@ class Servicer(type_pb2_grpc.ChannelServicer):
         return handler
 
 
-async def startServer(path, apps):
-    with open(path, "r", encoding="utf-8") as f:
-        config = json.load(f)
+async def startServer(root, apps):
+    try:
+        with open(root / "config.json", "r", encoding="utf-8") as f:
+            config = json.load(f)
+    except:
+        with open(root / "config_default.json", "r", encoding="utf-8") as f:
+            config = json.load(f)
+
     server = grpc.aio.server(options=[
         ('grpc.max_send_message_length', 256 * 1024 * 1024),
         ('grpc.max_receive_message_length', 256 * 1024 * 1024),
@@ -115,3 +120,6 @@ async def startServer(path, apps):
     servicer = Servicer(apps, server)
     type_pb2_grpc.add_ChannelServicer_to_server(servicer, server)
     return server
+
+
+__version__ = [1, 0, 1]

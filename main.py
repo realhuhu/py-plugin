@@ -1,7 +1,7 @@
 import os
 import asyncio
 import importlib
-
+from pathlib import Path
 import nonebot
 
 nonebot.init()
@@ -9,7 +9,7 @@ nonebot.init()
 from core.server.server import startServer
 from core import logger
 
-root = os.path.dirname(os.path.abspath(__file__))
+root = Path(os.path.dirname(os.path.abspath(__file__)))
 
 apps = map(
     lambda x: (x.package, x),
@@ -25,7 +25,7 @@ apps = map(
 
 
 async def main():
-    server = await startServer(os.path.join(root, "config.json"), apps)
+    server = await startServer(root, apps)
     await server.start()
     logger.success("Python server start")
     await server.wait_for_termination()
