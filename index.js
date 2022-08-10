@@ -2,10 +2,10 @@ import { exec } from "child_process";
 import fs from "fs";
 import path from "path";
 import _ from "lodash";
-import { _path, config } from "./core/client/client.js";
+import { _path, config, client } from "./core/client/client.js";
 
 if (config.host === "127.0.0.1") {
-  exec(`${config.pythonPath} ${path.join(_path, "main.py")}`, function(err, stdout, stderr) {
+  exec(`poetry run python main.py`, { cwd: _path }, function(err, stdout, stderr) {
     if (err) throw err;
   });
 }
@@ -61,3 +61,5 @@ export class Proxy {
   rule = [{ reg: ".*", fnc: "v3_proxy" }];
   v3_proxy = proxy;
 }
+
+console.log(`python插件${config.version.join(".")}初始化~`)
