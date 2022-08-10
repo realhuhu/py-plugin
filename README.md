@@ -40,7 +40,7 @@ curl -sSL https://install.python-poetry.org -o install-poetry.py
 
 ​	***对于windows系统***
 
-​	创建一个空的install-poetry.py文件，然后打开https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py这个网站，将里面所有代码复制进去
+​	创建一个空的install-poetry.py文件，然后打开https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py 这个网站，将里面所有代码复制进去
 
 **2.安装**
 
