@@ -1,6 +1,6 @@
 # 1.安装
 
-**nodejs:**
+**安装nodejs 依赖**
 
 ​	cd到云崽根目录
 
@@ -8,7 +8,7 @@
 
 ​	如果是v3版本云崽，输入`pnpm install @grpc/grpc-js @grpc/proto-loader -w`
 
-**python:**
+**安装python:**
 
 ​	python版本>=3.8，本人是3.8.8
 
@@ -20,15 +20,15 @@
 zlib-devel bzip2-devel expat-devel gdbm-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gcc make libffi-devel
 ```
 
-​	Linux安装python可以参考https://blog.csdn.net/fanxl10/article/details/10685406
+​	Linux安装python可以参考https://blog.csdn.net/weixin_41287692/article/details/105434826
 
-**poetry:**
+**安装poetry:**
 
 ​	poetry是python的包管理工具之一，被nonebot2采用，相当于nodejs的npm。安装依赖时会使用到它
 
-​	**1.获取安装文件**
+**1.获取安装文件**
 
-​	***linux:***
+​	***对于inux系统***
 
 ​	在任意目录下输入如下指令
 
@@ -38,11 +38,13 @@ curl -sSL https://install.python-poetry.org -o install-poetry.py
 
 ​	运行后目录里多了一个install-poetry.py文件
 
-​	***windows***
+​	***对于windows系统***
 
 ​	创建一个空的install-poetry.py文件，然后打开https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py这个网站，将里面所有代码复制进去
 
-​	用你的python执行这个文件
+**2.安装**
+
+​	用你的python执行install-poetry.py
 
 ```shell
 python install-poetry.py
@@ -52,9 +54,9 @@ python install-poetry.py
 
 ​	安装结束后输入poetry仍然无效，因为poetry的文件夹没有被添加到环境变量	
 
-​	**2.添加环境变量**
+**3.添加环境变量**
 
-​	***linux***
+​	***对于inux系统***
 
 ​	输入
 
@@ -76,19 +78,17 @@ source /etc/profile
 
 ​	更新配置
 
-​	***windows***
+​	***对于windows系统***
 
 ​	在Path环境变量增加`poetry`的路径`%USERPROFILE%\.poetry\bin`
 
-​	**3.测试是否安装成功**
+**4.测试是否安装成功**
 
 ​	输入`poetry`查看是否有输出
 
 # 2.使用
 
 ​	对于v2 v3，使用方法相同
-
-## 2.1安装python依赖
 
 ​	进入云崽plugins目录，输入
 
@@ -108,60 +108,4 @@ poetry install
 Creating virtualenv py-plugin-8_cve6GP-py3.8 in /root/.cache/pypoetry/virtualenvs
 ```
 
-​	等待安装完成即可
-
-## 2.2配置config
-
-​	进入py-plugin文件夹，将config_default.json复制一份，命名为config.json
-
-​	输入`poetry env list --full-path`结果一般如下
-
-​	**linux**
-
-```shell
-/root/.cache/pypoetry/virtualenvs/py-plugin-8_cve6GP-py3.8
-```
-
-​	则用
-
-```shell
-/root/.cache/pypoetry/virtualenvs/py-plugin-8_cve6GP-py3.8/bin/python
-```
-
-​	替换config.json中的pythonPath，config如下所示
-
-```json
-{
-  "version": [1,0,0],
-  "pythonPath": "/root/.cache/pypoetry/virtualenvs/py-plugin-8_cve6GP-py3.8/bin/python",
-  "host": "127.0.0.1",
-  "port": "50051"
-}
-```
-
-​	**windows**
-
-```shell
-C:\Users\huhu\AppData\Local\pypoetry\Cache\virtualenvs\py-plugin-Q1-OsYmF-py3.8
-```
-
-​	则用
-
-```shell
-C:\\Users\\huhu\\AppData\\Local\\pypoetry\\Cache\\virtualenvs\\py-plugin-ZwhPn4_3-py3.8\\Scripts\\python.exe
-```
-
-​	替换config.json中的pythonPath
-
-​	注意，windows系统的路径是\，需要进行转义，config如下所示
-
-```json
-{
-  "version": [1,0,0],
-  "pythonPath": "C:\\Users\\huhu\\AppData\\Local\\pypoetry\\Cache\\virtualenvs\\py-plugin-ZwhPn4_3-py3.8\\Scripts\\python.exe",
-  "host": "127.0.0.1",
-  "port": "50051"
-}
-```
-
-之后重启云崽
+​	等待安装完成即可，之后重启云崽
