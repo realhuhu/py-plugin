@@ -32,7 +32,7 @@ zlib-devel bzip2-devel expat-devel gdbm-devel openssl-devel ncurses-devel sqlite
 git clone https://github.com/realhuhu/py-plugin.git
 ```
 
-​	进入py-plugin文件夹，输入用你的python运行install文件夹
+​	进入py-plugin文件夹，用你的python运行install文件夹
 
 ```shell
 python install
