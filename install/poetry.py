@@ -1,5 +1,5 @@
 """
-This script will install-poetry Poetry and its dependencies.
+This script will install Poetry and its dependencies.
 
 It does, in order:
 
@@ -222,7 +222,7 @@ if WINDOWS:
 
 PRE_MESSAGE = """# Welcome to {poetry}!
 
-This will download and install-poetry the latest version of {poetry},
+This will download and install the latest version of {poetry},
 a dependency and package manager for Python.
 
 It will add the `poetry` command to {poetry}'s bin directory, located at:
@@ -334,7 +334,7 @@ class VirtualEnvironment:
         env = cls(target)
 
         # we do this here to ensure that outdated system default pip does not trigger older bugs
-        env.pip("install-poetry", "--disable-pip-version-check", "--upgrade", "pip")
+        env.pip("install", "--disable-pip-version-check", "--upgrade", "pip")
 
         return env
 
@@ -648,7 +648,7 @@ class Installer:
         else:
             specification = f"poetry=={version}"
 
-        env.pip("install-poetry", specification)
+        env.pip("install", specification)
 
     def display_pre_message(self) -> None:
         kwargs = {
@@ -822,16 +822,16 @@ def main():
     parser.add_argument(
         "-p",
         "--preview",
-        help="install-poetry preview version",
+        help="install preview version",
         dest="preview",
         action="store_true",
         default=False,
     )
-    parser.add_argument("--version", help="install-poetry named version", dest="version")
+    parser.add_argument("--version", help="install named version", dest="version")
     parser.add_argument(
         "-f",
         "--force",
-        help="install-poetry on top of existing version",
+        help="install on top of existing version",
         dest="force",
         action="store_true",
         default=False,

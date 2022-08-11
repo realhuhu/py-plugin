@@ -28,7 +28,7 @@ def exec_cmd(command):
     if stdout:
         print(stdout)
     if stderr:
-        print("!!! 错误 !!!" + stderr)
+        raise Exception("!!! 错误 !!!" + stderr)
 
     return stdout.strip()
 
