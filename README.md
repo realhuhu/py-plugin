@@ -35,7 +35,7 @@ git clone https://github.com/realhuhu/py-plugin.git
 ​	进入py-plugin文件夹，输入用你的python运行install文件夹
 
 ```shell
-python install-poetry
+python install
 ```
 
 ​	等待安装完成，输入`poetry`查看是否有输出，有则说明poetry安装完成，然后安装依赖
