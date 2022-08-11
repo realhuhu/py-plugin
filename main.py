@@ -25,7 +25,7 @@ apps = map(
 
 
 async def main():
-    server = await startServer(root, apps)
+    server = await startServer(apps)
     await server.start()
     logger.success("Python server start")
     await server.wait_for_termination()

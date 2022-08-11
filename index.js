@@ -5,8 +5,8 @@ import _ from "lodash";
 import { _path, config, __version__ } from "./core/client/client.js";
 
 if (config.host === "127.0.0.1") {
-  exec(`poetry run python main.py`, { cwd: _path }, function(err, stdout, stderr) {
-    if (err) throw err;
+  exec(`poetry run python main.py ${config.port}`, { cwd: _path }, function(err, stdout, stderr) {
+    if (err) console.log(err)
   });
 }
 
@@ -44,7 +44,7 @@ export async function proxy(e) {
         let stop = await app.handler(e);
         if (app.reg !== "noCheck") console.log(`py-plugin:${app.handler.name}`);
         if (app.reg === "noCheck" && stop) console.log(`py-plugin:${app.handler.name}`);
-        if (stop) return true;
+        return stop === true;
       } catch (e) {
         console.log(`py-plugin:${app[key].name} error:${e}`);
       }
@@ -58,8 +58,8 @@ export class Proxy {
   event = "message";
   priority = 0;
   task = {};
-  rule = [{ reg: ".*", fnc: "v3_proxy" }];
-  v3_proxy = proxy;
+  rule = [{ reg: ".*", fnc: "apps" }];
+  apps = proxy;
 }
 
 console.log(`python插件${__version__.join(".")}初始化~`);

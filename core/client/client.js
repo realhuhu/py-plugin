@@ -3,6 +3,7 @@ import protoLoader from "@grpc/proto-loader";
 import path from "path";
 import fs from "fs";
 import { imageUrlToBuffer } from "../util/transform.js";
+import _ from "lodash";
 
 export const __version__ = [1, 0, 1];
 
@@ -17,6 +18,9 @@ try {
 }
 
 export const config = _config;
+
+config.port = _.random(50000, 50100);
+
 
 const packageDefinition = protoLoader.loadSync(path.join(_path, "core", "rpc", "type.proto"), {
   keepCase: true,
@@ -42,7 +46,7 @@ function send(call) {
 
 
 export function FrameToFrame({ _package, _handler, params, onData }) {
-  return client.FrameToFrame({
+  let call = client.FrameToFrame({
     package: _package,
     handler: _handler,
     ...params,
@@ -50,6 +54,12 @@ export function FrameToFrame({ _package, _handler, params, onData }) {
     let error = err || response.error;
     onData(error, response);
   });
+
+  call.on("error", error => {
+    console.log(`${_package} ${_handler}出错了\n${error.details}`);
+  });
+
+  return call;
 }
 
 export function StreamToFrame({ _package, _handler, onInit, onData }) {
@@ -67,6 +77,10 @@ export function StreamToFrame({ _package, _handler, onInit, onData }) {
     onInit();
   }
 
+  call.on("error", error => {
+    console.log(`${_package} ${_handler}出错了\n${error.details}`);
+  });
+
   call.send = send(call);
 
   return call;
@@ -81,6 +95,10 @@ export function FrameToStream({ _package, _handler, params, onData, onEnd }) {
 
   call.on("data", response => {
     onData(response.error, response);
+  });
+
+  call.on("error", error => {
+    console.log(`${_package} ${_handler}出错了\n${error.details}`);
   });
 
   if (onEnd) call.on("end", onEnd);
@@ -102,6 +120,10 @@ export function StreamToStream({ _package, _handler, onInit, onData, onEnd }) {
 
   call.on("data", (response) => {
     onData(response.error, response);
+  });
+
+  call.on("error", error => {
+    console.log(`${_package} ${_handler}出错了\n${error.details}`);
   });
 
   call.send = send(call);

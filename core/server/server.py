@@ -1,4 +1,4 @@
-import json
+import sys
 import traceback
 
 import grpc
@@ -103,19 +103,12 @@ class Servicer(type_pb2_grpc.ChannelServicer):
         return handler
 
 
-async def startServer(root, apps):
-    try:
-        with open(root / "config.json", "r", encoding="utf-8") as f:
-            config = json.load(f)
-    except:
-        with open(root / "config_default.json", "r", encoding="utf-8") as f:
-            config = json.load(f)
-
+async def startServer(apps):
     server = grpc.aio.server(options=[
         ('grpc.max_send_message_length', 256 * 1024 * 1024),
         ('grpc.max_receive_message_length', 256 * 1024 * 1024),
     ])
-    server.add_insecure_port(f'{config.get("host", "127.0.0.1")}:{config.get("port", 50051)}')
+    server.add_insecure_port(f'127.0.0.1:{sys.argv[1]}')
 
     servicer = Servicer(apps, server)
     type_pb2_grpc.add_ChannelServicer_to_server(servicer, server)
