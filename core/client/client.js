@@ -19,7 +19,11 @@ try {
 
 export const config = _config;
 
-config.port = _.random(50000, 50100);
+if(config.host==="127.0.0.1"){
+  config.port = _.random(50000, 50100);
+}else {
+  config.port = 50051;
+}
 
 
 const packageDefinition = protoLoader.loadSync(path.join(_path, "core", "rpc", "type.proto"), {

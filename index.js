@@ -44,9 +44,11 @@ export async function proxy(e) {
         let stop = await app.handler(e);
         if (app.reg !== "noCheck") console.log(`py-plugin:${app.handler.name}`);
         if (app.reg === "noCheck" && stop) console.log(`py-plugin:${app.handler.name}`);
-        return stop === true;
+        if(stop === true){
+          return true
+        }
       } catch (e) {
-        console.log(`py-plugin:${app[key].name} error:${e}`);
+        console.log(`py-plugin:${app.handler.name} error:${e}`);
       }
     }
   }
