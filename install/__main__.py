@@ -43,7 +43,7 @@ if __platform__ == "windows":
     if exec_cmd(r'echo %APPDATA%\Python\Scripts', True) not in os.getenv("path"):
         print("### 添加环境变量... ###")
         path = exec_cmd(r'echo %Path%', True)
-        if len(path) > 1000:
+        if len(path) > 900:
             print(r"### 添加环境变量失败，请手动将 %APPDATA%\Python\Scripts 添加到 Path 环境变量 ###")
             exit(-1)
         else:
