@@ -22,10 +22,10 @@ else:
 Cmd = partial(subprocess.Popen, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding=__encoding__)
 
 
-def exec_cmd(command):
+def exec_cmd(command, hide=False):
     cmd = Cmd(command)
     stdout, stderr = cmd.communicate()
-    if stdout:
+    if stdout and not hide:
         print(stdout)
     if stderr:
         raise Exception("!!! 错误 !!!" + stderr)
@@ -40,9 +40,19 @@ print("### 安装poetry中... ###")
 exec_cmd(f'{__python_path__} {__path__ / "poetry.py"}')
 
 if __platform__ == "windows":
-    if exec_cmd(r'echo %APPDATA%\Python\Scripts"') not in os.getenv("path"):
+    if exec_cmd(r'echo %APPDATA%\Python\Scripts', True) not in os.getenv("path"):
         print("### 添加环境变量... ###")
-        exec_cmd(r'setx Path "%Path%;%APPDATA%\Python\Scripts"')
+        path = exec_cmd(r'echo %Path%', True)
+        if len(path) > 1000:
+            print(r"### 添加环境变量失败，请手动将 %APPDATA%\Python\Scripts 添加到 Path 环境变量 ###")
+            exit(-1)
+        else:
+            res = exec_cmd(r'setx Path "%Path%;%APPDATA%\Python\Scripts"')
+            if "警告" in res or "warning" in res:
+                print(r"### 添加环境变量失败，请手动将 %APPDATA%\Python\Scripts 添加到 Path 环境变量 ###")
+                exit(-1)
+
+
 else:
     if not os.path.exists("/usr/bin/poetry"):
         print("### 创建软连接... ###")
