@@ -1,13 +1,12 @@
+from nonebot import init
+
+init()
 import os
 import asyncio
 import importlib
 from pathlib import Path
-import nonebot
-
-nonebot.init()
 
 from core.server.server import startServer
-from core import logger
 
 root = Path(os.path.dirname(os.path.abspath(__file__)))
 
@@ -16,8 +15,8 @@ apps = map(
     filter(
         lambda x: hasattr(x, "package"),
         map(
-            lambda x: importlib.import_module(f"apps.py.{x.replace('.py', '')}"),
-            filter(lambda x: "." not in x or x.endswith(".py"), os.listdir(os.path.join(root, "apps", "py")))
+            lambda x: importlib.import_module(f"apps.{x}.py"),
+            filter(lambda x: "_" not in x and (root / "apps" / x).is_dir(), os.listdir(os.path.join(root, "apps")))
         )
     )
 
@@ -27,12 +26,11 @@ apps = map(
 async def main():
     server = await startServer(apps)
     await server.start()
-    logger.success("Python server start")
     await server.wait_for_termination()
 
 
 if __name__ == '__main__':
     try:
         asyncio.run(main())
-    except asyncio.exceptions.CancelledError or KeyboardInterrupt:
-        logger.success("Python server stop")
+    except asyncio.exceptions.CancelledError or KeyboardInterrupt as e:
+        raise e

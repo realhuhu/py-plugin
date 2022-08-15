@@ -2,8 +2,8 @@
 __pycache__
 .idea/
 config.json
-apps/js/*
-apps/py/*
-!apps/js/README.md
-!apps/py/README.md
+apps/*
+!apps/处理依赖
+!apps/帮助
+!apps/插件安装与更新
 data

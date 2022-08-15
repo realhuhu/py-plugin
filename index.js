@@ -5,16 +5,16 @@ import _ from "lodash";
 import { _path, config, __version__ } from "./core/client/client.js";
 
 if (config.host === "127.0.0.1") {
-  exec(`poetry run python main.py ${config.port}`, { cwd: _path }, function(err, stdout, stderr) {
-    if (err) console.log(err)
+  exec(`poetry run python main.py -grpc-port ${config.port}`, { cwd: _path }, function(err, stdout, stderr) {
+    if (err) console.log(err);
   });
 }
 
-let files = fs.readdirSync(path.join(_path, "apps", "js")).filter(x => x.endsWith(".js"));
+let files = fs.readdirSync(path.join(_path, "apps")).filter(x => !x.includes("__") && fs.statSync(path.join(_path, "apps", x)).isDirectory());
 let apps = [];
 
 for (let file of files) {
-  let tmp = await import(`./apps/js/${file}`);
+  let tmp = await import(`./apps/${file}/js/index.js`);
   if (tmp.rule) {
     for (let key of Object.keys(tmp.rule)) {
       apps.push({
@@ -44,15 +44,15 @@ export async function proxy(e) {
         let stop = await app.handler(e);
         if (app.reg !== "noCheck") console.log(`py-plugin:${app.handler.name}`);
         if (app.reg === "noCheck" && stop) console.log(`py-plugin:${app.handler.name}`);
-        if(stop === true){
-          return true
+        if (stop === true) {
+          return true;
         }
       } catch (e) {
         console.log(`py-plugin:${app.handler.name} error:${e}`);
       }
     }
   }
-  return false
+  return false;
 }
 
 

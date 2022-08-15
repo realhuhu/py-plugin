@@ -12,6 +12,7 @@ nonebot2 = "^2.0.0-beta.5"
 googleapis-common-protos = "^1.56.4"
 imageio = "^2.21.0"
 apscheduler = "^3.9.1"
+redis = "^4.3.4"
 
 [tool.poetry.dev-dependencies]
 

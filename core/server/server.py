@@ -1,10 +1,10 @@
-import sys
 import traceback
 
 import grpc
 
 from core.rpc import type_pb2_grpc, type_pb2
 from core.lib.exception import *
+from core import config
 
 
 class Servicer(type_pb2_grpc.ChannelServicer):
@@ -108,7 +108,7 @@ async def startServer(apps):
         ('grpc.max_send_message_length', 256 * 1024 * 1024),
         ('grpc.max_receive_message_length', 256 * 1024 * 1024),
     ])
-    server.add_insecure_port(f'127.0.0.1:{sys.argv[1]}')
+    server.add_insecure_port(f'{config.grpc_host or "127.0.0.1"}:{config.grpc_port or 50051}')
 
     servicer = Servicer(apps, server)
     type_pb2_grpc.add_ChannelServicer_to_server(servicer, server)
