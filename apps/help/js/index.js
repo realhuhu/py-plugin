@@ -2,7 +2,6 @@ import fs from "fs";
 import { render } from "../../../core/util/render.js";
 import path from "path";
 import _ from "lodash";
-import { segment } from "oicq";
 
 export const rule = {
   py_help: {
@@ -48,8 +47,8 @@ export async function py_help(e) {
   if (!e.isMaster) {
     all = all.filter(x => !x.auth);
   }
-  let base64 = await render("help", "py_help", { apps: all });
-  e.reply(segment.image(`base64://${base64}`));
+  let img = await render("help", "py_help", { apps: all });
+  e.reply(img);
   return true;
 }
 
@@ -66,7 +65,7 @@ export async function py_help_detail(e) {
     return true;
   }
 
-  let base64 = await render("help", "py_help_detail", { app });
-  e.reply(segment.image(`base64://${base64}`));
+  let img = await render("help", "py_help_detail", { app });
+  e.reply(img);
   return true;
 }

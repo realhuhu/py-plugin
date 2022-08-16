@@ -1,6 +1,5 @@
 import { render } from "../../../core/util/render.js";
 import fetch from "node-fetch";
-import { segment } from "oicq";
 import { exec } from "child_process";
 import path from "path";
 import fs from "fs";
@@ -103,9 +102,8 @@ export async function py_query_app(e) {
       app.not_installed = true;
     }
   }
-  console.log(apps);
-  let base64 = await render("download", "py_query_app", { apps: apps });
-  e.reply(segment.image(`base64://${base64}`));
+  let img = await render("download", "py_query_app", { apps: apps });
+  e.reply(img);
   return true;
 }
 
