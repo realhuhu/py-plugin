@@ -16,7 +16,10 @@ apps = map(
         lambda x: hasattr(x, "package"),
         map(
             lambda x: importlib.import_module(f"apps.{x}.py"),
-            filter(lambda x: "_" not in x and (root / "apps" / x).is_dir(), os.listdir(os.path.join(root, "apps")))
+            filter(
+                lambda x: x != "__pycache__" and (root / "apps" / x).is_dir() and (root / "apps" / x / "py").exists(),
+                os.listdir(os.path.join(root, "apps"))
+            )
         )
     )
 

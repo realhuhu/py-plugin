@@ -2,18 +2,20 @@ import { exec } from "child_process";
 import fs from "fs";
 import path from "path";
 import _ from "lodash";
-import { _path, config, __version__ } from "./core/client/client.js";
+import { config } from "./core/client/client.js";
 
 if (config.host === "127.0.0.1") {
-  exec(`poetry run python main.py -grpc-port ${config.port}`, { cwd: _path }, function(err, stdout, stderr) {
+  exec(`poetry run python main.py  -grpc-host ${config.host} -grpc-port ${config.port} -redis-host ${BotConfig.redis.host} -redis-port ${BotConfig.redis.port} -redis-password ${BotConfig.redis.password || "None"}`, { cwd: global.py_plugin_path }, function(err, stdout, stderr) {
     if (err) console.log(err);
   });
 }
 
-let files = fs.readdirSync(path.join(_path, "apps")).filter(x => !x.includes("__") && fs.statSync(path.join(_path, "apps", x)).isDirectory());
+let dirs = fs.readdirSync(path.join(global.py_plugin_path, "apps")).filter(x => !x.includes("__") && fs.statSync(path.join(global.py_plugin_path, "apps", x)).isDirectory());
+global.py_plugin_dirs = dirs;
+global.py_plugin_version = [1, 1, 1];
 let apps = [];
 
-for (let file of files) {
+for (let file of dirs) {
   let tmp = await import(`./apps/${file}/js/index.js`);
   if (tmp.rule) {
     for (let key of Object.keys(tmp.rule)) {
@@ -65,4 +67,4 @@ export class Proxy {
   apps = proxy;
 }
 
-console.log(`python插件${__version__.join(".")}初始化~`);
+console.log(`python插件${global.py_plugin_version.join(".")}初始化~`);

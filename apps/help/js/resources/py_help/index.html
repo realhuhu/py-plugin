@@ -1,0 +1,42 @@
+{{extend defaultLayout}}
+
+{{block 'css'}}
+<link rel="stylesheet" type="text/css" href="{{_res_path}}/index.css"/>
+{{/block}}
+
+{{block 'main'}}
+<div class="head-box">
+  <div class="title">Py-Plugin帮助</div>
+  <div class="sub-title">发送 #插件名+帮助 获取插件详细帮助</div>
+</div>
+
+{{each apps app}}
+{{if app.list?.length}}
+<div class="cont-box">
+  <div class="help-head">
+    <div class="left">
+      <div class="help-group">{{app.group}}</div>
+      {{if !app.skip}}
+      <div class="help-version">v{{app.version.join(".")}}</div>
+      {{/if}}
+    </div>
+    <div class="right">发送&nbsp;#{{app.group}}帮助&nbsp;获取详细帮助</div>
+  </div>
+  <div class="help-table">
+    {{each app.list help idx}}
+    {{if idx%3 == 0}}
+    <div class="tr">
+      {{/if}}
+      <div class="td">
+        <strong class="help-title">{{help.title}}</strong>
+        <span class="help-desc">{{help.desc}}</span>
+      </div>
+      {{if idx%3 ==2 || idx == app.list.length -1}}
+    </div>
+    {{/if}}
+    {{/each}}
+  </div>
+</div>
+{{/if}}
+{{/each}}
+{{/block}}

@@ -5,16 +5,15 @@ import fs from "fs";
 import { imageUrlToBuffer } from "../util/transform.js";
 import _ from "lodash";
 
-export const __version__ = [1, 0, 1];
 
-export const _path = path.join(process.cwd(), "plugins", "py-plugin");
+global.py_plugin_path = path.join(process.cwd(), "plugins", "py-plugin");
 
 let _config;
 
 try {
-  _config = JSON.parse(fs.readFileSync(path.join(_path, "config.json")).toString());
+  _config = JSON.parse(fs.readFileSync(path.join(global.py_plugin_path, "config.json")).toString());
 } catch (e) {
-  _config = JSON.parse(fs.readFileSync(path.join(_path, "config_default.json")).toString());
+  _config = JSON.parse(fs.readFileSync(path.join(global.py_plugin_path, "config_default.json")).toString());
 }
 
 export const config = _config;
@@ -26,7 +25,7 @@ if(config.host==="127.0.0.1"){
 }
 
 
-const packageDefinition = protoLoader.loadSync(path.join(_path, "core", "rpc", "type.proto"), {
+const packageDefinition = protoLoader.loadSync(path.join(global.py_plugin_path, "core", "rpc", "type.proto"), {
   keepCase: true,
   longs: String,
   enums: String,

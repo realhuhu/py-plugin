@@ -1,0 +1,74 @@
+@font-face {
+    font-family: "HWZS";
+    src: url("../font/华文中宋.TTF");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Number";
+    src: url("../font/tttgbnumber.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "NZBZ";
+    src: url("../font/NZBZ.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "YS";
+    src: url("../font/HYWH-85W.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "YS2";
+    src: url("../font/HYWH-65W.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    font-size: 18px;
+    color: #1e1f20;
+    font-family: Number, YS2, PingFangSC-Medium, PingFang SC, sans-serif;
+    transform: scale(1.4);
+    transform-origin: 0 0;
+    width: 600px;
+}
+
+.container {
+    width: 600px;
+    padding: 20px 15px 10px 15px;
+    background-size: contain;
+}
+
+
+.copyright {
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+    padding-left: 10px;
+    text-shadow: 1px 1px 1px #000;
+    margin: 10px 0;
+}
+
+.copyright .version {
+    font-size: 13px;
+    color: #d3bc8e;
+    display: inline-block;
+    padding: 0 3px;
+}

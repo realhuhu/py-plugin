@@ -3,7 +3,6 @@ __pycache__
 .idea/
 config.json
 apps/*
-!apps/处理依赖
-!apps/帮助
-!apps/插件安装与更新
+!apps/help/
+!apps/download/
 data

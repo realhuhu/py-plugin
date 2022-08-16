@@ -11,6 +11,7 @@ class Servicer(type_pb2_grpc.ChannelServicer):
     def __init__(self, apps, server):
         self.apps = dict(apps)
         self.server = server
+        print(self.apps)
 
     async def FrameToFrame(self, request, context):
         try:
@@ -23,6 +24,8 @@ class Servicer(type_pb2_grpc.ChannelServicer):
             context.set_details(traceback.format_exc())
 
     async def StreamToFrame(self, request_iterator, context):
+        print(123)
+
         try:
             try:
                 head = await request_iterator.__anext__()
