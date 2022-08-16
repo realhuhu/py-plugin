@@ -51,3 +51,4 @@ Creating virtualenv py-plugin-8_cve6GP-py3.8 in /root/.cache/pypoetry/virtualenv
 ```
 
 ​	等待安装完成即可，之后重启云崽
+    发送 #py帮助 获取帮助
