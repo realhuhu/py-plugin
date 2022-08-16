@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs";
-import {segment} from "oicq";
+import { segment } from "oicq";
 
 let _render = null, _puppeteer = null;
 
@@ -20,18 +20,18 @@ export async function render(app, func, data, imgType = "png") {
   let sys = {
     scale: "style=transform:scale(1.2)",
     copyright: `Created By Yunzai-Bot<span class="version">${JSON.parse(fs.readFileSync("package.json", "utf8")).version}</span> & Py-Plugin<span class="version">${global.py_plugin_version.join(".")}</span>`,
-  }
+  };
 
   if (_render) {
-    let base64 = _render(`py-plugin/apps/${app}/js`)(func, "index", {
+    let base64 = await _render(`py-plugin/apps/${app}/js`)(func, "index", {
       ...data,
       _res_path: `../../../../../../../../plugins/py-plugin/apps/${app}/js/resources/${func}`,
       _layout_res: `../../../../../../../../plugins/py-plugin/resources`,
       _layout_path: layoutPath,
       defaultLayout: path.join(layoutPath, "default.html"),
-      sys
+      sys,
     }, imgType);
-    return segment.image(`base64://${base64}`)
+    return segment.image(`base64://${base64}`);
   } else if (_puppeteer) {
     return await _puppeteer.screenshot(`py-plugin-${app}-${func}`, {
       ...data,
@@ -41,10 +41,10 @@ export async function render(app, func, data, imgType = "png") {
       _res_path: `../../../plugins/py-plugin/apps/${app}/js/resources/${func}`,
       _layout_res: `../../../plugins/py-plugin/resources`,
       _layout_path: layoutPath,
-      sys
-    })
+      sys,
+    });
   } else {
-    console.log("无法确定渲染引擎")
+    console.log("无法确定渲染引擎");
   }
 }
 
