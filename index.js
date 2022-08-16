@@ -16,17 +16,20 @@ global.py_plugin_version = [1, 1, 1];
 let apps = [];
 
 for (let file of dirs) {
-  if (!fs.existsSync(`./apps/${file}/js/index.js`)) continue;
-  let tmp = await import(`./apps/${file}/js/index.js`);
-  if (tmp.rule) {
-    for (let key of Object.keys(tmp.rule)) {
-      apps.push({
-        reg: tmp.rule[key].reg,
-        describe: tmp.rule[key].describe,
-        priority: tmp.rule[key].priority,
-        handler: tmp[key],
-      });
+  try {
+    let tmp = await import(`./apps/${file}/js/index.js`);
+    if (tmp.rule) {
+      for (let key of Object.keys(tmp.rule)) {
+        apps.push({
+          reg: tmp.rule[key].reg,
+          describe: tmp.rule[key].describe,
+          priority: tmp.rule[key].priority,
+          handler: tmp[key],
+        });
+      }
     }
+  } catch (e) {
+
   }
 }
 
