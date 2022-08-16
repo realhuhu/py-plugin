@@ -16,6 +16,7 @@ global.py_plugin_version = [1, 1, 1];
 let apps = [];
 
 for (let file of dirs) {
+  if (!fs.existsSync(`./apps/${file}/js/index.js`)) continue;
   let tmp = await import(`./apps/${file}/js/index.js`);
   if (tmp.rule) {
     for (let key of Object.keys(tmp.rule)) {
@@ -27,9 +28,9 @@ for (let file of dirs) {
       });
     }
   }
-
-  apps = _.sortBy(apps, app => app.priority);
 }
+
+apps = _.sortBy(apps, app => app.priority);
 
 export const rule = {
   proxy: {
