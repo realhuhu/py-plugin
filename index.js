@@ -1,11 +1,11 @@
-import {exec} from "child_process";
+import { exec } from "child_process";
 import fs from "fs";
 import path from "path";
 import _ from "lodash";
-import {config} from "./core/client/client.js";
+import { config } from "./core/client/client.js";
 
 if (config.host === "127.0.0.1") {
-  exec(`poetry run python main.py  -grpc-host ${config.host} -grpc-port ${config.port} `, {cwd: global.py_plugin_path}, function (err, stdout, stderr) {
+  exec(`poetry run python main.py  -grpc-host ${config.host} -grpc-port ${config.port} `, { cwd: global.py_plugin_path }, function(err, stdout, stderr) {
     if (err) console.log(err);
   });
 }
@@ -67,7 +67,7 @@ export class Proxy {
   event = "message";
   priority = 0;
   task = {};
-  rule = [{reg: ".*", fnc: "apps"}];
+  rule = [{ reg: ".*", fnc: "apps" }];
   apps = proxy;
 }
 
