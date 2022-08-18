@@ -45,7 +45,9 @@ def Response(
         message=message,
         messageList=messageList,
         messageDict=messageDict,
-        image=image
+        image=image,
+        imageList=imageList,
+        imageDict=imageDict
     )
 
 

@@ -12,7 +12,7 @@ if (config.host === "127.0.0.1") {
 
 let dirs = fs.readdirSync(path.join(global.py_plugin_path, "apps")).filter(x => !x.includes("__") && fs.statSync(path.join(global.py_plugin_path, "apps", x)).isDirectory());
 global.py_plugin_dirs = dirs;
-global.py_plugin_version = [1, 1, 2];
+global.py_plugin_version = [1, 1, 3];
 let apps = [];
 
 for (let file of dirs) {
@@ -67,8 +67,19 @@ export class Proxy {
   event = "message";
   priority = 0;
   task = {};
-  rule = [{ reg: ".*", fnc: "apps" }];
-  apps = proxy;
+  rule = apps.map(app => {
+    return {
+      reg: app.reg === "noCheck" ? ".*" : app.reg,
+      fnc: app.handler.name
+    }
+  });
+
+}
+
+for (let app of apps) {
+  Proxy.prototype[app.handler.name] = async (e) => {
+    return await app.handler(e) === true
+  }
 }
 
 console.log(`python插件${global.py_plugin_version.join(".")}初始化~`);

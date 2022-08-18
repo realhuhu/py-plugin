@@ -6,3 +6,4 @@ apps/*
 !apps/help/
 !apps/download/
 data
+poetry-installer*
