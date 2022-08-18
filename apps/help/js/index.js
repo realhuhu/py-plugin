@@ -5,7 +5,7 @@ import _ from "lodash";
 
 export const rule = {
   py_help: {
-    reg: "^#py帮助$|^#npy帮助$",
+    reg: "#?(n)?py(命令|帮助|菜单|help|说明|功能|指令|使用说明)$",
     priority: 700,
     describe: "获取帮助列表",
   },
