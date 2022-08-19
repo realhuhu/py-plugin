@@ -17,13 +17,12 @@ try {
 }
 
 export const config = _config;
-//
-// if (config.host === "127.0.0.1") {
-//   config.port = _.random(50000, 50100);
-// } else {
-//   config.port = 50051;
-// }
-config.port = 50051;
+
+if (config.host === "127.0.0.1") {
+  config.port = _.random(50000, 50100);
+} else {
+  config.port = 50051;
+}
 
 
 const packageDefinition = protoLoader.loadSync(path.join(global.py_plugin_path, "core", "rpc", "type.proto"), {
