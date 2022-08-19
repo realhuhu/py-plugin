@@ -142,12 +142,12 @@ export async function createUser(user) {
     qq: user.user_id.toString(),
     name: user.nickname,
     card: user.card,
-    sex: user.sex,
-    age: user.age.toString(),
-    area: user.area,
-    level: user.level.toString(),
-    role: user.role,
-    title: user.title,
+    sex: user?.sex,
+    age: user?.age?.toString(),
+    area: user?.area,
+    level: user?.level?.toString(),
+    role: user?.role,
+    title: user?.title,
   };
 }
 
