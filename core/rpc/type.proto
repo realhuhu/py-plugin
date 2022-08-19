@@ -53,6 +53,14 @@ message Event {
     string msg = 1;
     User sender = 2;
     Group group = 3;
+    Quote quote = 4;
+    repeated User atList = 5;
+    repeated bytes imageList = 6;
+
+}
+message Quote {
+    string msg = 1;
+    User sender = 2;
     repeated User atList = 4;
     repeated bytes imageList = 5;
 }
@@ -60,6 +68,13 @@ message Event {
 message User {
     string qq = 1;
     string name = 2;
+    string card = 3;
+    string gender = 4;
+    string age = 5;
+    string area = 6;
+    string level = 7;
+    string role = 8;
+    string title = 9;
 }
 
 message Group {

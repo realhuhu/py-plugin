@@ -4,15 +4,15 @@ import path from "path";
 import _ from "lodash";
 import { config } from "./core/client/client.js";
 
-if (config.host === "127.0.0.1") {
-  exec(`poetry run python main.py  -grpc-host ${config.host} -grpc-port ${config.port} `, { cwd: global.py_plugin_path }, function(err, stdout, stderr) {
-    if (err) console.log(err);
-  });
-}
+// if (config.host === "127.0.0.1") {
+//   exec(`poetry run python main.py  -grpc-host ${config.host} -grpc-port ${config.port} `, { cwd: global.py_plugin_path }, function(err, stdout, stderr) {
+//     if (err) console.log(err);
+//   });
+// }
 
 let dirs = fs.readdirSync(path.join(global.py_plugin_path, "apps")).filter(x => !x.includes("__") && fs.statSync(path.join(global.py_plugin_path, "apps", x)).isDirectory());
 global.py_plugin_dirs = dirs;
-global.py_plugin_version = [1, 1, 3];
+global.py_plugin_version = [1, 1, 4];
 let apps = [];
 
 for (let file of dirs) {

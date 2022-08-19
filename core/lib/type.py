@@ -1,4 +1,4 @@
-from typing import Protocol, Dict, Type, AsyncGenerator, Any, List, Optional
+from typing import Protocol, Dict, Type, AsyncGenerator, Any, List, Optional, Literal
 
 from ..rpc.type_pb2 import Response as _Response
 
@@ -6,6 +6,13 @@ from ..rpc.type_pb2 import Response as _Response
 class User(Protocol):
     qq: str
     name: str
+    card: str
+    gender: Literal["male", "female", "unknown"]
+    age: str
+    area: str
+    level: str
+    role: str
+    title: str
 
 
 class Group(Protocol):
@@ -13,10 +20,18 @@ class Group(Protocol):
     name: str
 
 
+class Quote(Protocol):
+    msg: str
+    sender: User
+    atList: List[User]
+    imageList: List[bytes]
+
+
 class Event(Protocol):
     msg: str
     sender: User
     group: Group
+    quote: Quote
     atList: List[User]
     imageList: List[bytes]
 

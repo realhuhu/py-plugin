@@ -17,12 +17,13 @@ try {
 }
 
 export const config = _config;
-
-if(config.host==="127.0.0.1"){
-  config.port = _.random(50000, 50100);
-}else {
-  config.port = 50051;
-}
+//
+// if (config.host === "127.0.0.1") {
+//   config.port = _.random(50000, 50100);
+// } else {
+//   config.port = 50051;
+// }
+config.port = 50051;
 
 
 const packageDefinition = protoLoader.loadSync(path.join(global.py_plugin_path, "core", "rpc", "type.proto"), {
@@ -136,32 +137,62 @@ export function StreamToStream({ _package, _handler, onInit, onData, onEnd }) {
   return call;
 }
 
-export async function createEvent(e) {
+
+export async function createUser(user) {
+  return {
+    qq: user.user_id.toString(),
+    name: user.nickname,
+    card: user.card,
+    sex: user.sex,
+    age: user.age.toString(),
+    area: user.area,
+    level: user.level.toString(),
+    role: user.role,
+    title: user.title,
+  };
+}
+
+export async function createMessage(raw_message, is_quote = false) {
   let imageList = [];
 
-  for (let val of e.message) {
+  for (let val of raw_message.message) {
     if ("image" === val.type) {
       imageList.push(await imageUrlToBuffer(val.url));
     }
   }
 
-  return {
-    msg: e.msg,
-    sender: {
-      qq: e.sender.user_id.toString(),
-      name: e.sender.nickname,
-    },
-    group: e.isGroup && {
-      qq: e.group_id.toString(),
-      name: e.group_name,
-    },
-    atList: e.message.filter(x => x.type === "at").map(x => {
+  let message = {
+    sender: await createUser(raw_message.sender),
+    atList: raw_message.message.filter(x => x.type === "at").map(x => {
       return {
         qq: x.qq.toString(),
         name: x.text.replace("@", ""),
       };
     }),
     imageList: imageList,
+
   };
+
+  if (is_quote) {
+    message["msg"] = raw_message.raw_message;
+  } else {
+    message["msg"] = raw_message.msg;
+    message["group"] = raw_message.isGroup ? {
+      qq: raw_message.group_id.toString(),
+      name: raw_message.group_name,
+    } : null;
+  }
+  return message;
 }
 
+export async function createEvent(e) {
+
+  let event = await createMessage(e);
+
+  if (e.isGroup && e.source) {
+    let source = (await e.group.getChatHistory(e.source.seq, 1)).pop();
+    event["quote"] = await createMessage(source, true);
+  }
+
+  return event;
+}
