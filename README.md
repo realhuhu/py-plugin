@@ -102,7 +102,15 @@ cnpm install @grpc/grpc-js @grpc/proto-loader
 
 如果还是报错，可能是node版本问题，建议重装node
 
-#### 2.python安装依赖时提示ModuleNotFoundError:No module named _ctypes
+#### 2.poetry install 报错
+
+![image-1](https://cos.miao.seutools.com/readme/error-http.jpg)
+
+原因：需要安装 Microsoft Visual C++ 14.0 以上
+
+在 https://go.microsoft.com/fwlink/?LinkId=691126 下载安装包，使用默认配置安装即可
+
+#### 3.python安装依赖时提示ModuleNotFoundError:No module named _ctypes
 
 如果是centos输入`sudo yum install libffi-devel `
 
@@ -118,7 +126,7 @@ sudo make && sudo make install
 
 之后重启云崽即可
 
-#### 3.python安装依赖时提示ModuleNotFoundError:No module named _sqlite
+#### 4.python安装依赖时提示ModuleNotFoundError:No module named _sqlite
 
 如果是centos输入`yum install sqlite-devel `
 
@@ -134,7 +142,7 @@ sudo make && sudo make install
 
 之后重启云崽即可
 
-#### 4.安装插件时提示 git clone失败，请查看控制台
+#### 5.安装插件时提示 git clone失败，请查看控制台
 
 大部分是因为网络原因连不上github(部分插件被gitee识别为图床，因此只能通过github安装)，多试几次就好了。如果一直卡住并且等不及了，可以发送 #重启，然后再发送安装指令，重新下载安装插件
 
