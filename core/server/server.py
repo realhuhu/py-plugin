@@ -19,13 +19,15 @@ class Servicer(type_pb2_grpc.ChannelServicer):
 
             return await handler(request)
 
-        except Exception:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details(traceback.format_exc())
+        except Exception as e:
+            if e.__class__ == RuntimeError and str(e) == "async generator raised StopAsyncIteration":
+                pass
+            else:
+                context.set_code(grpc.StatusCode.INTERNAL)
+                context.set_details(traceback.format_exc())
+
 
     async def StreamToFrame(self, request_iterator, context):
-        print(123)
-
         try:
             try:
                 head = await request_iterator.__anext__()
@@ -40,10 +42,12 @@ class Servicer(type_pb2_grpc.ChannelServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(e.stack)
 
-
-        except Exception:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details(traceback.format_exc())
+        except Exception as e:
+            if e.__class__ == RuntimeError and str(e) == "async generator raised StopAsyncIteration":
+                pass
+            else:
+                context.set_code(grpc.StatusCode.INTERNAL)
+                context.set_details(traceback.format_exc())
 
     async def FrameToStream(self, request, context):
         try:
@@ -51,9 +55,12 @@ class Servicer(type_pb2_grpc.ChannelServicer):
             async for response in handler(request):
                 await context.write(response)
 
-        except Exception:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details(traceback.format_exc())
+        except Exception as e:
+            if e.__class__ == RuntimeError and str(e) == "async generator raised StopAsyncIteration":
+                pass
+            else:
+                context.set_code(grpc.StatusCode.INTERNAL)
+                context.set_details(traceback.format_exc())
 
     async def StreamToStream(self, request_iterator, context):
         try:
@@ -71,11 +78,12 @@ class Servicer(type_pb2_grpc.ChannelServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(e.stack)
 
-
-        except Exception:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details(traceback.format_exc())
-            raise context
+        except Exception as e:
+            if e.__class__ == RuntimeError and str(e) == "async generator raised StopAsyncIteration":
+                pass
+            else:
+                context.set_code(grpc.StatusCode.INTERNAL)
+                context.set_details(traceback.format_exc())
 
     async def Option(self, request, context):
         if request.code == 1:
@@ -118,4 +126,4 @@ async def startServer(apps):
     return server
 
 
-__version__ = [1, 1, 4]
+__version__ = [1, 1, 5]
