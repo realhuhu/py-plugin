@@ -40,7 +40,7 @@ os.system('')
 
 print("### 安装poetry中... ###")
 
-exec_cmd(f'{__python_path__} {__path__ / "poetry.py"}')
+exec_cmd(f'"{__python_path__}" {__path__ / "poetry.py"}')
 
 if __platform__ == "windows":
     if exec_cmd(r'echo %APPDATA%\Python\Scripts', True) not in os.getenv("path"):
