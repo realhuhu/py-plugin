@@ -2,11 +2,14 @@ import { exec } from "child_process";
 import fs from "fs";
 import path from "path";
 import _ from "lodash";
-import { config } from "./core/client/client.js";
+import { config, client } from "./core/client/client.js";
 
 if (config.host === "127.0.0.1") {
-  exec(`poetry run python main.py  -grpc-host ${config.host} -grpc-port ${config.port} `, { cwd: global.py_plugin_path }, function(err, stdout, stderr) {
-    if (err) console.log(err);
+  client.Option({ code: 1 }, function(err, response) {
+    console.log("python服务器启动中");
+    exec(`poetry run python main.py  -grpc-host ${config.host} -grpc-port ${config.port} `, { cwd: global.py_plugin_path }, function(err, stdout, stderr) {
+      if (err) console.log(err);
+    });
   });
 }
 
@@ -70,16 +73,16 @@ export class Proxy {
   rule = apps.map(app => {
     return {
       reg: app.reg === "noCheck" ? ".*" : app.reg,
-      fnc: app.handler.name
-    }
+      fnc: app.handler.name,
+    };
   });
 
 }
 
 for (let app of apps) {
   Proxy.prototype[app.handler.name] = async (e) => {
-    return await app.handler(e) === true
-  }
+    return await app.handler(e) === true;
+  };
 }
 
 console.log(`python插件${global.py_plugin_version.join(".")}初始化~`);
