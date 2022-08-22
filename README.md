@@ -146,6 +146,31 @@ sudo make && sudo make install
 
 大部分是因为网络原因连不上github(部分插件被gitee识别为图床，因此只能通过github安装)，多试几次就好了。如果一直卡住并且等不及了，可以发送 #重启，然后再发送安装指令，重新下载安装插件
 
+### 6.发送命令无反应
+
+说明python服务未启动，绝大部分出现于node app启动的情况下。启动时有提示`python服务器启动中`才说明启动成功。如果没有这个提示请重启
+
+```shell
+0|Yunzai  | [2022-08-22T10:57:05.110] [MARK] [iPad:1438740274] - ----------
+0|Yunzai  | [2022-08-22T10:57:05.111] [MARK] [iPad:1438740274] - Package Version: oicq@2.3.0 (Released on 2022/6/19)
+0|Yunzai  | [2022-08-22T10:57:05.111] [MARK] [iPad:1438740274] - View Changelogs：https://github.com/takayama-lily/oicq/releases
+0|Yunzai  | [2022-08-22T10:57:05.111] [MARK] [iPad:1438740274] - ----------
+0|Yunzai  | [2022-08-22T10:57:05.181] [MARK] [iPad:1438740274] - 120.232.130.13:8080 connected
+0|Yunzai  | [2022-08-22T10:57:05.377] [MARK] [iPad:1438740274] - Welcome, 长野原备用机器人 ! 正在加载资源...
+0|Yunzai  | [2022-08-22T10:57:06.347] [MARK] [iPad:1438740274] - 加载了1095个好友，53个群，0个陌生人
+0|Yunzai  | [2022-08-22T10:57:06.353] [MARK] [iPad:1438740274] - ----------
+0|Yunzai  | [2022-08-22T10:57:06.353] [MARK] [iPad:1438740274] - 初始化Yunzai-Bot
+0|Yunzai  | [2022-08-22T10:57:06.578] [INFO] [iPad:1438740274] - ---------^_^---------
+0|Yunzai  | [2022-08-22T10:57:06.578] [INFO] [iPad:1438740274] - 喵喵插件1.9.6初始化~
+0|Yunzai  | python插件1.1.5初始化~
+0|Yunzai  | [2022-08-22T10:57:06.675] [MARK] [iPad:1438740274] - Yunzai-Bot 上线成功 版本v2.2.1
+0|Yunzai  | [2022-08-22T10:57:06.675] [MARK] [iPad:1438740274] - https://github.com/Le-niao/Yunzai-Bot
+0|Yunzai  | [2022-08-22T10:57:06.675] [MARK] [iPad:1438740274] - ----------
+0|Yunzai  | [2022-08-22T10:57:06.704] [MARK] 发送好友消息[‪](2661467107)
+0|Yunzai  | [2022-08-22T10:57:06.781] [INFO] succeed to send: [Private(2661467107)] 重启成功
+0|Yunzai  | python服务器启动中
+```
+
 # 4.使用远程
 
 如果实在装不上python的依赖，可以使用远程服务，前提是装上了nodejs的两个依赖
@@ -155,3 +180,5 @@ sudo make && sudo make install
 使用时方法相同，要先下载插件，然后使用
 
 如果是需要保存数据的插件，比如崩坏三，你的数据会被保存到我的服务器
+
+ps -aux | grep poetry | awk '{print $2}'|xargs kill -9
