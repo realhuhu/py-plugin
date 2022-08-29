@@ -3,7 +3,6 @@ import protoLoader from "@grpc/proto-loader";
 import path from "path";
 import fs from "fs";
 import { imageUrlToBuffer } from "../util/transform.js";
-import _ from "lodash";
 
 
 global.py_plugin_path = path.join(process.cwd(), "plugins", "py-plugin");
@@ -17,9 +16,6 @@ try {
 }
 
 export const config = _config;
-
-
-config.port = 50051;
 
 
 const packageDefinition = protoLoader.loadSync(path.join(global.py_plugin_path, "core", "rpc", "type.proto"), {

@@ -60,7 +60,7 @@ function clone(url) {
 
 function pull(dir) {
   return new Promise((resolve, reject) => {
-    exec(`git pull`, { cwd: path.join(global.py_plugin_path, "apps", dir) }, ((error, stdout, stderr) => {
+    exec(`git pull --allow-unrelated-history`, { cwd: path.join(global.py_plugin_path, "apps", dir) }, ((error, stdout, stderr) => {
       if (error) {
         console.log(stderr);
         console.log(error);
