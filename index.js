@@ -1,21 +1,18 @@
-import { exec } from "child_process";
+import {exec} from "child_process";
 import fs from "fs";
 import path from "path";
 import _ from "lodash";
-import { config, client } from "./core/client/client.js";
+import {config} from "./core/client/client.js";
 
 if (config.host === "127.0.0.1") {
-  client.Option({ code: 1 }, function(err, response) {
-    console.log("python服务器启动中");
-    exec(`poetry run python main.py  -grpc-host ${config.host} -grpc-port ${config.port} `, { cwd: global.py_plugin_path }, function(err, stdout, stderr) {
-      if (err) console.log(err);
-    });
+  exec(`poetry run python main.py  -grpc-host ${config.host} -grpc-port ${config.port} `, {cwd: global.py_plugin_path}, function (err, stdout, stderr) {
+    if (err) console.log(err);
   });
 }
 
 let dirs = fs.readdirSync(path.join(global.py_plugin_path, "apps")).filter(x => !x.includes("__") && fs.statSync(path.join(global.py_plugin_path, "apps", x)).isDirectory());
 global.py_plugin_dirs = dirs;
-global.py_plugin_version = [1, 1, 6];
+global.py_plugin_version = [1, 1, 4];
 let apps = [];
 
 for (let file of dirs) {
@@ -70,19 +67,34 @@ export class Proxy {
   event = "message";
   priority = 0;
   task = {};
-  rule = apps.map(app => {
-    return {
-      reg: app.reg === "noCheck" ? ".*" : app.reg,
-      fnc: app.handler.name,
-    };
-  });
+  rule = [
+    ...apps.filter(app => app.reg !== "noCheck").map(app => {
+      return {
+        reg: app.reg,
+        fnc: app.handler.name
+      }
+    }),
+    {
+      reg: ".*",
+      fnc: "noCheck"
+    }
+  ];
 
 }
 
-for (let app of apps) {
+for (let app of apps.filter(app => app.reg !== "noCheck")) {
   Proxy.prototype[app.handler.name] = async (e) => {
-    return await app.handler(e) === true;
-  };
+    return await app.handler(e) === true
+  }
 }
-
+Proxy.prototype.noCheck = async (e) => {
+  for (let app of apps.filter(app => app.reg === "noCheck")) {
+    let stop = await app.handler(e)
+    if (stop) {
+      console.log(app.handler.name)
+      return true
+    }
+  }
+  return false
+}
 console.log(`python插件${global.py_plugin_version.join(".")}初始化~`);
