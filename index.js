@@ -2,17 +2,20 @@ import {exec} from "child_process";
 import fs from "fs";
 import path from "path";
 import _ from "lodash";
-import {config} from "./core/client/client.js";
+import {config,client} from "./core/client/client.js";
 
 if (config.host === "127.0.0.1") {
-  exec(`poetry run python main.py  -grpc-host ${config.host} -grpc-port ${config.port} `, {cwd: global.py_plugin_path}, function (err, stdout, stderr) {
-    if (err) console.log(err);
+  client.Option({ code: 1 }, function(err, response) {
+    console.log("python服务器启动中");
+    exec(`poetry run python main.py  -grpc-host ${config.host} -grpc-port ${config.port} `, { cwd: global.py_plugin_path }, function(err, stdout, stderr) {
+      if (err) console.log(err);
+    });
   });
 }
 
 let dirs = fs.readdirSync(path.join(global.py_plugin_path, "apps")).filter(x => !x.includes("__") && fs.statSync(path.join(global.py_plugin_path, "apps", x)).isDirectory());
 global.py_plugin_dirs = dirs;
-global.py_plugin_version = [1, 1, 4];
+global.py_plugin_version = [1, 1, 7];
 let apps = [];
 
 for (let file of dirs) {
