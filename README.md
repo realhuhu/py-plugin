@@ -42,7 +42,9 @@ git clone https://github.com/realhuhu/py-plugin.git
 python install
 ```
 
-​	等待安装完成，输入`poetry`查看是否有输出，有则说明poetry安装完成，然后安装依赖
+​	等待安装完成，输入`poetry`查看是否有输出，有则说明poetry安装完成，然后安装依赖，有两种选择：
+
+**方法一（推荐）：**	
 
 ```shell
 poetry install
@@ -53,6 +55,14 @@ poetry install
 ```shell
 Creating virtualenv py-plugin-8_cve6GP-py3.8 in /root/.cache/pypoetry/virtualenvs
 ```
+
+**方法二：**
+
+```shell
+poetry run pip install -r requirements.txt
+```
+
+
 
 ​	等待安装完成即可，之后重启云崽
 
