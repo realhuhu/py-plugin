@@ -36,7 +36,7 @@ export const localClient = config.useRemote === true ? null : new channel.Channe
   "grpc.max_send_message_length": 1024 * 1024 * 128,
 });
 
-export const RemoteClient = typeof config.useRemote !== "object" || !config.useRemote.length ? null : new channel.Channel(`${config.remote.host}:${config.remote.port}`, grpc.credentials.createInsecure(), {
+export const RemoteClient =config.useRemote !== true && (typeof config.useRemote !== "object" || !config.useRemote.length) ? null : new channel.Channel(`${config.remote.host}:${config.remote.port}`, grpc.credentials.createInsecure(), {
   "grpc.max_receive_message_length": 1024 * 1024 * 128,
   "grpc.max_send_message_length": 1024 * 1024 * 128,
 });
