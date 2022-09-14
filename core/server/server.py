@@ -1,7 +1,7 @@
 import traceback
 
 import grpc
-
+from nonebot import logger
 from core.rpc import type_pb2_grpc, type_pb2
 from core.lib.exception import *
 from core import config
@@ -11,7 +11,7 @@ class Servicer(type_pb2_grpc.ChannelServicer):
     def __init__(self, apps, server):
         self.apps = dict(apps)
         self.server = server
-        print(self.apps)
+        logger.info(f"Plugins loaded:{' '.join(self.apps.keys())}")
 
     async def FrameToFrame(self, request, context):
         try:
@@ -25,7 +25,6 @@ class Servicer(type_pb2_grpc.ChannelServicer):
             else:
                 context.set_code(grpc.StatusCode.INTERNAL)
                 context.set_details(traceback.format_exc())
-
 
     async def StreamToFrame(self, request_iterator, context):
         try:
@@ -126,4 +125,4 @@ async def startServer(apps):
     return server
 
 
-__version__ = [1, 1, 6]
+__version__ = [1, 2, 0]

@@ -7,15 +7,17 @@ import { imageUrlToBuffer } from "../util/transform.js";
 
 global.py_plugin_path = path.join(process.cwd(), "plugins", "py-plugin");
 
-let _config;
-
-try {
-  _config = JSON.parse(fs.readFileSync(path.join(global.py_plugin_path, "config.json")).toString());
-} catch (e) {
-  _config = JSON.parse(fs.readFileSync(path.join(global.py_plugin_path, "config_default.json")).toString());
+if (!fs.existsSync(path.join(global.py_plugin_path, "config.json"))) {
+  fs.copyFileSync(path.join(global.py_plugin_path, "config_default.json"), path.join(global.py_plugin_path, "config.json"));
+} else {
+  if (!JSON.parse(fs.readFileSync(path.join(global.py_plugin_path, "config.json")).toString()).local) {
+    fs.unlinkSync(path.join(global.py_plugin_path, "config.json"));
+    fs.copyFileSync(path.join(global.py_plugin_path, "config_default.json"), path.join(global.py_plugin_path, "config.json"));
+    console.log("py-plugin版本更新，已清空config.json，请重新配置");
+  }
 }
 
-export const config = _config;
+export const config = JSON.parse(fs.readFileSync(path.join(global.py_plugin_path, "config.json")).toString());
 
 
 const packageDefinition = protoLoader.loadSync(path.join(global.py_plugin_path, "core", "rpc", "type.proto"), {
@@ -29,7 +31,12 @@ const packageDefinition = protoLoader.loadSync(path.join(global.py_plugin_path, 
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
 const channel = protoDescriptor.hello;
 
-export const client = new channel.Channel(`${config.host||"127.0.0.1"}:${config.port||50051}`, grpc.credentials.createInsecure(), {
+export const localClient = config.useRemote === true ? null : new channel.Channel(`${config.local.host}:${config.local.port}`, grpc.credentials.createInsecure(), {
+  "grpc.max_receive_message_length": 1024 * 1024 * 128,
+  "grpc.max_send_message_length": 1024 * 1024 * 128,
+});
+
+export const RemoteClient = typeof config.useRemote !== "object" || !config.useRemote.length ? null : new channel.Channel(`${config.remote.host}:${config.remote.port}`, grpc.credentials.createInsecure(), {
   "grpc.max_receive_message_length": 1024 * 1024 * 128,
   "grpc.max_send_message_length": 1024 * 1024 * 128,
 });
@@ -40,9 +47,17 @@ function send(call) {
   };
 }
 
+export function createClient(_package, _handler) {
+  if (!localClient || !RemoteClient) {
+    return localClient || RemoteClient;
+  } else {
+    return config.useRemote.includes(`${_package}.${_handler}`) ? RemoteClient : localClient;
+  }
+
+}
 
 export function FrameToFrame({ _package, _handler, params, onData }) {
-  let call = client.FrameToFrame({
+  let call = createClient(_package, _handler).FrameToFrame({
     package: _package,
     handler: _handler,
     ...params,
@@ -59,7 +74,7 @@ export function FrameToFrame({ _package, _handler, params, onData }) {
 }
 
 export function StreamToFrame({ _package, _handler, onInit, onData }) {
-  let call = client.StreamToFrame((err, response) => {
+  let call = createClient(_package, _handler).StreamToFrame((err, response) => {
     let error = err || response.error;
     onData(error, response);
   });
@@ -83,7 +98,7 @@ export function StreamToFrame({ _package, _handler, onInit, onData }) {
 }
 
 export function FrameToStream({ _package, _handler, params, onData, onEnd }) {
-  let call = client.FrameToStream({
+  let call = createClient(_package, _handler).FrameToStream({
     package: _package,
     handler: _handler,
     ...params,
@@ -103,7 +118,7 @@ export function FrameToStream({ _package, _handler, params, onData, onEnd }) {
 }
 
 export function StreamToStream({ _package, _handler, onInit, onData, onEnd }) {
-  let call = client.StreamToStream();
+  let call = createClient(_package, _handler).StreamToStream();
 
   call.write({
     package: _package,

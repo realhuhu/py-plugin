@@ -36,7 +36,7 @@ function pip(requirement) {
     exec(`poetry run pip install ${requirement.replace(".", " ")}`, { cwd: global.py_plugin_path }, ((error, stdout, stderr) => {
       if (error) {
         console.log(stderr);
-        reject(error);
+        resolve(error);
       } else {
         resolve("pip install失败，请查看控制台");
       }
