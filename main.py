@@ -9,8 +9,11 @@ import importlib
 from pathlib import Path
 
 from core.server.server import startServer
+import logging
 
+logging.getLogger('apscheduler').setLevel(logging.WARN)
 warnings.filterwarnings("ignore")
+
 root = Path(os.path.dirname(os.path.abspath(__file__)))
 
 
