@@ -9,7 +9,7 @@ if (config.useRemote !== true) {
   localClient.Option({ code: 1 }, function(err, response) {
     logger.info("python服务器启动中");
     const cmd = spawn(
-      "poetry1",
+      "poetry",
       ["run", "python", "main.py", "-grpc-host", config.local.host, "-grpc-port", config.local.port],
       {
         cwd: global.py_plugin_path,
