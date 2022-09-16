@@ -7,45 +7,45 @@ import { config, localClient, RemoteClient } from "./core/client/client.js";
 
 if (config.useRemote !== true) {
   localClient.Option({ code: 1 }, function(err, response) {
-    try {
-      logger.info("python服务器启动中");
-      const cmd = spawn(
-        "poetry",
-        ["run", "python", "main.py", "-grpc-host", config.local.host, "-grpc-port", config.local.port],
-        {
-          cwd: global.py_plugin_path,
-          shell: false,
-        },
-      );
+    logger.info("python服务器启动中");
+    const cmd = spawn(
+      "poetry1",
+      ["run", "python", "main.py", "-grpc-host", config.local.host, "-grpc-port", config.local.port],
+      {
+        cwd: global.py_plugin_path,
+        shell: false,
+      },
+    );
 
-      cmd.stdout.on("data", data => {
-        process.stdout.write(data);
-        if (data.toString().includes("Python started")) {
-          localClient.Option({ code: 100 }, function(err, response) {
-            if (response.code === 100) {
-              logger.info("python服务器启动成功");
-            }
-          });
-        }
-      });
+    cmd.stdout.on("data", data => {
+      process.stdout.write(data);
+      if (data.toString().includes("Python started")) {
+        localClient.Option({ code: 100 }, function(err, response) {
+          if (response.code === 100) {
+            logger.info("python服务器启动成功");
+          }
+        });
+      }
+    });
 
-      cmd.stderr.on("data", data => {
-        process.stderr.write(data.toString());
-      });
+    cmd.stderr.on("data", data => {
+      process.stderr.write(data.toString());
+    });
 
-      cmd.stderr.on("end", () => {
-        logger.warn("python服务器已关闭");
-      });
-    } catch (e) {
+    cmd.stderr.on("end", () => {
+      logger.warn("python服务器已关闭");
+    });
+
+    cmd.on("error", function(err) {
       logger.warn("python服务器启动失败");
-      logger.warn(e);
-    }
+      logger.warn(err);
+    });
   });
 }
 
 if (RemoteClient) {
   RemoteClient.Option({ code: 100 }, function(err, response) {
-    if (response.code === 100) {
+    if (response && response.code === 100) {
       logger.info("成功连接远程python服务器");
     } else {
       logger.warn("无法连接远程python服务器");
