@@ -68,6 +68,7 @@ for (let file of dirs) {
           describe: tmp.rule[key].describe,
           priority: tmp.rule[key].priority,
           handler: tmp[key],
+          dir:file
         });
       }
     }
