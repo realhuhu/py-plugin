@@ -115,7 +115,7 @@ export class Proxy {
       return {
         reg: app.reg,
         fnc: app.handler.name,
-        name: app.handler.name,
+        name: "py_plugin."+app.handler.name,
       };
     }),
     {
