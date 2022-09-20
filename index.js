@@ -108,7 +108,7 @@ export async function proxy(e) {
 
 export class Proxy {
   get name() {
-    return this.e ? apps.filter(app => RegExp(app.reg).test(this.e.msg))?.[0].handler.name ?? "py-plugin" : "py-plugin"
+    return this.e ? apps.filter(app => RegExp(app.reg).test(this.e.msg))?.[0].dir ?? "py-plugin" : "py-plugin"
   }
   event = "message";
   priority = 0;
