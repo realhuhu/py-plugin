@@ -123,6 +123,7 @@ export class Proxy {
     {
       reg: ".*",
       fnc: "noCheck",
+      log: false,
     },
   ];
 
@@ -137,7 +138,7 @@ Proxy.prototype.noCheck = async (e) => {
   for (let app of apps.filter(app => app.reg === "noCheck")) {
     let stop = await app.handler(e);
     if (stop) {
-      logger.info(app.handler.name);
+      logger.mark(`[${app.dir}][${app.handler.name}]${e.logText} ${_.truncate(e.msg, { length: 80 })}`)
       return true;
     }
   }
