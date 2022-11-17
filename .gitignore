@@ -1,9 +1,10 @@
 *.pyc
 __pycache__
 .idea/
-config.json
-apps/*
-!apps/help/
-!apps/download/
-data
+config.yaml
+plugins/*
+!plugins/nonebot-plugin-memes/
+!plugins/nonebot-plugin-petpet/
+data/*
+!data/fonts
 poetry-installer*

@@ -2,11 +2,14 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import ssl
 import sys
 import platform
 import subprocess
 from pathlib import Path
 from functools import partial
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 __path__ = Path(os.path.dirname(os.path.abspath(__file__)))
 
@@ -26,6 +29,7 @@ Cmd = partial(subprocess.Popen, shell=True, stdout=subprocess.PIPE, stderr=subpr
 
 
 def exec_cmd(command, hide=False):
+    print(command)
     cmd = Cmd(command)
     stdout, stderr = cmd.communicate()
     if stdout and not hide:

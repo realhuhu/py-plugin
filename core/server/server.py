@@ -1,128 +1,71 @@
 import traceback
+from pathlib import Path
+from typing import AsyncGenerator, Any
 
 import grpc
-from nonebot import logger
-from core.rpc import type_pb2_grpc, type_pb2
-from core.lib.exception import *
-from core import config
+from omegaconf import OmegaConf
+from grpc import Server, ServicerContext
+
+import nonebot
+from nonebot.log import logger
+from nonebot.adapters.onebot.v11 import Bot
+from core.rpc import hola_pb2_grpc, hola_pb2
+from core.queue import Queue
+from core.lib.event import event_parser
 
 
-class Servicer(type_pb2_grpc.ChannelServicer):
-    def __init__(self, apps, server):
-        self.apps = dict(apps)
+class Channel(hola_pb2_grpc.ChannelServicer):
+    def __init__(self, server: Server, bot: Bot):
         self.server = server
-        logger.info(f"Plugins loaded:{' '.join(self.apps.keys())}")
+        self.bot = bot
+        self.request_queue = Queue("request")
+        self.result_queue = Queue("result")
 
-    async def FrameToFrame(self, request, context):
-        try:
-            handler = self._get_handler(request, "FrameToFrame")
-
-            return await handler(request)
-
-        except Exception as e:
-            if e.__class__ == RuntimeError and str(e) == "async generator raised StopAsyncIteration":
-                pass
-            else:
-                context.set_code(grpc.StatusCode.INTERNAL)
-                context.set_details(traceback.format_exc())
-
-    async def StreamToFrame(self, request_iterator, context):
-        try:
-            try:
-                head = await request_iterator.__anext__()
-            except Exception:
-                raise StreamInitException(traceback.format_exc())
-
-            handler = self._get_handler(head, "StreamToFrame")
-
-            return await handler(request_iterator)
-
-        except StreamInitException as e:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details(e.stack)
-
-        except Exception as e:
-            if e.__class__ == RuntimeError and str(e) == "async generator raised StopAsyncIteration":
-                pass
-            else:
-                context.set_code(grpc.StatusCode.INTERNAL)
-                context.set_details(traceback.format_exc())
-
-    async def FrameToStream(self, request, context):
-        try:
-            handler = self._get_handler(request, "FrameToStream")
-            async for response in handler(request):
-                await context.write(response)
-
-        except Exception as e:
-            if e.__class__ == RuntimeError and str(e) == "async generator raised StopAsyncIteration":
-                pass
-            else:
-                context.set_code(grpc.StatusCode.INTERNAL)
-                context.set_details(traceback.format_exc())
-
-    async def StreamToStream(self, request_iterator, context):
-        try:
-            try:
-                head = await request_iterator.__anext__()
-            except Exception:
-                raise StreamInitException(traceback.format_exc())
-
-            handler = self._get_handler(head, "StreamToStream")
-
-            async for response in handler(request_iterator):
-                await context.write(response)
-
-        except StreamInitException as e:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details(e.stack)
-
-        except Exception as e:
-            if e.__class__ == RuntimeError and str(e) == "async generator raised StopAsyncIteration":
-                pass
-            else:
-                context.set_code(grpc.StatusCode.INTERNAL)
-                context.set_details(traceback.format_exc())
-
-    async def Option(self, request, context):
+    async def option(
+            self,
+            request: hola_pb2.OptionCode,
+            context: ServicerContext
+    ) -> hola_pb2.OptionCode:
         if request.code == 1:
             await self.server.stop(0)
 
-        return type_pb2.ResponseCode(code=request.code)
+        return hola_pb2.OptionCode(code=request.code)
 
-    def _get_handler(self, frame, handler_type):
+    async def match(
+            self,
+            event: hola_pb2.Event,
+            context: ServicerContext
+    ) -> hola_pb2.Empty:
+        try:
+            await self.bot.handle_event(await event_parser(event))
+            return hola_pb2.Empty()
+        except Exception:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(traceback.format_exc())
 
-        if not frame.package or not frame.handler:
-            raise Exception("没有指定package或handler")
-
-        package = self.apps.get(frame.package)
-
-        if not package:
-            raise Exception(f"package不存在:{frame.package}")
-
-        handler = getattr(package, frame.handler, None)
-
-        if not handler:
-            raise Exception(f"package {frame.package}中没有该handler:{frame.handler}")
-
-        __type__ = getattr(handler, "__type__", None)
-
-        if __type__ != handler_type:
-            raise Exception(f"您采用的是{handler_type}调用，但您指定的handler是{__type__}函数，调用失败")
-
-        return handler
+    async def callBack(
+            self,
+            result_iterator: AsyncGenerator[hola_pb2.Result, Any],
+            context: ServicerContext
+    ) -> AsyncGenerator[hola_pb2.Request, Any]:
+        try:
+            await result_iterator.__anext__()
+            logger.success("成功建立双向连接")
+            async for i in self.request_queue:
+                yield hola_pb2.Request(**i)
+                await self.result_queue.put(await result_iterator.__anext__())
+        except Exception:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(traceback.format_exc())
 
 
-async def startServer(apps):
-    server = grpc.aio.server(options=[
-        ('grpc.max_send_message_length', 256 * 1024 * 1024),
-        ('grpc.max_receive_message_length', 256 * 1024 * 1024),
-    ])
-    server.add_insecure_port(f'{config.grpc_host or "127.0.0.1"}:{config.grpc_port or 50051}')
-
-    servicer = Servicer(apps, server)
-    type_pb2_grpc.add_ChannelServicer_to_server(servicer, server)
+def create_server(host, port):
+    server: Server = grpc.aio.server(
+        options=[
+            ('grpc.max_send_message_length', 256 * 1024 * 1024),
+            ('grpc.max_receive_message_length', 256 * 1024 * 1024),
+        ]
+    )
+    server.add_insecure_port(f'{host or "127.0.0.1"}:{port or 50052}')
+    hola_pb2_grpc.add_ChannelServicer_to_server(Channel(server, nonebot.get_bot()), server)
     return server
-
-
-__version__ = [1, 2, 0]

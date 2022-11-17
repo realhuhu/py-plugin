@@ -1,205 +1,88 @@
-import grpc from "@grpc/grpc-js";
-import protoLoader from "@grpc/proto-loader";
 import path from "path";
-import fs from "fs";
-import { imageUrlToBuffer } from "../util/transform.js";
+import grpc from "@grpc/grpc-js";
+import iconv from 'iconv-lite'
+import protoLoader from "@grpc/proto-loader";
+import {spawn} from "child_process";
+import {setup} from "../utils/channel.js";
+import {message_receiver, notice_receiver, request_receiver} from "../utils/receiver.js";
 
 
-global.py_plugin_path = path.join(process.cwd(), "plugins", "py-plugin");
-
-if (!fs.existsSync(path.join(global.py_plugin_path, "config.json"))) {
-  fs.copyFileSync(path.join(global.py_plugin_path, "config_default.json"), path.join(global.py_plugin_path, "config.json"));
-} else {
-  if (!JSON.parse(fs.readFileSync(path.join(global.py_plugin_path, "config.json")).toString()).local) {
-    fs.unlinkSync(path.join(global.py_plugin_path, "config.json"));
-    fs.copyFileSync(path.join(global.py_plugin_path, "config_default.json"), path.join(global.py_plugin_path, "config.json"));
-    console.log("py-plugin版本更新，已清空config.json，请重新配置");
-  }
+export const create_client = config => {
+  const packageDefinition = protoLoader.loadSync(path.join(py_plugin_path, "core", "rpc", "hola.proto"), {
+    keepCase: true,
+    longs: String,
+    enums: String,
+    defaults: true,
+    oneofs: true,
+    includeDirs: [
+      process.cwd()
+    ],
+  });
+  const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
+  const channel = protoDescriptor.hola;
+  return new channel.Channel(`${config.host || "127.0.0.1"}:${config.port || 50052}`, grpc.credentials.createInsecure(), {
+    "grpc.max_receive_message_length": 1024 * 1024 * 128,
+    "grpc.max_send_message_length": 1024 * 1024 * 128,
+  });
 }
 
-export const config = JSON.parse(fs.readFileSync(path.join(global.py_plugin_path, "config.json")).toString());
+export const setup_server = () => new Promise(resolve => {
+  py_plugin_client.option({code: 1}, function (err, response) {
+    logger.info("python服务器启动中");
+    const cmd = spawn(
+      "poetry",
+      ["run", "python", "main.py"],
+      {
+        cwd: global.py_plugin_path,
+        shell: false,
+      },
+    );
 
+    cmd.stdout.on("data", data => {
+      data = iconv.decode(data, py_plugin_config.encoding || "utf-8")
+      process.stdout.write(data.toString());
+      if (data.toString().includes("Py服务器已启动")) {
+        py_plugin_client.option({code: 100}, function (err, response) {
+          if (response.code === "100") {
+            logger.info("python服务器启动成功");
+            resolve()
+          }
+        });
+      }
+    });
 
-const packageDefinition = protoLoader.loadSync(path.join(global.py_plugin_path, "core", "rpc", "type.proto"), {
-  keepCase: true,
-  longs: String,
-  enums: String,
-  defaults: true,
-  oneofs: true,
-});
+    cmd.stderr.on("data", data => {
+      process.stderr.write(iconv.decode(data, py_plugin_config.encoding || "utf-8"));
+    });
 
-const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
-const channel = protoDescriptor.hello;
+    cmd.stderr.on("end", () => {
+      logger.warn("python服务器已关闭");
+    });
 
-export const localClient = config.useRemote === true ? null : new channel.Channel(`${config.local.host}:${config.local.port}`, grpc.credentials.createInsecure(), {
-  "grpc.max_receive_message_length": 1024 * 1024 * 128,
-  "grpc.max_send_message_length": 1024 * 1024 * 128,
-});
-
-export const RemoteClient =config.useRemote !== true && (typeof config.useRemote !== "object" || !config.useRemote.length) ? null : new channel.Channel(`${config.remote.host}:${config.remote.port}`, grpc.credentials.createInsecure(), {
-  "grpc.max_receive_message_length": 1024 * 1024 * 128,
-  "grpc.max_send_message_length": 1024 * 1024 * 128,
-});
-
-function send(call) {
-  return params => {
-    call.write(params);
-  };
-}
-
-export function createClient(_package, _handler) {
-  if (!localClient || !RemoteClient) {
-    return localClient || RemoteClient;
-  } else {
-    return config.useRemote.includes(`${_package}.${_handler}`) ? RemoteClient : localClient;
-  }
-
-}
-
-export function FrameToFrame({ _package, _handler, params, onData }) {
-  let call = createClient(_package, _handler).FrameToFrame({
-    package: _package,
-    handler: _handler,
-    ...params,
-  }, (err, response) => {
-    let error = err || response.error;
-    onData(error, response);
+    cmd.on("error", err => {
+      logger.warn("python服务器启动失败");
+      logger.warn(iconv.decode(err, py_plugin_config.encoding || "utf-8"));
+    });
   });
-
-  call.on("error", error => {
-    console.log(`${_package} ${_handler}出错了\n${error.details}`);
-  });
-
-  return call;
-}
-
-export function StreamToFrame({ _package, _handler, onInit, onData }) {
-  let call = createClient(_package, _handler).StreamToFrame((err, response) => {
-    let error = err || response.error;
-    onData(error, response);
-  });
-
-  call.write({
-    package: _package,
-    handler: _handler,
-  });
-
-  if (onInit) {
-    onInit();
-  }
-
-  call.on("error", error => {
-    console.log(`${_package} ${_handler}出错了\n${error.details}`);
-  });
-
-  call.send = send(call);
-
-  return call;
-}
-
-export function FrameToStream({ _package, _handler, params, onData, onEnd }) {
-  let call = createClient(_package, _handler).FrameToStream({
-    package: _package,
-    handler: _handler,
-    ...params,
-  });
-
-  call.on("data", response => {
-    onData(response.error, response);
-  });
-
-  call.on("error", error => {
-    console.log(`${_package} ${_handler}出错了\n${error.details}`);
-  });
-
-  if (onEnd) call.on("end", onEnd);
-
-  return call;
-}
-
-export function StreamToStream({ _package, _handler, onInit, onData, onEnd }) {
-  let call = createClient(_package, _handler).StreamToStream();
-
-  call.write({
-    package: _package,
-    handler: _handler,
-  });
-
-  if (onInit) {
-    onInit();
-  }
-
-  call.on("data", (response) => {
-    onData(response.error, response);
-  });
-
-  call.on("error", error => {
-    console.log(`${_package} ${_handler}出错了\n${error.details}`);
-  });
-
-  call.send = send(call);
-
-  if (onEnd) call.on("end", onEnd);
-
-  return call;
-}
+})
 
 
-export async function createUser(user) {
-  return {
-    qq: user.user_id.toString(),
-    name: user.nickname,
-    card: user.card,
-    sex: user?.sex,
-    age: user?.age?.toString(),
-    area: user?.area,
-    level: user?.level?.toString(),
-    role: user?.role,
-    title: user?.title,
-  };
-}
+export const setup_client = () => {
+  setup(py_plugin_client).then(err => {
+    if (err) logger.error(err)
+    Bot.on("request", async event => {
+      let err = await request_receiver(event, py_plugin_client)
+      if (err) logger.warn(err)
+    })
 
-export async function createMessage(raw_message, is_quote = false) {
-  let imageList = [];
+    Bot.on("message", async event => {
+      let err = await message_receiver(event, py_plugin_client)
+      if (err) logger.warn(err)
+    })
 
-  for (let val of raw_message.message) {
-    if ("image" === val.type) {
-      imageList.push(await imageUrlToBuffer(val.url));
-    }
-  }
-
-  let message = {
-    sender: await createUser(raw_message.sender),
-    atList: raw_message.message.filter(x => x.type === "at").map(x => {
-      return {
-        qq: x.qq.toString(),
-        name: x.text.replace("@", ""),
-      };
-    }),
-    imageList: imageList,
-
-  };
-
-  if (is_quote) {
-    message["msg"] = raw_message.raw_message;
-  } else {
-    message["msg"] = raw_message.msg;
-    message["group"] = raw_message.isGroup ? {
-      qq: raw_message.group_id.toString(),
-      name: raw_message.group_name,
-    } : null;
-  }
-  return message;
-}
-
-export async function createEvent(e) {
-
-  let event = await createMessage(e);
-
-  if (e.isGroup && e.source) {
-    let source = (await e.group.getChatHistory(e.source.seq, 1)).pop();
-    event["quote"] = await createMessage(source, true);
-  }
-
-  return event;
+    Bot.on("notice", async event => {
+      let err = await notice_receiver(event, py_plugin_client)
+      if (err) logger.warn(err)
+    })
+  })
 }

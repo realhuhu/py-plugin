@@ -4,13 +4,13 @@
 
 ​	cd到云崽根目录
 
-​	如果是v2版本云崽，输入`npm install @grpc/grpc-js @grpc/proto-loader`
+​	如果是v2版本云崽，输入`npm install iconv-lite @grpc/grpc-js @grpc/proto-loader`
 
-​	如果是v3版本云崽，输入`pnpm install @grpc/grpc-js @grpc/proto-loader -w`
+​	如果是v3版本云崽，输入`pnpm install iconv-lite @grpc/grpc-js @grpc/proto-loader  -w`
 
 ### 安装python
 
-​	python版本>=3.8.8，本人是3.8.8
+​	python版本>=3.9
 
 ​	安装教程请百度
 
@@ -26,9 +26,7 @@ zlib-devel bzip2-devel expat-devel gdbm-devel openssl-devel ncurses-devel sqlite
 
 # 2.使用
 
-### 安装插件
-
-​	对于v2 v3，使用方法相同
+### 2.1 安装
 
 ​	进入云崽plugins目录，输入
 
@@ -36,7 +34,7 @@ zlib-devel bzip2-devel expat-devel gdbm-devel openssl-devel ncurses-devel sqlite
 git clone https://github.com/realhuhu/py-plugin.git
 ```
 
-​	进入py-plugin文件夹，用你的python运行install文件夹
+​	进入py-plugin文件夹，输入
 
 ```shell
 python install
@@ -62,35 +60,93 @@ Creating virtualenv py-plugin-8_cve6GP-py3.8 in /root/.cache/pypoetry/virtualenv
 poetry run pip install -r requirements.txt
 ```
 
-
-
 ​	等待安装完成即可，之后重启云崽
 
-### 使用插件
+​	第一次启动时，需要下载petpet和memes的依赖，需要等待一段时间
 
-发送 **#py帮助** 结果如下图所示
+### 2.2 使用
 
-![image-1](https://cos.miao.seutools.com/readme/help-default.png)
+### 2.2.1 获取插件
 
-发送 **#py插件管理帮助** 获取详细介绍
+​	插件可以通过clone到plugins文件夹或者poetry run pip install的方式安装，内置的两个表情制作插件采用了前一种方式。
 
-![image-1](https://cos.miao.seutools.com/readme/help-detail.png)
+​	可以在github搜索或前往[nonebot商店](https://v2.nonebot.dev/store)获取插件
 
-若想安装插件， 先发送 **#py查询插件** 获取支持的插件列表
+​	获取插件后，需要将插件名称添加到config.yaml中，重启云崽即可
 
-![image-1](https://cos.miao.seutools.com/readme/all-app.png)
+​	未来将支持通过命令下载/卸载和启动/禁用插件
 
-以安装米**游币自动兑换插件**为例，发送 **#py下载插件米游币自动兑换**，等待安装完成
+	#### 	clone到plugins文件夹
 
-![image-1](https://cos.miao.seutools.com/readme/download-myb.png)
+​	![image-20221117163456296](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171635372.png)
 
-重启后发送 **#py帮助** 结果如下图所示，说明新插件安装完成
+​	例如安装该插件，点击右上角跳转到github，获取clone链接
 
-![image-1](https://cos.miao.seutools.com/readme/help-new.png)
+![image-20221117163642282](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171636344.png)
 
-发送 **#米游币自动兑换帮助** 获取详细帮助
+​	进入plugins文件夹，输入git clone 你的链接，完成后可以发现文件夹中多了这一项
 
-![image-1](https://cos.miao.seutools.com/readme/myb-detail.png)
+![](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171639292.png)
+
+​	在config.yaml中添加这个插件，重启即可
+
+![image-20221117163841418](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171638464.png)
+
+![image-20221117163950890](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171639930.png)
+
+​	若插件支持配置，再config.yaml中配置即可
+
+![image-20221117164035336](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171640377.png)
+
+![image-20221117164106239](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171641279.png)
+
+#### 	pip安装
+
+​	点击卡片的复制安装命令
+
+![image-20221117164235599](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171642641.png)
+
+​	内容为```nb plugin install nonebot-plugin-remake```
+
+​	则进入py-plugin文件夹，输入```poetry run pip install nonebot-plugin-remake```
+
+​	完成后在config.yaml添加插件即可
+
+![image-20221117164932853](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171649897.png)
+
+![image-20221117164956910](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171649951.png)
+
+​	通过```poetry run pip uninstall nonebot-plugin-remake```卸载插件
+
+
+
+若同时采用了两种安装方式，则会运行pip安装的插件
+
+nonebot机器人的命令以/开头，注意替换为#
+
+![image-20221117165119644](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171651686.png)
+
+![image-20221117165127354](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171651398.png)
+
+### 2.2.2 配置文件
+
+```yaml
+log_level: INFO #大于等于log_level的日志才会打印
+nickname: #机器人的名字
+  - 云崽
+  - yunzai
+superusers: #机器人主人
+  - 123456
+  - 654321
+need_at: no #是否需要@机器人或加上机器人名字才能触发指令，默认no
+plugins: #运行哪些插件
+  - nonebot-plugin-petpet
+  - nonebot-plugin-memes
+  # 加载哪些插件就继续往下加
+host: 127.0.0.1 #python服务器启动的地址
+port: 50052 #python服务器启动的端口
+#encoding: gbk #如果输出乱码，可以开启这项试试看，主要是windows平台
+```
 
 # 3.常见问题
 
@@ -158,176 +214,35 @@ sudo make && sudo make install
 
 ### 6.发送命令无反应
 
-说明python服务未启动，绝大部分出现于node app启动的情况下。启动时有提示`python服务器启动中`才说明启动成功。如果没有这个提示请重启
+说明python服务未启动，绝大部分出现于node app启动的情况下。启动时有提示`成功建立双向连接`才说明启动成功。如果没有这个提示请重启
 
 ```shell
-0|Yunzai  | [2022-08-22T10:57:05.110] [MARK] [iPad:1438740274] - ----------
-0|Yunzai  | [2022-08-22T10:57:05.111] [MARK] [iPad:1438740274] - Package Version: oicq@2.3.0 (Released on 2022/6/19)
-0|Yunzai  | [2022-08-22T10:57:05.111] [MARK] [iPad:1438740274] - View Changelogs：https://github.com/takayama-lily/oicq/releases
-0|Yunzai  | [2022-08-22T10:57:05.111] [MARK] [iPad:1438740274] - ----------
-0|Yunzai  | [2022-08-22T10:57:05.181] [MARK] [iPad:1438740274] - 120.232.130.13:8080 connected
-0|Yunzai  | [2022-08-22T10:57:05.377] [MARK] [iPad:1438740274] - Welcome, 长野原备用机器人 ! 正在加载资源...
-0|Yunzai  | [2022-08-22T10:57:06.347] [MARK] [iPad:1438740274] - 加载了1095个好友，53个群，0个陌生人
-0|Yunzai  | [2022-08-22T10:57:06.353] [MARK] [iPad:1438740274] - ----------
-0|Yunzai  | [2022-08-22T10:57:06.353] [MARK] [iPad:1438740274] - 初始化Yunzai-Bot
-0|Yunzai  | [2022-08-22T10:57:06.578] [INFO] [iPad:1438740274] - ---------^_^---------
-0|Yunzai  | [2022-08-22T10:57:06.578] [INFO] [iPad:1438740274] - 喵喵插件1.9.6初始化~
-0|Yunzai  | python插件1.1.5初始化~
-0|Yunzai  | [2022-08-22T10:57:06.675] [MARK] [iPad:1438740274] - Yunzai-Bot 上线成功 版本v2.2.1
-0|Yunzai  | [2022-08-22T10:57:06.675] [MARK] [iPad:1438740274] - https://github.com/Le-niao/Yunzai-Bot
-0|Yunzai  | [2022-08-22T10:57:06.675] [MARK] [iPad:1438740274] - ----------
-0|Yunzai  | [2022-08-22T10:57:06.704] [MARK] 发送好友消息[‪](2661467107)
-0|Yunzai  | [2022-08-22T10:57:06.781] [INFO] succeed to send: [Private(2661467107)] 重启成功
-0|Yunzai  | python服务器启动中
+[YzBot][16:49:46.170][INFO] 加载插件中..
+[YzBot][16:49:46.355][INFO] python服务器启动中
+[YzBot][16:49:46.383][INFO] 加载定时任务[2个]
+[YzBot][16:49:46.384][INFO] 加载插件完成[15个]
+[YzBot][16:49:46.384][INFO] -----------
+[PyBot][08:49:47.742]][WARNING] Failed to extract font properties from F:\Bot\YunZaiV3\plugins\py-plugin\data\fonts\consola.ttf: In FT2Font: Can not load face (invalid stream operation; error code 0x55)
+[PyBot][08:49:47.743]][WARNING] Failed to extract font properties from F:\Bot\YunZaiV3\plugins\py-plugin\data\fonts\FZSEJW.ttf: In FT2Font: Can not load face (invalid stream operation; error code 0x55)
+[PyBot][08:49:47.743]][WARNING] Failed to extract font properties from F:\Bot\YunZaiV3\plugins\py-plugin\data\fonts\FZSJ-QINGCRJ.ttf: In FT2Font: Can not load face (invalid stream operation; error code 0x55)
+[PyBot][08:49:47.743]][WARNING] Failed to extract font properties from F:\Bot\YunZaiV3\plugins\py-plugin\data\fonts\FZXS14.ttf: In FT2Font: Can not load face (invalid stream operation; error code 0x55)
+[PyBot][08:49:47.744]][WARNING] Failed to extract font properties from F:\Bot\YunZaiV3\plugins\py-plugin\data\fonts\NotoSansSC-Regular.otf: In FT2Font: Can not load face (invalid stream operation; error code 0x55)
+[PyBot][08:49:47.744]][WARNING] Failed to extract font properties from F:\Bot\YunZaiV3\plugins\py-plugin\data\fonts\NotoSerifSC-Regular.otf: In FT2Font: Can not load face (invalid stream operation; error code 0x55)
+[PyBot][08:49:47.745]][SUCCESS] 插件导入成功： "nonebot_plugin_imageutils"
+[PyBot][08:49:48.511]][SUCCESS] 插件导入成功： "nonebot_plugin_petpet"
+[PyBot][08:49:48.770]][SUCCESS] 插件导入成功： "nonebot_plugin_memes"
+[PyBot][08:49:48.845]][SUCCESS] 插件导入成功： "nonebot_plugin_analysis_bilibili"
+[PyBot][08:49:48.857]][SUCCESS] 插件导入成功： "nonebot_plugin_remake"
+[PyBot][08:49:48.857]][INFO] petpet正在检查资源文件...
+[PyBot][08:49:48.870]][INFO] memes正在检查资源文件...
+[PyBot][08:49:49.745]][INFO] memes资源文件检查完成
+[PyBot][08:49:49.888]][INFO] petpet资源文件检查完成
+[PyBot][08:49:49.888]][INFO] Py服务器已启动
+[YzBot][16:49:49.894][INFO] python服务器启动成功
+[YzBot][16:49:49.895][INFO] py服务器连接成功
+[PyBot][08:49:49.898]][SUCCESS] 成功建立双向连接
 ```
 
 # 4.使用远程
 
-如果实在装不上python的依赖，可以使用远程服务，前提是装上了nodejs的两个依赖
-
-如果所有功能全部使用远程，把config.json中useRemote改成true即可
-
-```json
-{
-  "local":{
-    "host": "127.0.0.1",
-    "port":50051
-  },
-  "remote":{
-    "host": "42.193.148.140",
-    "port":50051
-  },
-  "useRemote":true
-}
-```
-
-如果只希望部分功能用远程，去useRemote添加这个功能的\_package._handler
-
-例如扫雷，在apps/mine_sweep/js/index.js可以看到扫雷的函数是mine_sweep_start，定位后他们的\_package._handler是mine_sweep.sweep
-
-```js
-...
-
-export const rule = {
-  mine_sweep_start: {
-    reg: "^#扫雷",
-    priority: 700,
-    describe: "开始扫雷",
-  },
-  mine_sweep_listener: {
-    reg: "noCheck",
-    priority: 800,
-    describe: "开始扫雷",
-  },
-  mine_sweep_cancel: {
-    reg: "^#取消扫雷",
-    priority: 701,
-    describe: "取消扫雷",
-  },
-};
-
-...
-
-async function createGame(e) {
-  let call = StreamToStream({
-    _package: "mine_sweep",//_package
-    _handler: "sweep",//_handler
-    onData: (errors, response) => {
-     	...
-      }
-    },
-    onEnd: () => {
-		...
-    },
-  });
-
-	...
-}
-
-async function timer(e, is_group, id) {
-  let current;
-  if (is_group) {
-    current = group_call[id];
-  } else {
-    current = private_call[id];
-  }
-
-  if (current.timer) {
-    clearTimeout(current.timer);
-  }
-
-  return setTimeout(() => {
-    e.reply("扫雷已自动结束");
-    current["call"].end();
-
-  }, 5 * 60 * 1000);
-}
-
-function valid(e) {
-  if (e.isGroup) {
-    let qq = e.sender.user_id;
-    let current = group_call[e.group_id].participant;
-    return current.allow_all || qq === current.owner || current.other.indexOf(qq) !== -1;
-  } else {
-    return true;
-  }
-}
-
-export async function mine_sweep_start(e) {
-	...
-}
-
-export async function mine_sweep_listener(e) {
-	...
-}
-
-export async function mine_sweep_cancel(e) {
-	...
-}
-```
-
-所以如果向让扫雷远程，将useRemote改成["mine_sweep.sweep"]即可
-
-```json
-{
-  "local":{
-    "host": "127.0.0.1",
-    "port":50051
-  },
-  "remote":{
-    "host": "42.193.148.140",
-    "port":50051
-  },
-  "useRemote":[
-    "mine_sweep.sweep"
-  ]
-}
-```
-
-对于多个插件同理
-
-```json
-{
-  "local":{
-    "host": "127.0.0.1",
-    "port":50051
-  },
-  "remote":{
-    "host": "42.193.148.140",
-    "port":50051
-  },
-  "useRemote":[
-    "mine_sweep.sweep",//扫雷使用远程
-    "bh3.show_finance",//崩坏三手账使用远程
-    "bh3.switch_autosign",//崩坏三自动签到使用远程
-    "where_resource.where_resource_is" //地图资源查询使用远程，注意最后一项末尾不要加逗号！
-  ]
-}
-```
-
-修改完后重启
-
-使用时方法相同，要先下载插件，然后使用
-
-如果是需要保存数据的插件，比如崩坏三，你的数据会被保存到我的服务器
-
+敬请期待

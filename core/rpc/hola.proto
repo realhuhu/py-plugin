@@ -1,0 +1,434 @@
+//python -m grpc_tools.protoc -I . --python_out=. --pyi_out=. --grpc_python_out=. .\core\rpc\hola.proto
+
+syntax = "proto3";
+
+package hola;
+
+service Channel {
+    rpc option (OptionCode) returns (OptionCode) {}
+    rpc match (Event) returns (Empty) {}
+    rpc callBack (stream Result) returns (stream Request) {}
+}
+
+//--------message---------//
+message Empty {}
+
+message OptionCode {
+    uint64 code = 1;
+}
+
+message Event {
+    oneof event {
+        FriendRequestEvent FriendRequestEvent = 1;
+        GroupRequestEvent GroupRequestEvent = 2;
+
+        PrivateMessageEvent PrivateMessageEvent = 3;
+        GroupMessageEvent GroupMessageEvent = 4;
+
+        FriendAddNoticeEvent FriendAddNoticeEvent = 5;
+        FriendRecallNoticeEvent FriendRecallNoticeEvent = 6;
+        GroupIncreaseNoticeEvent GroupIncreaseNoticeEvent = 7;
+        GroupDecreaseNoticeEvent GroupDecreaseNoticeEvent = 8;
+        GroupRecallNoticeEvent GroupRecallNoticeEvent = 9;
+        GroupBanNoticeEvent GroupBanNoticeEvent = 10;
+        GroupAdminNoticeEvent GroupAdminNoticeEvent = 11;
+        PokeNotifyEvent PokeNotifyEvent = 12;
+    }
+}
+
+message Request {
+    oneof request {
+        PrivateMessageRequest PrivateMessageRequest = 1;
+        GroupMessageRequest GroupMessageRequest = 2;
+        DeleteMsgRequest DeleteMsgRequest = 3;
+        GetMsgRequest GetMsgRequest = 4;
+        SendPrivateForwardMsgRequest SendPrivateForwardMsgRequest = 5;
+        SendGroupForwardMsgRequest SendGroupForwardMsgRequest = 6;
+    }
+}
+
+message Result {
+    oneof result {
+        PrivateMessageResult PrivateMessageResult = 1;
+        GroupMessageResult GroupMessageResult = 2;
+        DeleteMsgResult DeleteMsgResult = 3;
+        GetMsgResult GetMsgResult = 4;
+        SendPrivateForwardMsgResult SendPrivateForwardMsgResult = 5;
+        SendGroupForwardMsgResult SendGroupForwardMsgResult = 6;
+    }
+}
+//--------model---------//
+message Sender {
+    int64 user_id = 1;//发送者QQ号
+    string nickname = 2;//昵称
+    string sex = 3;//性别 {male|female|unknown}
+    int64 age = 4;//年龄
+
+    //以下在群聊中才有效
+    string card = 5;//群名片/备注
+    string area = 6;//地区
+    string level = 7;//成员等级
+    string role = 8;//角色 {owner|admin|member}
+    string title = 9;//专属头衔
+}
+
+message Reply {
+    int64 time = 1;//发送时间
+    string message_type = 2;//消息类型
+    string message_id = 3;//消息ID
+    int64 real_id = 4;//消息真实ID
+    Sender sender = 5;//发送人信息
+    repeated ReceivableMessageSegment message = 6;//消息内容
+}
+
+message Anonymous {
+    int64 id = 1;//匿名用户ID
+    string name = 2;//匿名用户名称
+    string flag = 3;//匿名用户flag,在调用禁言API时需要传入
+}
+
+message ReceivableMessageSegment {
+    oneof segment {
+        TextSegment TextSegment = 1;
+        AtSegment AtSegment = 2;
+        FaceSegment FaceSegment = 3;
+        RpsSegment RpsSegment = 4;
+        DiceSegment DiceSegment = 5;
+        ImageSegment ImageSegment = 6;
+        RecordSegment RecordSegment = 7;
+        VideoSegment VideoSegment = 8;
+        LocationSegment LocationSegment = 9;
+        ShareSegment ShareSegment = 10;
+        JsonSegment JsonSegment = 11;
+        XmlSegment XmlSegment = 12;
+        PokeSegment PokeSegment = 13;
+        ReplySegment ReplySegment = 14;
+    }
+}
+
+message GroupMessageResponse {
+    int64 group_id = 1;
+    repeated SendibleMessageSegment message = 2;
+}
+
+message PrivateMessageResponse {
+    int64 user_id = 1;
+    repeated SendibleMessageSegment message = 2;
+}
+
+message SendibleMessageSegment {
+    oneof segment {
+        TextSegment TextSegment = 1;
+        FaceSegment FaceSegment = 2;
+        ImageSegment ImageSegment = 3;
+        RecordSegment RecordSegment = 4;
+        VideoSegment VideoSegment = 5;
+        AtSegment AtSegment = 6;
+        RpsSegment RpsSegment = 7;
+        DiceSegment DiceSegment = 8;
+        PokeSegment PokeSegment = 9;
+        AnonymousSegment AnonymousSegment = 10;
+        ShareSegment ShareSegment = 11;
+        ContactSegment ContactSegment = 12;
+        LocationSegment LocationSegment = 13;
+        MusicSegment MusicSegment = 14;
+        CustomMusicSegment CustomMusicSegment = 15;
+        ReplySegment ReplySegment = 16;
+        XmlSegment XmlSegment = 17;
+        JsonSegment JsonSegment = 18;
+    }
+}
+//--------request---------//
+message FriendRequestEvent {
+    int64 time = 1;//事件发生的时间戳
+    int64 self_id = 2;//收到事件的机器人QQ号
+    string post_type = 3;//上报类型 {request}
+    string request_type = 4;//请求类型 {friend}
+    int64 user_id = 5;//发送请求的QQ号
+    string comment = 6;//验证信息
+    string flag = 7;//请求flag，在调用处理请求的API时需要传入
+}
+
+message GroupRequestEvent {
+    int64 time = 1;//事件发生的时间戳
+    int64 self_id = 2;//收到事件的机器人QQ号
+    string post_type = 3;//上报类型 {request}
+    string request_type = 4;//请求类型 {group}
+    string sub_type = 5;//请求子类型，分别表示加群请求、邀请登录号入群 {add|invite}
+    int64 group_id = 6;//群号
+    int64 user_id = 7;//发送请求的QQ号
+    string comment = 8;//验证信息
+    string flag = 9;//请求flag，在调用处理请求的API时需要传入
+}
+//--------message---------//
+message PrivateMessageEvent {
+    int64 time = 1;//事件发生的时间戳
+    int64 self_id = 2;//收到事件的机器人QQ号
+    string post_type = 3;//上报类型 {message}
+    string message_type = 4;//消息类型 {private}
+    string sub_type = 5;//消息子类型 {friend|group|other}
+    string message_id = 6;//消息ID
+    int64 user_id = 7;//发送者QQ号
+    repeated ReceivableMessageSegment message = 8;//消息内容
+    string raw_message = 9;//原始消息内容
+    int64 font = 10;//字体
+    Sender sender = 11;//发送人信息
+    bool to_me = 12;//消息是否与机器人有关
+    Reply reply = 13;//消息中提取的回复消息
+}
+
+message GroupMessageEvent {
+    int64 time = 1;//事件发生的时间戳
+    int64 self_id = 2;//收到事件的机器人QQ号
+    string post_type = 3;//上报类型 {message}
+    string message_type = 4;//消息类型 {group}
+    string sub_type = 5;//消息子类型 {normal|anonymous|notice}
+    string message_id = 6;//消息ID
+    int64 group_id = 7;//群号
+    int64 user_id = 8;//发送者QQ号
+    Anonymous anonymous = 9;//匿名信息
+    repeated ReceivableMessageSegment message = 10;//消息内容
+    string raw_message = 11;//原始消息内容
+    int64 font = 12;//字体
+    Sender sender = 13;//发送人信息
+    bool to_me = 14;//消息是否与机器人有关
+    Reply reply = 15;//消息中提取的回复消息
+}
+//--------notice---------//
+message FriendAddNoticeEvent {
+    int64 time = 1;//事件发生的时间戳
+    int64 self_id = 2;//收到事件的机器人QQ号
+    string post_type = 3;//上报类型 {notice}
+    string notice_type = 4;//通知类型 {friend_add}
+    int64 user_id = 5;//新添加好友QQ号
+}
+
+message FriendRecallNoticeEvent {
+    int64 time = 1;//事件发生的时间戳
+    int64 self_id = 2;//收到事件的机器人QQ号
+    string post_type = 3;//上报类型 {notice}
+    string notice_type = 4;//通知类型 {friend_recall
+    int64 user_id = 5;//好友QQ号
+    string message_id = 6;//被撤回的消息ID
+}
+
+message GroupIncreaseNoticeEvent {
+    int64 time = 1;//事件发生的时间戳
+    int64 self_id = 2;//收到事件的机器人QQ号
+    string post_type = 3;//上报类型 {notice}
+    string notice_type = 4;//通知类型 {group_increase}
+    string sub_type = 5;//事件子类型，分别表示管理员已同意入群、管理员邀请入群 {approve|invite}
+    int64 user_id = 6;//加入者QQ号
+    int64 group_id = 7;//群号
+    int64 operator_id = 8;//操作者QQ号
+}
+
+message GroupDecreaseNoticeEvent {
+    int64 time = 1;//事件发生的时间戳
+    int64 self_id = 2;//收到事件的机器人QQ号
+    string post_type = 3;//上报类型 {notice}
+    string notice_type = 4;//通知类型 {group_decrease}
+    string sub_type = 5;//消息子类型 {leave|kick|kick_me}
+    int64 user_id = 6;//离开者QQ号
+    int64 group_id = 7;//群号
+    int64 operator_id = 8;//操作者QQ号（如果是主动退群，则和user_id相同）
+}
+
+message GroupRecallNoticeEvent {
+    int64 time = 1;//事件发生的时间戳
+    int64 self_id = 2;//收到事件的机器人QQ号
+    string post_type = 3;//上报类型 {notice}
+    string notice_type = 4;//通知类型 {group_recall}
+    int64 user_id = 5;//消息发送者QQ号
+    int64 group_id = 6;//群号
+    int64 operator_id = 7;//操作者QQ号
+    string message_id = 8;//被撤回的消息ID
+}
+
+message GroupBanNoticeEvent {
+    int64 time = 1;//事件发生的时间戳
+    int64 self_id = 2;//收到事件的机器人QQ号
+    string post_type = 3;//上报类型 {notice}
+    string notice_type = 4;//通知类型 {group_ban}
+    string sub_type = 5;//事件子类型，分别表示禁言、解除禁言 {ban|lift_ban}
+    int64 user_id = 6;//被禁言QQ号
+    int64 group_id = 7;//群号
+    int64 operator_id = 8;//操作者QQ号
+    int64 duration = 9;//禁言时长，单位秒
+}
+
+message GroupAdminNoticeEvent {
+    int64 time = 1;//事件发生的时间戳
+    int64 self_id = 2;//收到事件的机器人QQ号
+    string post_type = 3;//上报类型 {notice}
+    string notice_type = 4;//通知类型 {group_admin}
+    string sub_type = 5;//消息子类型 {set|unset}
+    int64 user_id = 6;//管理员QQ号
+    int64 group_id = 7;//群号
+}
+
+message PokeNotifyEvent {
+    int64 time = 1;//事件发生的时间戳
+    int64 self_id = 2;//收到事件的机器人QQ号
+    string post_type = 3;//上报类型 {notice}
+    string notice_type = 4;//通知类型 {notify}
+    string sub_type = 5;//消息子类型 {poke}
+    int64 user_id = 6;//发送者QQ号
+    int64 target_id = 7;//被戳者QQ号
+    int64 group_id = 8;//群号
+}
+//--------segment---------//
+message TextSegment {
+    string data = 1;//纯文本内容
+}
+
+message AtSegment {
+    string qq = 1;//@的QQ号，all表示全体成员
+}
+
+message FaceSegment {
+    string id = 1;//QQ表情ID
+}
+
+message RpsSegment {}
+
+message DiceSegment {}
+
+message ImageSegment {
+    string file = 1;//图片文件名
+    string type = 2;//图片类型，flash表示闪照，无此参数表示普通图片
+    string url = 3;//图片URL
+
+    bytes  content = 4; // 图片二进制数据(发送)
+    string timeout = 5; // 超时时间(发送)
+}
+
+message RecordSegment {
+    string file = 1;//语音文件名
+    string url = 2;//语音URL
+    bytes  content = 3; // 录音二进制数据(发送)
+    string timeout = 4; // 超时时间(发送)
+}
+
+message VideoSegment {
+    string file = 1;//视频文件名
+    string url = 2;//视频URL
+    bytes  content = 3; // 视频二进制数据(发送)
+    string timeout = 4; // 超时时间(发送)
+}
+
+message LocationSegment {
+    string lat = 1;//纬度
+    string lon = 2;//经度
+    string title = 3;//标题
+    string content = 4;//内容描述
+}
+
+message ShareSegment {
+    string url = 1;//URL
+    string title = 2;//标题
+    string content = 3;//内容描述
+    string image = 4;//图片URL
+}
+
+message JsonSegment {
+    string data = 1;//JSON内容
+}
+
+message XmlSegment {
+    string data = 1;//XML内容
+}
+
+message PokeSegment {
+    string type = 1;//类型
+    string id = 2;//ID
+    string name = 3;//表情名(接收)
+}
+
+message ReplySegment {
+    string id = 1;//回复时引用的消息ID
+}
+
+message AnonymousSegment {
+    bool ignore = 1;//表示无法匿名时是否继续发送
+}//(发送)
+
+message ContactSegment {
+    string type = 1;//推荐类型 {qq|group}
+    string id = 2;//被推荐用户QQ|群号
+}//(发送)
+
+message MusicSegment {
+    string type = 1;//音乐来源 {qq|163|xm}
+    string id = 2;//歌曲ID
+}//(发送)
+
+message CustomMusicSegment {
+    string type = 1;//音乐来源 custom
+    string url = 2;//点击后跳转目标URL
+    string audio = 3;//音乐URL
+    string title = 4;//标题
+    string content = 5;//发送时可选，内容描述
+    string image = 6;//发送时可选，图片 URL
+}//(发送)
+
+message _ForwardSegment {
+    string name = 1;//名称
+    string uin = 2;//QQ
+    repeated SendibleMessageSegment content = 3;//内容
+}
+//--------request---------//
+message PrivateMessageRequest {
+    int64 user_id = 1;
+    repeated SendibleMessageSegment message = 2;
+}
+
+message GroupMessageRequest {
+    int64 group_id = 1;
+    repeated SendibleMessageSegment message = 2;
+}
+
+message DeleteMsgRequest {
+    int64 message_id = 1;
+}
+
+message GetMsgRequest {
+    int64 message_id = 1;
+}
+
+message SendPrivateForwardMsgRequest {
+    int64 user_id = 1;
+    repeated _ForwardSegment message = 2;
+}
+
+message SendGroupForwardMsgRequest {
+    int64 group_id = 1;
+    repeated _ForwardSegment message = 2;
+}
+//--------result---------//
+message PrivateMessageResult {
+    string message_id = 1;
+}
+
+message GroupMessageResult {
+    string message_id = 1;
+}
+
+message DeleteMsgResult {}
+
+message GetMsgResult {
+    int64 message_id = 1;
+    int64 real_id = 2;
+    Sender sender = 3;
+    int64 time = 4;
+    repeated ReceivableMessageSegment message = 5;
+}
+
+message SendPrivateForwardMsgResult {
+    string message_id = 1;
+}
+
+message SendGroupForwardMsgResult {
+    string message_id = 1;
+}
+
