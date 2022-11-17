@@ -76,7 +76,7 @@ poetry run pip install -r requirements.txt
 
 ​	未来将支持通过命令下载/卸载和启动/禁用插件
 
-	#### 	clone到plugins文件夹
+####    clone到plugins文件夹
 
 ​	![image-20221117163456296](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171635372.png)
 

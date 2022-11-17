@@ -17,6 +17,7 @@ from nonebot.dependencies import Dependent
 from nonebot.typing import T_State, T_Handler, T_RuleChecker, T_PermissionChecker
 from nonebot.rule import (
     Rule,
+    ArgumentParser,
     regex,
     command,
     is_type,
@@ -24,6 +25,7 @@ from nonebot.rule import (
     endswith,
     fullmatch,
     startswith,
+    shell_command,
 )
 
 from .manager import _current_plugin_chain
@@ -373,6 +375,40 @@ def on_command(
         command(*commands) & rule, block=block, **kwargs, _depth=_depth + 1
     )
 
+def on_shell_command(
+    cmd: Union[str, Tuple[str, ...]],
+    rule: Optional[Union[Rule, T_RuleChecker]] = None,
+    aliases: Optional[Set[Union[str, Tuple[str, ...]]]] = None,
+    parser: Optional[ArgumentParser] = None,
+    _depth: int = 0,
+    **kwargs,
+) -> Type[Matcher]:
+    """注册一个支持 `shell_like` 解析参数的命令消息事件响应器。
+
+    与普通的 `on_command` 不同的是，在添加 `parser` 参数时, 响应器会自动处理消息。
+
+    并将用户输入的原始参数列表保存在 `state["argv"]`, `parser` 处理的参数保存在 `state["args"]` 中
+
+    参数:
+        cmd: 指定命令内容
+        rule: 事件响应规则
+        aliases: 命令别名
+        parser: `nonebot.rule.ArgumentParser` 对象
+        permission: 事件响应权限
+        handlers: 事件处理函数列表
+        temp: 是否为临时事件响应器（仅执行一次）
+        expire_time: 事件响应器最终有效时间点，过时即被删除
+        priority: 事件响应器优先级
+        block: 是否阻止事件向更低优先级传递
+        state: 默认 state
+    """
+
+    commands = {cmd} | (aliases or set())
+    return on_message(
+        shell_command(*commands, parser=parser) & rule,
+        **kwargs,
+        _depth=_depth + 1,
+    )
 
 def on_regex(
         pattern: str,

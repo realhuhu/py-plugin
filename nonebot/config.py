@@ -10,40 +10,20 @@ class Env:
     environment: str = "prod"
 
 
-class Config:
-    host: IPvAnyAddress = IPv4Address("127.0.0.1")
-
-    port: int = 8080
-
-    log_level: Union[int, str] = "INFO"
-
-    api_timeout: Optional[float] = 30.0
-
-    superusers: Set[str] = set()
-
-    nickname: Set[str] = set()
-
-    command_start: Set[str] = {"#"}
-
-    command_sep: Set[str] = {"."}
-
-    session_expire_timeout: timedelta = timedelta(minutes=2)
-
+class Config(dict):
     def __init__(self, **kwargs):
-        for k, v in kwargs.items():
-            setattr(self, k, v)
-
-        self.config = {
-            **self.__class__.__dict__["__annotations__"],
-            **self.__dict__
-        }
-
-        self.config["host"] = IPv4Address(self.config["host"])
-        self.config["superusers"] = set(self.config["superusers"])
-        self.config["nickname"] = set(self.config["nickname"])
+        kwargs["host"] = IPv4Address(kwargs.get("host", "127.0.0.1"))
+        kwargs["port"] = int(kwargs.get("port", 50052))
+        kwargs["log_level"] = kwargs.get("log_level", "INFO")
+        kwargs["api_timeout"] = float(kwargs.get("api_timeout", 30.0))
+        kwargs["superusers"] = set(map(str, kwargs.get("superusers", {})))
+        kwargs["nickname"] = set(map(str, kwargs.get("nickname", {})))
+        kwargs["command_start"] = set(map(str, kwargs.get("command_start", {})))
+        kwargs["session_expire_timeout"] = timedelta(minutes=2)
+        super().__init__(kwargs)
 
     def __getattr__(self, item):
-        return self.config.get(item)
+        return self.get(item)
 
     def dict(self):
-        return self.config
+        return self

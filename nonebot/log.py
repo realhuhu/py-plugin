@@ -34,7 +34,7 @@ def default_filter(record):
 
 default_format: str = (
     "[PyBot]"
-    "[<g>{time:HH:mm:ss.SSS}]</g>]"
+    "[<g>{time:HH:mm:ss.SSS}</g>]"
     "[<lvl>{level}</lvl>] "
     "{message}"
 )

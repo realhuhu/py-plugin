@@ -51,7 +51,7 @@ def _module_name_to_plugin_name(module_name: str) -> str:
 
 
 def _new_plugin(
-    module_name: str, module: ModuleType, manager: "PluginManager"
+        module_name: str, module: ModuleType, manager: "PluginManager"
 ) -> "Plugin":
     plugin_name = _module_name_to_plugin_name(module_name)
     if plugin_name in _plugins:
@@ -125,6 +125,7 @@ from .load import load_plugins as load_plugins
 from .on import on_startswith as on_startswith
 from .load import load_from_json as load_from_json
 from .load import load_from_toml as load_from_toml
+from .on import on_shell_command as on_shell_command
 from .plugin import PluginMetadata as PluginMetadata
 from .load import load_all_plugins as load_all_plugins
 from .load import load_builtin_plugin as load_builtin_plugin

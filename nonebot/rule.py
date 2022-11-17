@@ -1,7 +1,12 @@
 # DONE
 import re
-from itertools import product
+import shlex
+from argparse import Action
+from argparse import ArgumentError
+from itertools import chain, product
+from argparse import ArgumentParser as ArgParser
 from typing import (
+    IO,
     List,
     Type,
     Tuple,
@@ -10,19 +15,23 @@ from typing import (
     Optional,
     TypedDict,
     NamedTuple,
+    cast
 )
 
 from pygtrie import CharTrie
 
 from .log import logger
 from .typing import T_State
+from .exception import ParserExit
 from .internal.rule import Rule as Rule
-from .params import Command, EventToMe
+from .params import Command, EventToMe, CommandArg
 from .adapters import Bot, Event, Message, MessageSegment
 from .consts import (
     CMD_KEY,
     PREFIX_KEY,
     REGEX_DICT,
+    SHELL_ARGS,
+    SHELL_ARGV,
     CMD_ARG_KEY,
     KEYWORD_KEY,
     RAW_CMD_KEY,
@@ -358,8 +367,8 @@ def command(*cmds: Union[str, Tuple[str, ...]]) -> Rule:
     :::
     """
 
-    command_start = "#"
-    command_sep = "."
+    command_start = {"#"}
+    command_sep = {"."}
     commands: List[Tuple[str, ...]] = []
     for command in cmds:
         if isinstance(command, str):
@@ -377,6 +386,98 @@ def command(*cmds: Union[str, Tuple[str, ...]]) -> Rule:
                 )
 
     return Rule(CommandRule(commands))
+
+
+class ArgumentParser(ArgParser):
+    def _parse_optional(
+            self, arg_string: Union[str, MessageSegment]
+    ) -> Optional[Tuple[Optional[Action], str, Optional[str]]]:
+        return (
+            super()._parse_optional(arg_string) if isinstance(arg_string, str) else None
+        )
+
+    def _print_message(self, message: str, file: Optional[IO[str]] = None):
+        if message:
+            setattr(self, "_message", getattr(self, "_message", "") + message)
+
+    def exit(self, status: int = 0, message: Optional[str] = None):
+        if message:
+            self._print_message(message)
+        raise ParserExit(status=status, message=getattr(self, "_message", None))
+
+
+class ShellCommandRule:
+    __slots__ = ("cmds", "parser")
+
+    def __init__(self, cmds: List[Tuple[str, ...]], parser: Optional[ArgumentParser]):
+        self.cmds = tuple(cmds)
+        self.parser = parser
+
+    def __repr__(self) -> str:
+        return f"ShellCommand(cmds={self.cmds}, parser={self.parser})"
+
+    def __eq__(self, other: object) -> bool:
+        return (
+                isinstance(other, ShellCommandRule)
+                and frozenset(self.cmds) == frozenset(other.cmds)
+                and self.parser is other.parser
+        )
+
+    def __hash__(self) -> int:
+        return hash((frozenset(self.cmds), self.parser))
+
+    async def __call__(
+            self,
+            state: T_State,
+            cmd: Optional[Tuple[str, ...]] = Command(),
+            msg: Optional[Message] = CommandArg(),
+    ) -> bool:
+        if cmd not in self.cmds or msg is None:
+            return False
+
+        state[SHELL_ARGV] = list(
+            chain.from_iterable(
+                shlex.split(str(seg)) if cast(MessageSegment, seg).is_text() else (seg,)
+                for seg in msg
+            )
+        )
+
+        if self.parser:
+            try:
+                args = self.parser.parse_args(state[SHELL_ARGV])
+                state[SHELL_ARGS] = args
+            except ArgumentError as e:
+                state[SHELL_ARGS] = ParserExit(status=2, message=str(e))
+            except ParserExit as e:
+                state[SHELL_ARGS] = e
+        return True
+
+
+def shell_command(
+        *cmds: Union[str, Tuple[str, ...]], parser: Optional[ArgumentParser] = None
+) -> Rule:
+    if parser is not None and not isinstance(parser, ArgumentParser):
+        raise TypeError("`parser` must be an instance of nonebot.rule.ArgumentParser")
+
+    command_start = {"#"}
+    command_sep = {"."}
+    commands: List[Tuple[str, ...]] = []
+    for command in cmds:
+        if isinstance(command, str):
+            command = (command,)
+
+        commands.append(command)
+
+        if len(command) == 1:
+            for start in command_start:
+                TrieRule.add_prefix(f"{start}{command[0]}", TRIE_VALUE(start, command))
+        else:
+            for start, sep in product(command_start, command_sep):
+                TrieRule.add_prefix(
+                    f"{start}{sep.join(command)}", TRIE_VALUE(start, command)
+                )
+
+    return Rule(ShellCommandRule(commands, parser))
 
 
 class RegexRule:
