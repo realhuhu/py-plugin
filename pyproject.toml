@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py-plugin"
-version = "3.0.0"
+version = "0.1.0"
 description = ""
 authors = ["realhuhu <2661467107@qq.com>"]
 readme = "README.md"
@@ -21,3 +21,9 @@ nonebot-plugin-apscheduler = "^0.2.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[[tool.poetry.source]]
+name = "aliyun"
+url = "http://mirrors.aliyun.com/pypi/simple"
+default = true
