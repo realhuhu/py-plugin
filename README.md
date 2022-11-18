@@ -57,7 +57,7 @@ Creating virtualenv py-plugin-8_cve6GP-py3.8 in /root/.cache/pypoetry/virtualenv
 **方法二：**
 
 ```shell
-poetry run pip install -r requirements.txt
+poetry run pip install -r requirements.txt --trusted-host mirrors.aliyun.com
 ```
 
 ​	等待安装完成即可，之后重启云崽

@@ -27,7 +27,7 @@ export const create_client = config => {
 }
 
 export const setup_server = () => new Promise((resolve, reject) => {
-  py_plugin_client.option({code: 100}, function (err, response) {
+  py_plugin_client.option({code: 1}, function (err, response) {
     logger.info("python服务器启动中");
     const cmd = spawn(
       "poetry",
