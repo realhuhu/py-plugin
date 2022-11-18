@@ -1,4 +1,5 @@
 # Done TODO
+import re
 import sys
 import logging
 
@@ -27,6 +28,8 @@ class LoguruHandler(logging.Handler):  # pragma: no cover
 
 
 def default_filter(record):
+    record["name"] = re.sub("(nonebot.|nonebot_plugin_)", "", record["name"])
+    record["name"] = re.sub(".*onebot.v11.", "onebot", record["name"])
     log_level = record["extra"].get("nonebot_log_level", "INFO")
     levelno = logger.level(log_level).no if isinstance(log_level, str) else log_level
     return record["level"].no >= levelno
@@ -36,6 +39,7 @@ default_format: str = (
     "[PyBot]"
     "[<g>{time:HH:mm:ss.SSS}</g>]"
     "[<lvl>{level}</lvl>] "
+    "[<c><u>{name}</u></c>]"
     "{message}"
 )
 

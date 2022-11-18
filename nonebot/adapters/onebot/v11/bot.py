@@ -28,37 +28,9 @@ from core.typing import (
 )
 
 
-async def _check_reply(bot: "Bot", event: MessageEvent) -> None:
-    try:
-        index = list(map(lambda x: x.type == "reply", event.message)).index(True)
-    except ValueError:
-        return
-
-    logger.error("暂未实现获取消息")
-
-    # msg_seg = event.message[index]
-    # try:
-    #      event.reply = Reply.parse_obj(await bot.get_msg(message_id=msg_seg.data["id"]))
-    # except Exception as e:
-    #     return
-    # ensure string comparation
-    # if str(event.reply.sender.user_id) == str(event.self_id):
-    #     event.to_me = True
-    # del event.message[index]
-    # if len(event.message) > index and event.message[index].type == "at":
-    #     del event.message[index]
-    # if len(event.message) > index and event.message[index].type == "text":
-    #     event.message[index].data["text"] = event.message[index].data["text"].lstrip()
-    #     if not event.message[index].data["text"]:
-    #         del event.message[index]
-    # if not event.message:
-    #     event.message.append(MessageSegment.text(""))
-
-
 def _check_at_me(bot: "Bot", event: MessageEvent) -> None:
     if not bot.config.need_at:
         event.to_me = True
-        return
 
     if not isinstance(event, MessageEvent):
         return
@@ -136,10 +108,13 @@ class Bot(BaseBot):
         self.result_queue = Queue("result")
 
     async def handle_event(self, event: Event) -> None:
+        if not event:
+            return
+
         if isinstance(event, MessageEvent):
-            await _check_reply(self, event)
             _check_at_me(self, event)
             _check_nickname(self, event)
+
         await handle_event(self, event)
 
     @staticmethod
@@ -297,14 +272,15 @@ class Bot(BaseBot):
             result: GRPCGroupMessageResult = (await self.result_queue.__anext__()).GroupMessageResult
             return result.message_id
 
-    async def delete_msg(self, message_id: int) -> None:
+    async def delete_msg(self, message_id: str) -> None:
+        type, id, real_message_id = message_id.split("|")
         await self.request_queue.put({
-            "GroupMessageRequest": {
+            "DeleteMsgRequest": {
                 "message_id": message_id,
             }
         })
-        logger.success(f'[撤回消息] "{message_id}"')
-        result: GRPCDeleteMsgResult = (await self.result_queue.__anext__()).GroupMessageResult
+        logger.success(f'[撤回消息({type}:{id})] "{real_message_id}"')
+        result: GRPCDeleteMsgResult = (await self.result_queue.__anext__()).DeleteMsgResult
         return None
 
     async def get_msg(self, message_id: int):

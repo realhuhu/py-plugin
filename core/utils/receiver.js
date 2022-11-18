@@ -146,13 +146,13 @@ async function parse_sender(sender) {
   }
 }
 
-async function parse_reply(handler, flag) {
+async function parse_reply(handler, flag, prefix) {
   let message = await handler.getChatHistory(flag, 1)
   message = message && message.pop()
   return message && {
     time: message.time,
     message_type: message.message_type,
-    message_id: message.message_id,
+    message_id: prefix + message.message_id,
     sender: await parse_sender(message.sender),
     message: await parse_message(message.message)
   }
@@ -186,13 +186,13 @@ export async function message_receiver(event, client) {
           post_type: event.post_type,
           message_type: event.message_type,
           sub_type: event.sub_type,
-          message_id: event.message_id,
+          message_id: `private|${event.user_id}|${event.message_id}`,
           user_id: event.user_id,
           message: await parse_message(event.message),
           raw_message: event.raw_message,
           sender: await parse_sender(event.sender),
           to_me: true,
-          reply: event.source && await parse_reply(event.friend, event.source.time + 1)
+          reply: event.source && await parse_reply(event.friend, event.source.time + 1, `private|${event.user_id}|`)
         }
       }
       break
@@ -204,7 +204,7 @@ export async function message_receiver(event, client) {
           post_type: event.post_type,
           message_type: event.message_type,
           sub_type: event.sub_type,
-          message_id: event.message_id,
+          message_id: `group|${event.group_id}|${event.message_id}`,
           group_id: event.group_id,
           user_id: event.user_id,
           anonymous: await parse_anonymous(event.anonymous),
@@ -212,7 +212,7 @@ export async function message_receiver(event, client) {
           raw_message: event.raw_message,
           sender: await parse_sender(event.sender),
           to_me: event.atme,
-          reply: event.source && await parse_reply(event.group, event.source.seq)
+          reply: event.source && await parse_reply(event.group, event.source.seq, `group|${event.group_id}|`)
         }
       }
       break
@@ -297,9 +297,9 @@ export async function notice_receiver(event, client) {
           time: time,//OVERWRITE
           self_id: event.self_id,
           post_type: event.post_type,
-          notice_type: "friend_add",//OVERWRITE
+          notice_type: "friend_recall",//OVERWRITE
           user_id: event.user_id,
-          message_id: event.message_id
+          message_id: `private|${event.user_id}|${event.message_id}`
         }
       }
       break
@@ -358,7 +358,7 @@ export async function notice_receiver(event, client) {
           user_id: event.user_id,
           group_id: event.group_id,
           operator_id: event.operator_id,
-          message_id: event.message_id
+          message_id: `group|${event.group_id}|${event.message_id}`
         }
       }
       break

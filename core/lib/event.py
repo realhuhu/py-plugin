@@ -48,6 +48,28 @@ async def event_parser(event: typing.GRPCEvent):
             group_id=event.group_id,
             anonymous=None if not event.anonymous.id else await anonymous_parser(event.anonymous),
         )
+    elif event_class == "FriendRecallNoticeEvent":
+        event = event.FriendRecallNoticeEvent
+        return _event.FriendRecallNoticeEvent(
+            time=event.time,
+            self_id=event.self_id,
+            post_type=event.post_type,
+            notice_type=event.notice_type,
+            user_id=event.user_id,
+            message_id=event.message_id,
+        )
+    elif event_class == "GroupRecallNoticeEvent":
+        event = event.GroupRecallNoticeEvent
+        return _event.GroupRecallNoticeEvent(
+            time=event.time,
+            self_id=event.self_id,
+            post_type=event.post_type,
+            notice_type=event.notice_type,
+            user_id=event.user_id,
+            group_id=event.group_id,
+            operator_id=event.operator_id,
+            message_id=event.message_id,
+        )
 
 
 __all__ = [

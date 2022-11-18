@@ -389,7 +389,7 @@ message GroupMessageRequest {
 }
 
 message DeleteMsgRequest {
-    int64 message_id = 1;
+    string message_id = 1;
 }
 
 message GetMsgRequest {

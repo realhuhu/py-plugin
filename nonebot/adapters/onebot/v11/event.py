@@ -160,7 +160,7 @@ class PrivateMessageEvent(MessageEvent):
                 self.message,
             ))
         return (
-                f'[私聊:{self.user_id}] "'
+                f'(私聊:{self.user_id})"'
                 + msg
                 + '"'
         )
@@ -182,7 +182,7 @@ class GroupMessageEvent(MessageEvent):
             )
         )
         return (
-                f'[群聊:{self.group_id} 用户:{self.user_id}] "'
+                f'(群聊:{self.group_id} 用户:{self.user_id})"'
                 + msg
                 + '"'
         )
@@ -317,6 +317,10 @@ class GroupRecallNoticeEvent(NoticeEvent):
     def get_session_id(self) -> str:
         return f"group_{self.group_id}_{self.user_id}"
 
+    @overrides(Event)
+    def get_event_description(self) -> str:
+        return f"{self.operator_id}撤回了{self.user_id}的消息"
+
 
 class FriendRecallNoticeEvent(NoticeEvent):
     notice_type: Literal["friend_recall"]
@@ -330,6 +334,10 @@ class FriendRecallNoticeEvent(NoticeEvent):
     @overrides(NoticeEvent)
     def get_session_id(self) -> str:
         return str(self.user_id)
+
+    @overrides(Event)
+    def get_event_description(self) -> str:
+        return f"{self.user_id}撤回了消息"
 
 
 class NotifyEvent(NoticeEvent):

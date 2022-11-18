@@ -26,6 +26,13 @@ const resolve_request = async request => {
       return await Bot.pickFriend(load.user_id).sendMsg(await parse_message(load.message))
     case "GroupMessageRequest":
       return await Bot.pickGroup(load.group_id).sendMsg(await parse_message(load.message))
+    case "DeleteMsgRequest":
+      load = load.message_id.split("|")
+      if (load[0] === "group") {
+        return await Bot.pickGroup(Number(load[1])).recallMsg(load[2])
+      } else {
+        return await Bot.pickFriend(Number(load[1])).recallMsg(load[2])
+      }
     case "SendPrivateForwardMsgRequest":
       let private_forward_message = []
       for (let i of load.message) {
@@ -49,30 +56,36 @@ const resolve_request = async request => {
   }
 }
 
-const create_response = async (type, raw) => {
+const create_response = async (request, raw) => {
+  let type = request.request
+  let load = request[type]
   switch (type) {
     case "PrivateMessageRequest":
       return {
         PrivateMessageResult: {
-          message_id: raw.message_id
+          message_id: `private|${load.user_id}|${raw.message_id}`
         }
       }
     case "GroupMessageRequest":
       return {
         GroupMessageRequest: {
-          message_id: raw.message_id
+          message_id: `group|${load.group_id}|${raw.message_id}`
         }
+      }
+    case "DeleteMsgRequest":
+      return {
+        "DeleteMsgResult": {}
       }
     case "SendPrivateForwardMsgRequest":
       return {
         SendPrivateForwardMsgResult: {
-          message_id: raw.message_id
+          message_id: `private|${load.user_id}|${raw.message_id}`
         }
       }
     case "SendGroupForwardMsgRequest":
       return {
         SendGroupForwardMsgResult: {
-          message_id: raw.message_id
+          message_id: `group|${load.group_id}|${raw.message_id}`
         }
       }
   }
@@ -88,7 +101,7 @@ export const channel_setup = async (client) => {
   const call = client.callBack()
   call.on("data", request => {
     resolve_request(request).then(raw => {
-      return create_response(request.request, raw)
+      return create_response(request, raw)
     }).then(response => {
       call.write(response)
     })

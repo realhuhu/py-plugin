@@ -54,8 +54,8 @@ class CustomMusicSegment(_message.Message):
 class DeleteMsgRequest(_message.Message):
     __slots__ = ["message_id"]
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
-    message_id: int
-    def __init__(self, message_id: _Optional[int] = ...) -> None: ...
+    message_id: str
+    def __init__(self, message_id: _Optional[str] = ...) -> None: ...
 
 class DeleteMsgResult(_message.Message):
     __slots__ = []

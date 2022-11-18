@@ -34,10 +34,10 @@ class Event(abc.ABC, BaseModel):
         raise NotImplementedError
 
     def __str__(self) -> str:
-        return f"[{self.get_event_name()}]{self.get_event_description()}"
+        return f"[{self.get_event_name()}] {self.get_event_description()}"
 
     def get_log_string(self) -> str:
-        return f"[{self.get_event_name()}]{self.get_event_description()}"
+        return f"[{self.get_event_name()}] {self.get_event_description()}"
 
     @abc.abstractmethod
     def get_user_id(self) -> str:
