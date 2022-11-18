@@ -138,8 +138,15 @@ async def _run_matcher(
         stack: Optional[AsyncExitStack] = None,
         dependency_cache: Optional[T_DependencyCache] = None,
 ) -> None:
-    # logger.info(f"消息匹配成功: {Matcher}")
-
+    logger.info(f"消息匹配成功: {Matcher}")
+    show_log = True
+    log_msg = ""
+    try:
+        log_msg += event.get_log_string()
+    except NoLogException:
+        show_log = False
+    if show_log:
+        logger.opt(colors=True).success(log_msg)
     matcher = Matcher()
     if coros := [
         run_coro_with_catch(
@@ -209,13 +216,13 @@ async def _run_matcher(
 
 async def handle_event(bot: "Bot", event: "Event") -> None:
     show_log = True
-    log_msg = ""
-    try:
-        log_msg += event.get_log_string()
-    except NoLogException:
-        show_log = False
-    if show_log:
-        logger.opt(colors=True).success(log_msg)
+    # log_msg = ""
+    # try:
+    #     log_msg += event.get_log_string()
+    # except NoLogException:
+    #     show_log = False
+    # if show_log:
+    #     logger.opt(colors=True).success(log_msg)
 
     state: Dict[Any, Any] = {}
     dependency_cache: T_DependencyCache = {}
