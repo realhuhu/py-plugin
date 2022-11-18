@@ -28,6 +28,15 @@ from core.typing import (
 )
 
 
+def _check_reply(bot: "Bot", event: MessageEvent) -> None:
+    reply = event.reply
+    if not reply:
+        return
+
+    if event.message[0].type == "at" and str(reply.sender.user_id) == event.message[0].data.get("qq"):
+        event.message.pop(0)
+
+
 def _check_at_me(bot: "Bot", event: MessageEvent) -> None:
     if not bot.config.need_at:
         event.to_me = True
@@ -110,8 +119,8 @@ class Bot(BaseBot):
     async def handle_event(self, event: Event) -> None:
         if not event:
             return
-
         if isinstance(event, MessageEvent):
+            _check_reply(self, event)
             _check_at_me(self, event)
             _check_nickname(self, event)
 
@@ -249,7 +258,7 @@ class Bot(BaseBot):
             event: Event,
             message: Union[str, Message, MessageSegment],
             **kwargs: Any,
-    ) -> Any:
+    ) -> str:
         if isinstance(event, PrivateMessageEvent):
             await self.request_queue.put({
                 "PrivateMessageRequest": {
@@ -303,7 +312,15 @@ class Bot(BaseBot):
         ...
 
     async def send_like(self, user_id: int, times: int = 1):
-        ...
+        await self.request_queue.put({
+            "SendLikeRequest": {
+                "user_id": user_id,
+                "times": times,
+            }
+        })
+        logger.success(f'[点赞] "给{user_id}点赞{times}次"')
+        result = await self.result_queue.__anext__()
+        return None
 
     async def set_group_kick(self, group_id: int, user_id: int, reject_add_request: bool = False):
         ...

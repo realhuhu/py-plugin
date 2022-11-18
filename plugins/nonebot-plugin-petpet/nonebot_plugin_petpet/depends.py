@@ -85,8 +85,8 @@ def split_msg():
             ):
                 i -= 1
                 last_msg_seg = raw_msg[i]
-            if _is_at_me_seg(last_msg_seg):
-                msg.append(last_msg_seg)
+            # if _is_at_me_seg(last_msg_seg):
+            #     msg.append(last_msg_seg)
 
         users: List[UserInfo] = []
         args: List[str] = []

@@ -264,14 +264,14 @@ POST_MESSAGE_CONFIGURE_WINDOWS = """"""
 
 
 class PoetryInstallationError(RuntimeError):
-    def __init__(self, return_code: int = 0, log: Optional[str] = None):
+    def __init__(cls, return_code: int = 0, log: Optional[str] = None):
         super(PoetryInstallationError, self).__init__()
         self.return_code = return_code
         self.log = log
 
 
 class VirtualEnvironment:
-    def __init__(self, path: Path) -> None:
+    def __init__(cls, path: Path) -> None:
         self._path = path
         self._bin_path = self._path.joinpath(
             "Scripts" if WINDOWS and not MINGW else "bin"
@@ -282,11 +282,11 @@ class VirtualEnvironment:
         )
 
     @property
-    def path(self):
+    def path(cls):
         return self._path
 
     @property
-    def bin_path(self):
+    def bin_path(cls):
         return self._bin_path
 
     @classmethod
@@ -353,68 +353,68 @@ class VirtualEnvironment:
             )
         return completed_process
 
-    def python(self, *args, **kwargs) -> subprocess.CompletedProcess:
+    def python(cls, *args, **kwargs) -> subprocess.CompletedProcess:
         return self.run(self._python, *args, **kwargs)
 
-    def pip(self, *args, **kwargs) -> subprocess.CompletedProcess:
+    def pip(cls, *args, **kwargs) -> subprocess.CompletedProcess:
         return self.python("-m", "pip", *args, **kwargs)
 
 
 class Cursor:
-    def __init__(self) -> None:
+    def __init__(cls) -> None:
         self._output = sys.stdout
 
-    def move_up(self, lines: int = 1) -> "Cursor":
+    def move_up(cls, lines: int = 1) -> "Cursor":
         self._output.write("\x1b[{}A".format(lines))
 
         return self
 
-    def move_down(self, lines: int = 1) -> "Cursor":
+    def move_down(cls, lines: int = 1) -> "Cursor":
         self._output.write("\x1b[{}B".format(lines))
 
         return self
 
-    def move_right(self, columns: int = 1) -> "Cursor":
+    def move_right(cls, columns: int = 1) -> "Cursor":
         self._output.write("\x1b[{}C".format(columns))
 
         return self
 
-    def move_left(self, columns: int = 1) -> "Cursor":
+    def move_left(cls, columns: int = 1) -> "Cursor":
         self._output.write("\x1b[{}D".format(columns))
 
         return self
 
-    def move_to_column(self, column: int) -> "Cursor":
+    def move_to_column(cls, column: int) -> "Cursor":
         self._output.write("\x1b[{}G".format(column))
 
         return self
 
-    def move_to_position(self, column: int, row: int) -> "Cursor":
+    def move_to_position(cls, column: int, row: int) -> "Cursor":
         self._output.write("\x1b[{};{}H".format(row + 1, column))
 
         return self
 
-    def save_position(self) -> "Cursor":
+    def save_position(cls) -> "Cursor":
         self._output.write("\x1b7")
 
         return self
 
-    def restore_position(self) -> "Cursor":
+    def restore_position(cls) -> "Cursor":
         self._output.write("\x1b8")
 
         return self
 
-    def hide(self) -> "Cursor":
+    def hide(cls) -> "Cursor":
         self._output.write("\x1b[?25l")
 
         return self
 
-    def show(self) -> "Cursor":
+    def show(cls) -> "Cursor":
         self._output.write("\x1b[?25h\x1b[?0c")
 
         return self
 
-    def clear_line(self) -> "Cursor":
+    def clear_line(cls) -> "Cursor":
         """
         Clears all the output from the current line.
         """
@@ -422,7 +422,7 @@ class Cursor:
 
         return self
 
-    def clear_line_after(self) -> "Cursor":
+    def clear_line_after(cls) -> "Cursor":
         """
         Clears all the output from the current line after the current position.
         """
@@ -430,7 +430,7 @@ class Cursor:
 
         return self
 
-    def clear_output(self) -> "Cursor":
+    def clear_output(cls) -> "Cursor":
         """
         Clears all the output from the cursors' current position
         to the end of the screen.
@@ -439,7 +439,7 @@ class Cursor:
 
         return self
 
-    def clear_screen(self) -> "Cursor":
+    def clear_screen(cls) -> "Cursor":
         """
         Clears the entire screen.
         """
@@ -461,7 +461,7 @@ class Installer:
     )
 
     def __init__(
-            self,
+            cls,
             version: Optional[str] = None,
             preview: bool = False,
             force: bool = False,
@@ -479,10 +479,10 @@ class Installer:
         self._bin_dir = bin_dir()
         self._cursor = Cursor()
 
-    def allows_prereleases(self) -> bool:
+    def allows_prereleases(cls) -> bool:
         return self._preview
 
-    def run(self) -> int:
+    def run(cls) -> int:
         if self._git:
             version = self._git
         elif self._path:
@@ -514,7 +514,7 @@ class Installer:
                 colorize(
                     "warning",
                     f"You are installing {version}. When using the current installer, this version does not support "
-                    f"updating using the 'self update' command. Please use 1.1.7 or later.",
+                    f"updating using the 'cls update' command. Please use 1.1.7 or later.",
                 )
             )
             if not self._accept_all:
@@ -534,7 +534,7 @@ class Installer:
 
         return 0
 
-    def install(self, version, upgrade=False):
+    def install(cls, version, upgrade=False):
         """
         Installs Poetry in $POETRY_HOME.
         """
@@ -552,7 +552,7 @@ class Installer:
 
             return 0
 
-    def uninstall(self) -> int:
+    def uninstall(cls) -> int:
         if not self._data_dir.exists():
             self._write(
                 "{} is not currently installed.".format(colorize("info", "Poetry"))
@@ -580,7 +580,7 @@ class Installer:
 
         return 0
 
-    def _install_comment(self, version: str, message: str):
+    def _install_comment(cls, version: str, message: str):
         self._overwrite(
             "Installing {} ({}): {}".format(
                 colorize("info", "Poetry"),
@@ -590,7 +590,7 @@ class Installer:
         )
 
     @contextmanager
-    def make_env(self, version: str) -> VirtualEnvironment:
+    def make_env(cls, version: str) -> VirtualEnvironment:
         env_path = self._data_dir.joinpath("venv")
         env_path_saved = env_path.with_suffix(".save")
 
@@ -621,7 +621,7 @@ class Installer:
             if env_path_saved.exists():
                 shutil.rmtree(env_path_saved, ignore_errors=True)
 
-    def make_bin(self, version: str, env: VirtualEnvironment) -> None:
+    def make_bin(cls, version: str, env: VirtualEnvironment) -> None:
         self._install_comment(version, "Creating script")
         self._bin_dir.mkdir(parents=True, exist_ok=True)
 
@@ -638,7 +638,7 @@ class Installer:
             # does not have the correct permission on Windows
             shutil.copy(target_script, self._bin_dir.joinpath(script))
 
-    def install_poetry(self, version: str, env: VirtualEnvironment) -> None:
+    def install_poetry(cls, version: str, env: VirtualEnvironment) -> None:
         self._install_comment(version, "Installing Poetry")
 
         if self._git:
@@ -650,14 +650,14 @@ class Installer:
 
         env.pip("install", specification)
 
-    def display_pre_message(self) -> None:
+    def display_pre_message(cls) -> None:
         kwargs = {
             "poetry": colorize("info", "Poetry"),
             "poetry_home_bin": colorize("comment", self._bin_dir),
         }
         self._write(PRE_MESSAGE.format(**kwargs))
 
-    def display_post_message(self, version: str) -> None:
+    def display_post_message(cls, version: str) -> None:
         if WINDOWS:
             return self.display_post_message_windows(version)
 
@@ -666,7 +666,7 @@ class Installer:
 
         return self.display_post_message_unix(version)
 
-    def display_post_message_windows(self, version: str) -> None:
+    def display_post_message_windows(cls, version: str) -> None:
         path = self.get_windows_path_var()
 
         message = POST_MESSAGE_NOT_IN_PATH
@@ -686,7 +686,7 @@ class Installer:
             )
         )
 
-    def get_windows_path_var(self) -> Optional[str]:
+    def get_windows_path_var(cls) -> Optional[str]:
         import winreg
 
         with winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER) as root:
@@ -695,7 +695,7 @@ class Installer:
 
                 return path
 
-    def display_post_message_fish(self, version: str) -> None:
+    def display_post_message_fish(cls, version: str) -> None:
         fish_user_paths = subprocess.check_output(
             ["fish", "-c", "echo $fish_user_paths"]
         ).decode("utf-8")
@@ -717,7 +717,7 @@ class Installer:
             )
         )
 
-    def display_post_message_unix(self, version: str) -> None:
+    def display_post_message_unix(cls, version: str) -> None:
         paths = os.getenv("PATH", "").split(":")
 
         message = POST_MESSAGE_NOT_IN_PATH
@@ -737,11 +737,11 @@ class Installer:
             )
         )
 
-    def ensure_directories(self) -> None:
+    def ensure_directories(cls) -> None:
         self._data_dir.mkdir(parents=True, exist_ok=True)
         self._bin_dir.mkdir(parents=True, exist_ok=True)
 
-    def get_version(self):
+    def get_version(cls):
         current_version = None
         if self._data_dir.joinpath("VERSION").exists():
             current_version = self._data_dir.joinpath("VERSION").read_text().strip()
@@ -797,10 +797,10 @@ class Installer:
 
         return version, current_version
 
-    def _write(self, line) -> None:
+    def _write(cls, line) -> None:
         sys.stdout.write(line + "\n")
 
-    def _overwrite(self, line) -> None:
+    def _overwrite(cls, line) -> None:
         if not is_decorated():
             return self._write(line)
 
@@ -808,7 +808,7 @@ class Installer:
         self._cursor.clear_line()
         self._write(line)
 
-    def _get(self, url):
+    def _get(cls, url):
         request = Request(url, headers={"User-Agent": "Python Poetry"})
 
         with closing(urlopen(request)) as r:

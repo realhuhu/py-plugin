@@ -27,44 +27,45 @@ export const create_client = config => {
 }
 
 export const setup_server = () => new Promise((resolve, reject) => {
-  py_plugin_client.option({code: 1}, function (err, response) {
-    logger.info("python服务器启动中");
-    const cmd = spawn(
-      "poetry",
-      ["run", "python", "main.py"],
-      {
-        cwd: global.py_plugin_path,
-        shell: false,
-      },
-    );
-
-    cmd.stdout.on("data", data => {
-      data = iconv.decode(data, py_plugin_config.encoding || "utf-8")
-      process.stdout.write(data.toString());
-      if (data.toString().includes("Py服务器已启动")) {
-        py_plugin_client.option({code: 100}, function (err, response) {
-          if (response.code === "100") {
-            resolve("python服务器启动成功")
-          } else {
-            reject(err || response)
-          }
-        });
-      }
-    });
-
-    cmd.stderr.on("data", data => {
-      process.stderr.write(iconv.decode(data, py_plugin_config.encoding || "utf-8"));
-    });
-
-    cmd.stderr.on("end", () => {
-      logger.warn("python服务器已关闭");
-    });
-
-    cmd.on("error", err => {
-      logger.warn("python服务器启动失败");
-      logger.warn(iconv.decode(err, py_plugin_config.encoding || "utf-8"));
-    });
-  });
+  resolve()
+  // py_plugin_client.option({code: 100}, function (err, response) {
+  //   logger.info("python服务器启动中");
+  //   const cmd = spawn(
+  //     "poetry",
+  //     ["run", "python", "main.py"],
+  //     {
+  //       cwd: global.py_plugin_path,
+  //       shell: false,
+  //     },
+  //   );
+  //
+  //   cmd.stdout.on("data", data => {
+  //     data = iconv.decode(data, py_plugin_config.encoding || "utf-8")
+  //     process.stdout.write(data.toString());
+  //     if (data.toString().includes("Py服务器已启动")) {
+  //       py_plugin_client.option({code: 100}, function (err, response) {
+  //         if (response.code === "100") {
+  //           resolve("python服务器启动成功")
+  //         } else {
+  //           reject(err || response)
+  //         }
+  //       });
+  //     }
+  //   });
+  //
+  //   cmd.stderr.on("data", data => {
+  //     process.stderr.write(iconv.decode(data, py_plugin_config.encoding || "utf-8"));
+  //   });
+  //
+  //   cmd.stderr.on("end", () => {
+  //     logger.warn("python服务器已关闭");
+  //   });
+  //
+  //   cmd.on("error", err => {
+  //     logger.warn("python服务器启动失败");
+  //     logger.warn(iconv.decode(err, py_plugin_config.encoding || "utf-8"));
+  //   });
+  // });
 })
 
 export const setup_client = () => {

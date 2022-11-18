@@ -5,11 +5,11 @@ from asyncio.queues import LifoQueue
 class QueueMCS(type):
     instance: Dict[str, Optional["Queue"]] = {}
 
-    def __call__(self: "Queue", type: str, *args, **kwargs) -> "Queue":
-        if not self.__class__.instance.get(type):
-            self.__class__.instance[type] = super().__call__(type, *args, **kwargs)
+    def __call__(cls: "Queue", type: str, *args, **kwargs) -> "Queue":
+        if not cls.__class__.instance.get(type):
+            cls.__class__.instance[type] = super().__call__(type, *args, **kwargs)
 
-        return self.__class__.instance[type]
+        return cls.__class__.instance[type]
 
 
 class Queue(metaclass=QueueMCS):
