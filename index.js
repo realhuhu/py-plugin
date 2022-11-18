@@ -4,7 +4,6 @@ import path from "path";
 import plugin from '../../lib/plugins/plugin.js'
 import {spawn} from "child_process";
 import {create_client, setup_server, setup_client} from "./core/client/client.js";
-import iconv from "iconv-lite";
 
 
 global.py_plugin_path = path.join(process.cwd(), "plugins", "py-plugin");
