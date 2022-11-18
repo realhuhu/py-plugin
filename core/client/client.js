@@ -26,7 +26,7 @@ export const create_client = config => {
   });
 }
 
-export const setup_server = () => new Promise((resolve, reject) => {
+export const setup_server = setup_client => new Promise((resolve, reject) => {
   py_plugin_client.option({code: 1}, function (err, response) {
     logger.info("python服务器启动中");
     const cmd = spawn(
@@ -44,9 +44,9 @@ export const setup_server = () => new Promise((resolve, reject) => {
       if (data.toString().includes("Py服务器已启动")) {
         py_plugin_client.option({code: 100}, function (err, response) {
           if (response.code === "100") {
-            resolve("python服务器启动成功")
+            setup_client()
           } else {
-            reject(err || response)
+            logger.error("Py服务器出错")
           }
         });
       }

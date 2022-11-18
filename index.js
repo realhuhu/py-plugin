@@ -13,12 +13,7 @@ if (!fs.existsSync(path.join(py_plugin_path, "config.yaml"))) {
 global.py_plugin_config = YAML.parse(fs.readFileSync(path.join(global.py_plugin_path, "config.yaml"), 'utf8'))
 global.py_plugin_client = create_client(py_plugin_config)
 
-setup_server().then(msg => {
-  logger.mark(msg)
-  setup_client()
-}).catch(err => {
-  logger.error(err)
-})
+setup_server(setup_client)
 
 export class PyPlugin extends plugin {
   constructor() {
