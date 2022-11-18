@@ -27,7 +27,7 @@ def get_bot() -> Bot:
     return _bot
 
 
-def init(config_path) -> None:
+def init(config_path: Path) -> None:
     global _driver, _bot
     config = Config(**OmegaConf.load(config_path))
     _bot = Bot(config)
