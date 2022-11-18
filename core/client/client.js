@@ -44,9 +44,9 @@ export const setup_server = setup_client => new Promise((resolve, reject) => {
       if (data.toString().includes("Py服务器已启动")) {
         py_plugin_client.option({code: 100}, function (err, response) {
           if (response.code === "100") {
-            setup_client()
+            resolve("python服务器启动成功")
           } else {
-            logger.error("Py服务器出错")
+            reject(err || response)
           }
         });
       }
