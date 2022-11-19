@@ -303,17 +303,33 @@ export async function notice_receiver(event, client) {
         }
       }
       break
-    //FriendPokeEvent
+    //FriendPokeEvent OVERWRITE
     case "friend.poke"://OMIT<operator_id,action,suffix>
+      // data = {
+      //   PokeNotifyEvent: {
+      //     time: time,//OVERWRITE
+      //     self_id: event.self_id,
+      //     post_type: event.post_type,
+      //     notice_type: "notify",//OVERWRITE
+      //     sub_type: event.sub_type,
+      //     user_id: event.self_id,
+      //     target_id: event.self_id,
+      //   }
+      // }
       data = {
-        PokeNotifyEvent: {
+        PrivateMessageEvent: {
           time: time,//OVERWRITE
           self_id: event.self_id,
-          post_type: event.post_type,
-          notice_type: "notify",//OVERWRITE
-          sub_type: event.sub_type,
-          user_id: event.self_id,
-          target_id: event.self_id,
+          post_type: "message",
+          message_type: "private",//OVERWRITE
+          sub_type: "friend",//OVERWRITE
+          user_id: event.user_id,
+          message: [{PokeSegment: {}}],//TODO
+          sender: {
+            user_id: event.operator_id,
+            nickname: event.sender.nickname,
+          },
+          to_me: event.target_id === event.self_id,
         }
       }
       break

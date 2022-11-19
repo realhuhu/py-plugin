@@ -41,7 +41,7 @@ export const setup_server = setup_client => new Promise((resolve, reject) => {
     cmd.stdout.on("data", data => {
       data = iconv.decode(data, py_plugin_config.encoding || "utf-8")
       process.stdout.write(data.toString());
-      if (data.toString().includes("Py服务器已启动")) {
+      if (data.toString().includes("Py started")) {
         py_plugin_client.option({code: 100}, function (err, response) {
           if (response.code === "100") {
             resolve("python服务器启动成功")

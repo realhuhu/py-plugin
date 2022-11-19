@@ -70,6 +70,18 @@ async def event_parser(event: typing.GRPCEvent):
             operator_id=event.operator_id,
             message_id=event.message_id,
         )
+    elif event_class == "PokeNotifyEvent":
+        event = event.PokeNotifyEvent
+        return _event.PokeNotifyEvent(
+            time=event.time,
+            self_id=event.self_id,
+            post_type=event.post_type,
+            notice_type=event.notice_type,
+            sub_type=event.sub_type,
+            user_id=event.user_id,
+            target_id=event.target_id,
+            group_id=event.group_id,
+        )
 
 
 __all__ = [

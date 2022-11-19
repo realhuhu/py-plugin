@@ -65,7 +65,7 @@ class GRPCDriver(Driver):
         self.install_signal_handlers()
         await self.startup()
         await self.server.start()
-        logger.info("Py服务器已启动")
+        logger.info("Py started")
         try:
             await self.server.wait_for_termination()
         except:

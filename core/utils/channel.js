@@ -21,7 +21,6 @@ const parse_message = async message => {
 const resolve_request = async request => {
   let type = request.request
   let load = request[type]
-  Bot.pickFriend()
   switch (type) {
     case "PrivateMessageRequest":
       return await Bot.pickFriend(load.user_id).sendMsg(await parse_message(load.message))
