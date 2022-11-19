@@ -28,6 +28,17 @@ from core.typing import (
 )
 
 
+def _check_first_at(bot: "Bot", event: MessageEvent) -> None:
+    if len(event.message) < 2:
+        return
+
+    if event.message[0].type == "at" and event.message[0].data.get("qq") == event.self_id:
+        return
+
+    if event.message[0].type == "at" and event.message[1].type == "text":
+        event.message[0], event.message[1] = event.message[1], event.message[0]
+
+
 def _check_reply(bot: "Bot", event: MessageEvent) -> None:
     reply = event.reply
     if not reply:
@@ -40,6 +51,7 @@ def _check_reply(bot: "Bot", event: MessageEvent) -> None:
 def _check_at_me(bot: "Bot", event: MessageEvent) -> None:
     if not bot.config.need_at:
         event.to_me = True
+        return
 
     if not isinstance(event, MessageEvent):
         return
@@ -123,6 +135,7 @@ class Bot(BaseBot):
             _check_reply(self, event)
             _check_at_me(self, event)
             _check_nickname(self, event)
+            _check_first_at(self, event)
 
         await handle_event(self, event)
 

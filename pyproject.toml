@@ -4,7 +4,6 @@ version = "3.0.0"
 description = ""
 authors = ["realhuhu <2661467107@qq.com>"]
 readme = "README.md"
-packages = [{include = "py_plugin"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
