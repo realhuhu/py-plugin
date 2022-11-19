@@ -5,6 +5,7 @@ FrontMatter:
     description: nonebot.plugin.load 模块
 """
 import json
+import importlib
 from pathlib import Path
 from types import ModuleType
 from typing import Set, Union, Iterable, Optional
@@ -46,7 +47,7 @@ def load_plugins(*plugin_dir: str) -> Set[Plugin]:
 
 
 def load_all_plugins(
-    module_path: Iterable[str], plugin_dir: Iterable[str]
+        module_path: Iterable[str], plugin_dir: Iterable[str]
 ) -> Set[Plugin]:
     """导入指定列表中的插件以及指定目录下多个插件，以 `_` 开头的插件不会被导入!
 
@@ -157,6 +158,8 @@ def require(name: str) -> ModuleType:
     异常:
         RuntimeError: 插件无法加载
     """
+    if name == "nonebot_plugin_apscheduler":
+        return importlib.import_module(name)
     plugin = get_plugin(_module_name_to_plugin_name(name))
     if not plugin:
         if manager := _find_manager_by_name(name):

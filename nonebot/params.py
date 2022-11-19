@@ -211,17 +211,9 @@ def LastReceived(default: Any = None) -> Any:
     return Depends(_last_received, use_cache=False)
 
 
-__autodoc__ = {
-    "Arg": True,
-    "ArgStr": True,
-    "Depends": True,
-    "ArgParam": True,
-    "BotParam": True,
-    "EventParam": True,
-    "StateParam": True,
-    "DependParam": True,
-    "ArgPlainText": True,
-    "DefaultParam": True,
-    "MatcherParam": True,
-    "ExceptionParam": True,
-}
+def _state(state: T_State) -> T_State:
+    return state
+
+
+def State() -> Any:
+    return Depends(_state)

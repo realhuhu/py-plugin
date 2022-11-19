@@ -470,7 +470,6 @@ class Matcher(metaclass=MatcherMeta):
         """
         if message is not None:
             await cls.send(message, **kwargs)
-        raise FinishedException
 
     @classmethod
     async def pause(
@@ -708,7 +707,7 @@ class Matcher(metaclass=MatcherMeta):
             except StopPropagation:
                 self.block = True
             # finally:
-                # logger.info(f"{self} 插件运行完成")
+            # logger.info(f"{self} 插件运行完成")
 
     # 运行handlers
     async def run(

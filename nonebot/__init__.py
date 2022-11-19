@@ -48,6 +48,18 @@ def run(root: Path):
     _driver.run()
 
 
+class Export:
+    pass
+
+
+_export = Export()
+
+
+def export():
+    global _export
+    return _export
+
+
 from nonebot.plugin import on as on
 from nonebot.plugin import on_type as on_type
 from nonebot.plugin import require as require
