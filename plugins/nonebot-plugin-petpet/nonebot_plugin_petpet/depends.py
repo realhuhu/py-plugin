@@ -22,14 +22,13 @@ from .utils import UserInfo
 from .config import petpet_config
 from .download import download_url, download_avatar
 
-
 USERS_KEY = "USERS"
 SENDER_KEY = "SENDER"
 ARGS_KEY = "ARGS"
 REGEX_DICT = "REGEX_DICT"
 REGEX_ARG = "REGEX_ARG"
 
-command_start = petpet_config.petpet_command_start or "|".join(
+command_start = petpet_config.petpet_command_start if petpet_config.petpet_command_start is not None else "|".join(
     get_driver().config.command_start
 )
 
@@ -49,7 +48,7 @@ def regex(pattern: str) -> Rule:
             return False
 
         new_msg = msg.copy()
-        seg_text = seg_text[matched.end() :].lstrip()
+        seg_text = seg_text[matched.end():].lstrip()
         if seg_text:
             new_msg[0].data["text"] = seg_text
         else:
@@ -79,9 +78,9 @@ def split_msg():
             i = -1
             last_msg_seg = raw_msg[i]
             if (
-                last_msg_seg.type == "text"
-                and not last_msg_seg.data["text"].strip()
-                and len(raw_msg) >= 2
+                    last_msg_seg.type == "text"
+                    and not last_msg_seg.data["text"].strip()
+                    and len(raw_msg) >= 2
             ):
                 i -= 1
                 last_msg_seg = raw_msg[i]
