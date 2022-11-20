@@ -11,3 +11,4 @@ if not config_path.exists():
 
 nonebot.init(config_path)
 nonebot.run(root)
+import nonebot_plugin_gspanel
