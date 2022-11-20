@@ -17,7 +17,7 @@ REGEX_DICT = "REGEX_DICT"
 REGEX_GROUP = "REGEX_GROUP"
 REGEX_ARG = "REGEX_ARG"
 
-command_start = memes_config.memes_command_start if memes_config.memes_command_start is None else "|".join(
+command_start = memes_config.memes_command_start if memes_config.memes_command_start is not None else "|".join(
     get_driver().config.command_start
 )
 
