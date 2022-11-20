@@ -1,3 +1,5 @@
+# ！！！Windows系统不用用git执行命令，用cmd执行命令！！！
+
 # 1.前期准备
 
 ### 安装nodejs 依赖
@@ -62,6 +64,8 @@ poetry run pip install -r requirements.txt --trusted-host mirrors.aliyun.com
 
 ​	等待安装完成即可，之后重启云崽
 
+​	如果无法安装poetry，可以百度方法，*不推荐用pip install poetry安装*
+
 ​	第一次启动时，需要下载petpet和memes的依赖，需要等待一段时间
 
 ### 2.2 使用
@@ -76,7 +80,29 @@ poetry run pip install -r requirements.txt --trusted-host mirrors.aliyun.com
 
 ​	未来将支持通过命令下载/卸载和启动/禁用插件
 
-####    clone到plugins文件夹
+#### 命令安装（推荐）
+
+对于可以pip install或nb plugin install的插件，可以使用```#py下载插件```指令进行安装
+
+![image-20221120202102903](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211202021020.png)
+
+![image-20221120202148165](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211202021203.png)
+
+​	此方法能自动安装依赖，并自动将插件添加到config.yaml的plugins下
+
+#### pip安装（推荐）
+
+​	如果无法命令安装，也可以使用pip安装，
+
+​	如上图插件，进入py-plugin目录，输入命令```poetry run pip install nonebot-plugin-gspanel```即可安装
+
+​	此方法能自动安装依赖，但需要手动将插件名称添加到config.yaml的plugins下
+
+![image-20221117164932853](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211202025156.png)
+
+​	输入命令```poetry run pip uninstall nonebot-plugin-gspanel```彻底卸载插件
+
+####    clone到plugins文件夹（不推荐）
 
 ​	![image-20221117163456296](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171635372.png)
 
@@ -94,33 +120,9 @@ poetry run pip install -r requirements.txt --trusted-host mirrors.aliyun.com
 
 ![image-20221117163950890](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171639930.png)
 
-​	若插件支持配置，再config.yaml中配置即可
+​	
 
-![image-20221117164035336](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171640377.png)
-
-![image-20221117164106239](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171641279.png)
-
-#### 	pip安装
-
-​	点击卡片的复制安装命令
-
-![image-20221117164235599](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171642641.png)
-
-​	内容为```nb plugin install nonebot-plugin-remake```
-
-​	则进入py-plugin文件夹，输入```poetry run pip install nonebot-plugin-remake```
-
-​	完成后在config.yaml添加插件即可
-
-![image-20221117164932853](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171649897.png)
-
-![image-20221117164956910](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171649951.png)
-
-​	通过```poetry run pip uninstall nonebot-plugin-remake```卸载插件
-
-
-
-若同时采用了两种安装方式，则会运行pip安装的插件
+若同时采用了两种安装方式，则会优先运行pip/命令安装的插件
 
 nonebot机器人的命令以/开头，注意替换为#
 
@@ -128,7 +130,15 @@ nonebot机器人的命令以/开头，注意替换为#
 
 ![image-20221117165127354](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171651398.png)
 
-### 2.2.2 配置文件
+### 2.2.2 指令
+
+​	#py下载插件+插件名称：自动运行poetry run pip install 插件，并将插件添加到config.yaml的plugins下，之后重启服务器
+
+​	#py禁用插件+插件名称：将插件从config.yaml的plugins下删除，之后重启服务器
+
+​	#py启用插件+插件名称：将插件添加到config.yaml的plugins下，之后重启服务器
+
+### 2.2.3 配置文件
 
 ```yaml
 log_level: INFO #大于等于log_level的日志才会打印
@@ -145,8 +155,15 @@ plugins: #运行哪些插件
   # 加载哪些插件就继续往下加
 host: 127.0.0.1 #python服务器启动的地址
 port: 50052 #python服务器启动的端口
+independent: false #py服务器是否独立运行，开启此项后需要你手动启动py服务器，然后启动云崽
 #encoding: gbk #如果输出乱码，可以开启这项试试看，主要是windows平台
 ```
+
+若插件支持配置，在config.yaml中配置即可
+
+![image-20221117164035336](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171640377.png)
+
+![image-20221117164106239](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171641279.png)
 
 # 3.常见问题
 
