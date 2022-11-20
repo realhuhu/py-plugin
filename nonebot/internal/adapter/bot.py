@@ -58,7 +58,10 @@ class Bot(abc.ABC):
 
         if not skip_calling_api:
             try:
-                result = await getattr(self, api)(**data)
+                if hasattr(self,api):
+                    result = await getattr(self, api)(**data)
+                else:
+                    raise NotImplementedError()
             except Exception as e:
                 exception = e
 
