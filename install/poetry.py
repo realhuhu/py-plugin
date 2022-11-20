@@ -1,17 +1,27 @@
-"""
-This script will install Poetry and its dependencies.
+#!/usr/bin/env python3
+r"""
+This script will install Poetry and its dependencies in an isolated fashion.
 
-It does, in order:
+It will perform the following steps:
+    * Create a new virtual environment using the built-in venv module, or the virtualenv zipapp if venv is unavailable.
+      This will be created at a platform-specific path (or `$POETRY_HOME` if `$POETRY_HOME` is set:
+        - `~/Library/Application Support/pypoetry` on macOS
+        - `$XDG_DATA_HOME/pypoetry` on Linux/Unix (`$XDG_DATA_HOME` is `~/.local/share` if unset)
+        - `%APPDATA%\pypoetry` on Windows
+    * Update pip inside the virtual environment to avoid bugs in older versions.
+    * Install the latest (or a given) version of Poetry inside this virtual environment using pip.
+    * Install a `poetry` script into a platform-specific path (or `$POETRY_HOME/bin` if `$POETRY_HOME` is set):
+        - `~/.local/bin` on Unix
+        - `%APPDATA%\Python\Scripts` on Windows
+    * Attempt to inform the user if they need to add this bin directory to their `$PATH`, as well as how to do so.
+    * Upon failure, write an error log to `poetry-installer-error-<hash>.log and restore any previous environment.
 
-  - Creates a virtual environment using venv (or virtualenv zipapp) in the correct OS data dir which will be
-      - `%APPDATA%\\pypoetry` on Windows
-      -  ~/Library/Application Support/pypoetry on MacOS
-      - `${XDG_DATA_HOME}/pypoetry` (or `~/.local/share/pypoetry` if it's not set) on UNIX systems
-      - In `${POETRY_HOME}` if it's set.
-  - Installs the latest or given version of Poetry inside this virtual environment.
-  - Installs a `poetry` script in the Python user directory (or `${POETRY_HOME/bin}` if `POETRY_HOME` is set).
-  - On failure, the error log is written to poetry-installer-error-*.log and any previously existing environment
-    is restored.
+This script performs minimal magic, and should be relatively stable. However, it is optimized for interactive developer
+use and trivial pipelines. If you are considering using this script in production, you should consider manually-managed
+installs, or use of pipx as alternatives to executing arbitrary, unversioned code from the internet. If you prefer this
+script to alternatives, consider maintaining a local copy as part of your infrastructure.
+
+For full documentation, visit https://python-poetry.org/docs/#installation.
 """
 
 import argparse
@@ -19,7 +29,6 @@ import json
 import os
 import re
 import shutil
-import site
 import subprocess
 import sys
 import sysconfig
@@ -33,6 +42,7 @@ from pathlib import Path
 from typing import Optional
 from urllib.request import Request
 from urllib.request import urlopen
+
 
 SHELL = os.getenv("SHELL", "")
 WINDOWS = sys.platform.startswith("win") or (sys.platform == "cli" and os.name == "nt")
@@ -96,9 +106,9 @@ STYLES = {
 def is_decorated():
     if WINDOWS:
         return (
-                os.getenv("ANSICON") is not None
-                or "ON" == os.getenv("ConEmuANSI")
-                or "xterm" == os.getenv("Term")
+            os.getenv("ANSICON") is not None
+            or "ON" == os.getenv("ConEmuANSI")
+            or "xterm" == os.getenv("Term")
         )
 
     if not hasattr(sys.stdout, "fileno"):
@@ -124,7 +134,7 @@ def colorize(style, text):
     if not is_decorated():
         return text
 
-    return "{}{}\033[0m".format(STYLES[style], text)
+    return f"{STYLES[style]}{text}\033[0m"
 
 
 def string_to_bool(value):
@@ -133,38 +143,29 @@ def string_to_bool(value):
     return value in {"true", "1", "y", "yes"}
 
 
-def data_dir(version: Optional[str] = None) -> Path:
+def data_dir() -> Path:
     if os.getenv("POETRY_HOME"):
         return Path(os.getenv("POETRY_HOME")).expanduser()
 
     if WINDOWS:
-        const = "CSIDL_APPDATA"
-        path = os.path.normpath(_get_win_folder(const))
-        path = os.path.join(path, "pypoetry")
+        base_dir = Path(_get_win_folder("CSIDL_APPDATA"))
     elif MACOS:
-        path = os.path.expanduser("~/Library/Application Support/pypoetry")
+        base_dir = Path("~/Library/Application Support").expanduser()
     else:
-        path = os.getenv("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
-        path = os.path.join(path, "pypoetry")
+        base_dir = Path(os.getenv("XDG_DATA_HOME", "~/.local/share")).expanduser()
 
-    if version:
-        path = os.path.join(path, version)
-
-    return Path(path)
+    base_dir = base_dir.resolve()
+    return base_dir / "pypoetry"
 
 
-def bin_dir(version: Optional[str] = None) -> Path:
+def bin_dir() -> Path:
     if os.getenv("POETRY_HOME"):
-        return Path(os.getenv("POETRY_HOME"), "bin").expanduser()
-
-    user_base = site.getuserbase()
+        return Path(os.getenv("POETRY_HOME")).expanduser() / "bin"
 
     if WINDOWS and not MINGW:
-        bin_dir = os.path.join(user_base, "Scripts")
+        return Path(_get_win_folder("CSIDL_APPDATA")) / "Python/Scripts"
     else:
-        bin_dir = os.path.join(user_base, "bin")
-
-    return Path(bin_dir)
+        return Path("~/.local/bin").expanduser()
 
 
 def _get_win_folder_from_registry(csidl_name):
@@ -180,9 +181,9 @@ def _get_win_folder_from_registry(csidl_name):
         _winreg.HKEY_CURRENT_USER,
         r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders",
     )
-    dir, type = _winreg.QueryValueEx(key, shell_folder_name)
+    path, _ = _winreg.QueryValueEx(key, shell_folder_name)
 
-    return dir
+    return path
 
 
 def _get_win_folder_with_ctypes(csidl_name):
@@ -219,6 +220,7 @@ if WINDOWS:
         _get_win_folder = _get_win_folder_with_ctypes
     except ImportError:
         _get_win_folder = _get_win_folder_from_registry
+
 
 PRE_MESSAGE = """# Welcome to {poetry}!
 
@@ -264,14 +266,14 @@ POST_MESSAGE_CONFIGURE_WINDOWS = """"""
 
 
 class PoetryInstallationError(RuntimeError):
-    def __init__(cls, return_code: int = 0, log: Optional[str] = None):
-        super(PoetryInstallationError, self).__init__()
+    def __init__(self, return_code: int = 0, log: Optional[str] = None):
+        super().__init__()
         self.return_code = return_code
         self.log = log
 
 
 class VirtualEnvironment:
-    def __init__(cls, path: Path) -> None:
+    def __init__(self, path: Path) -> None:
         self._path = path
         self._bin_path = self._path.joinpath(
             "Scripts" if WINDOWS and not MINGW else "bin"
@@ -282,15 +284,20 @@ class VirtualEnvironment:
         )
 
     @property
-    def path(cls):
+    def path(self):
         return self._path
 
     @property
-    def bin_path(cls):
+    def bin_path(self):
         return self._bin_path
 
     @classmethod
     def make(cls, target: Path) -> "VirtualEnvironment":
+        if not sys.executable:
+            raise ValueError(
+                "Unable to determine sys.executable. Set PATH to a sane value or set it explicitly with PYTHONEXECUTABLE."
+            )
+
         try:
             # on some linux distributions (eg: debian), the distribution provided python
             # installation might not include ensurepip, causing the venv module to
@@ -303,9 +310,9 @@ class VirtualEnvironment:
             context = builder.ensure_directories(target)
 
             if (
-                    WINDOWS
-                    and hasattr(context, "env_exec_cmd")
-                    and context.env_exe != context.env_exec_cmd
+                WINDOWS
+                and hasattr(context, "env_exec_cmd")
+                and context.env_exe != context.env_exec_cmd
             ):
                 target = target.resolve()
 
@@ -353,68 +360,68 @@ class VirtualEnvironment:
             )
         return completed_process
 
-    def python(cls, *args, **kwargs) -> subprocess.CompletedProcess:
+    def python(self, *args, **kwargs) -> subprocess.CompletedProcess:
         return self.run(self._python, *args, **kwargs)
 
-    def pip(cls, *args, **kwargs) -> subprocess.CompletedProcess:
+    def pip(self, *args, **kwargs) -> subprocess.CompletedProcess:
         return self.python("-m", "pip", *args, **kwargs)
 
 
 class Cursor:
-    def __init__(cls) -> None:
+    def __init__(self) -> None:
         self._output = sys.stdout
 
-    def move_up(cls, lines: int = 1) -> "Cursor":
-        self._output.write("\x1b[{}A".format(lines))
+    def move_up(self, lines: int = 1) -> "Cursor":
+        self._output.write(f"\x1b[{lines}A")
 
         return self
 
-    def move_down(cls, lines: int = 1) -> "Cursor":
-        self._output.write("\x1b[{}B".format(lines))
+    def move_down(self, lines: int = 1) -> "Cursor":
+        self._output.write(f"\x1b[{lines}B")
 
         return self
 
-    def move_right(cls, columns: int = 1) -> "Cursor":
-        self._output.write("\x1b[{}C".format(columns))
+    def move_right(self, columns: int = 1) -> "Cursor":
+        self._output.write(f"\x1b[{columns}C")
 
         return self
 
-    def move_left(cls, columns: int = 1) -> "Cursor":
-        self._output.write("\x1b[{}D".format(columns))
+    def move_left(self, columns: int = 1) -> "Cursor":
+        self._output.write(f"\x1b[{columns}D")
 
         return self
 
-    def move_to_column(cls, column: int) -> "Cursor":
-        self._output.write("\x1b[{}G".format(column))
+    def move_to_column(self, column: int) -> "Cursor":
+        self._output.write(f"\x1b[{column}G")
 
         return self
 
-    def move_to_position(cls, column: int, row: int) -> "Cursor":
-        self._output.write("\x1b[{};{}H".format(row + 1, column))
+    def move_to_position(self, column: int, row: int) -> "Cursor":
+        self._output.write(f"\x1b[{row + 1};{column}H")
 
         return self
 
-    def save_position(cls) -> "Cursor":
+    def save_position(self) -> "Cursor":
         self._output.write("\x1b7")
 
         return self
 
-    def restore_position(cls) -> "Cursor":
+    def restore_position(self) -> "Cursor":
         self._output.write("\x1b8")
 
         return self
 
-    def hide(cls) -> "Cursor":
+    def hide(self) -> "Cursor":
         self._output.write("\x1b[?25l")
 
         return self
 
-    def show(cls) -> "Cursor":
+    def show(self) -> "Cursor":
         self._output.write("\x1b[?25h\x1b[?0c")
 
         return self
 
-    def clear_line(cls) -> "Cursor":
+    def clear_line(self) -> "Cursor":
         """
         Clears all the output from the current line.
         """
@@ -422,7 +429,7 @@ class Cursor:
 
         return self
 
-    def clear_line_after(cls) -> "Cursor":
+    def clear_line_after(self) -> "Cursor":
         """
         Clears all the output from the current line after the current position.
         """
@@ -430,7 +437,7 @@ class Cursor:
 
         return self
 
-    def clear_output(cls) -> "Cursor":
+    def clear_output(self) -> "Cursor":
         """
         Clears all the output from the cursors' current position
         to the end of the screen.
@@ -439,7 +446,7 @@ class Cursor:
 
         return self
 
-    def clear_screen(cls) -> "Cursor":
+    def clear_screen(self) -> "Cursor":
         """
         Clears the entire screen.
         """
@@ -461,13 +468,13 @@ class Installer:
     )
 
     def __init__(
-            cls,
-            version: Optional[str] = None,
-            preview: bool = False,
-            force: bool = False,
-            accept_all: bool = False,
-            git: Optional[str] = None,
-            path: Optional[str] = None,
+        self,
+        version: Optional[str] = None,
+        preview: bool = False,
+        force: bool = False,
+        accept_all: bool = False,
+        git: Optional[str] = None,
+        path: Optional[str] = None,
     ) -> None:
         self._version = version
         self._preview = preview
@@ -475,14 +482,31 @@ class Installer:
         self._accept_all = accept_all
         self._git = git
         self._path = path
-        self._data_dir = data_dir()
-        self._bin_dir = bin_dir()
-        self._cursor = Cursor()
 
-    def allows_prereleases(cls) -> bool:
+        self._cursor = Cursor()
+        self._bin_dir = None
+        self._data_dir = None
+
+    @property
+    def bin_dir(self) -> Path:
+        if not self._bin_dir:
+            self._bin_dir = bin_dir()
+        return self._bin_dir
+
+    @property
+    def data_dir(self) -> Path:
+        if not self._data_dir:
+            self._data_dir = data_dir()
+        return self._data_dir
+
+    @property
+    def version_file(self) -> Path:
+        return self.data_dir.joinpath("VERSION")
+
+    def allows_prereleases(self) -> bool:
         return self._preview
 
-    def run(cls) -> int:
+    def run(self) -> int:
         if self._git:
             version = self._git
         elif self._path:
@@ -514,7 +538,7 @@ class Installer:
                 colorize(
                     "warning",
                     f"You are installing {version}. When using the current installer, this version does not support "
-                    f"updating using the 'cls update' command. Please use 1.1.7 or later.",
+                    f"updating using the 'self update' command. Please use 1.1.7 or later.",
                 )
             )
             if not self._accept_all:
@@ -534,7 +558,7 @@ class Installer:
 
         return 0
 
-    def install(cls, version, upgrade=False):
+    def install(self, version):
         """
         Installs Poetry in $POETRY_HOME.
         """
@@ -547,13 +571,13 @@ class Installer:
         with self.make_env(version) as env:
             self.install_poetry(version, env)
             self.make_bin(version, env)
-            self._data_dir.joinpath("VERSION").write_text(version)
+            self.version_file.write_text(version)
             self._install_comment(version, "Done")
 
             return 0
 
-    def uninstall(cls) -> int:
-        if not self._data_dir.exists():
+    def uninstall(self) -> int:
+        if not self.data_dir.exists():
             self._write(
                 "{} is not currently installed.".format(colorize("info", "Poetry"))
             )
@@ -561,8 +585,8 @@ class Installer:
             return 1
 
         version = None
-        if self._data_dir.joinpath("VERSION").exists():
-            version = self._data_dir.joinpath("VERSION").read_text().strip()
+        if self.version_file.exists():
+            version = self.version_file.read_text().strip()
 
         if version:
             self._write(
@@ -573,14 +597,14 @@ class Installer:
         else:
             self._write("Removing {}".format(colorize("info", "Poetry")))
 
-        shutil.rmtree(str(self._data_dir))
+        shutil.rmtree(str(self.data_dir))
         for script in ["poetry", "poetry.bat", "poetry.exe"]:
-            if self._bin_dir.joinpath(script).exists():
-                self._bin_dir.joinpath(script).unlink()
+            if self.bin_dir.joinpath(script).exists():
+                self.bin_dir.joinpath(script).unlink()
 
         return 0
 
-    def _install_comment(cls, version: str, message: str):
+    def _install_comment(self, version: str, message: str):
         self._overwrite(
             "Installing {} ({}): {}".format(
                 colorize("info", "Poetry"),
@@ -590,8 +614,8 @@ class Installer:
         )
 
     @contextmanager
-    def make_env(cls, version: str) -> VirtualEnvironment:
-        env_path = self._data_dir.joinpath("venv")
+    def make_env(self, version: str) -> VirtualEnvironment:
+        env_path = self.data_dir.joinpath("venv")
         env_path_saved = env_path.with_suffix(".save")
 
         if env_path.exists():
@@ -621,24 +645,24 @@ class Installer:
             if env_path_saved.exists():
                 shutil.rmtree(env_path_saved, ignore_errors=True)
 
-    def make_bin(cls, version: str, env: VirtualEnvironment) -> None:
+    def make_bin(self, version: str, env: VirtualEnvironment) -> None:
         self._install_comment(version, "Creating script")
-        self._bin_dir.mkdir(parents=True, exist_ok=True)
+        self.bin_dir.mkdir(parents=True, exist_ok=True)
 
         script = "poetry.exe" if WINDOWS else "poetry"
         target_script = env.bin_path.joinpath(script)
 
-        if self._bin_dir.joinpath(script).exists():
-            self._bin_dir.joinpath(script).unlink()
+        if self.bin_dir.joinpath(script).exists():
+            self.bin_dir.joinpath(script).unlink()
 
         try:
-            self._bin_dir.joinpath(script).symlink_to(target_script)
+            self.bin_dir.joinpath(script).symlink_to(target_script)
         except OSError:
             # This can happen if the user
             # does not have the correct permission on Windows
-            shutil.copy(target_script, self._bin_dir.joinpath(script))
+            shutil.copy(target_script, self.bin_dir.joinpath(script))
 
-    def install_poetry(cls, version: str, env: VirtualEnvironment) -> None:
+    def install_poetry(self, version: str, env: VirtualEnvironment) -> None:
         self._install_comment(version, "Installing Poetry")
 
         if self._git:
@@ -650,14 +674,14 @@ class Installer:
 
         env.pip("install", specification)
 
-    def display_pre_message(cls) -> None:
+    def display_pre_message(self) -> None:
         kwargs = {
             "poetry": colorize("info", "Poetry"),
-            "poetry_home_bin": colorize("comment", self._bin_dir),
+            "poetry_home_bin": colorize("comment", self.bin_dir),
         }
         self._write(PRE_MESSAGE.format(**kwargs))
 
-    def display_post_message(cls, version: str) -> None:
+    def display_post_message(self, version: str) -> None:
         if WINDOWS:
             return self.display_post_message_windows(version)
 
@@ -666,27 +690,27 @@ class Installer:
 
         return self.display_post_message_unix(version)
 
-    def display_post_message_windows(cls, version: str) -> None:
+    def display_post_message_windows(self, version: str) -> None:
         path = self.get_windows_path_var()
 
         message = POST_MESSAGE_NOT_IN_PATH
-        if path and str(self._bin_dir) in path:
+        if path and str(self.bin_dir) in path:
             message = POST_MESSAGE
 
         self._write(
             message.format(
                 poetry=colorize("info", "Poetry"),
                 version=colorize("b", version),
-                poetry_home_bin=colorize("comment", self._bin_dir),
-                poetry_executable=colorize("b", self._bin_dir.joinpath("poetry")),
+                poetry_home_bin=colorize("comment", self.bin_dir),
+                poetry_executable=colorize("b", self.bin_dir.joinpath("poetry")),
                 configure_message=POST_MESSAGE_CONFIGURE_WINDOWS.format(
-                    poetry_home_bin=colorize("comment", self._bin_dir)
+                    poetry_home_bin=colorize("comment", self.bin_dir)
                 ),
                 test_command=colorize("b", "poetry --version"),
             )
         )
 
-    def get_windows_path_var(cls) -> Optional[str]:
+    def get_windows_path_var(self) -> Optional[str]:
         import winreg
 
         with winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER) as root:
@@ -695,56 +719,56 @@ class Installer:
 
                 return path
 
-    def display_post_message_fish(cls, version: str) -> None:
+    def display_post_message_fish(self, version: str) -> None:
         fish_user_paths = subprocess.check_output(
             ["fish", "-c", "echo $fish_user_paths"]
         ).decode("utf-8")
 
         message = POST_MESSAGE_NOT_IN_PATH
-        if fish_user_paths and str(self._bin_dir) in fish_user_paths:
+        if fish_user_paths and str(self.bin_dir) in fish_user_paths:
             message = POST_MESSAGE
 
         self._write(
             message.format(
                 poetry=colorize("info", "Poetry"),
                 version=colorize("b", version),
-                poetry_home_bin=colorize("comment", self._bin_dir),
-                poetry_executable=colorize("b", self._bin_dir.joinpath("poetry")),
+                poetry_home_bin=colorize("comment", self.bin_dir),
+                poetry_executable=colorize("b", self.bin_dir.joinpath("poetry")),
                 configure_message=POST_MESSAGE_CONFIGURE_FISH.format(
-                    poetry_home_bin=colorize("comment", self._bin_dir)
+                    poetry_home_bin=colorize("comment", self.bin_dir)
                 ),
                 test_command=colorize("b", "poetry --version"),
             )
         )
 
-    def display_post_message_unix(cls, version: str) -> None:
+    def display_post_message_unix(self, version: str) -> None:
         paths = os.getenv("PATH", "").split(":")
 
         message = POST_MESSAGE_NOT_IN_PATH
-        if paths and str(self._bin_dir) in paths:
+        if paths and str(self.bin_dir) in paths:
             message = POST_MESSAGE
 
         self._write(
             message.format(
                 poetry=colorize("info", "Poetry"),
                 version=colorize("b", version),
-                poetry_home_bin=colorize("comment", self._bin_dir),
-                poetry_executable=colorize("b", self._bin_dir.joinpath("poetry")),
+                poetry_home_bin=colorize("comment", self.bin_dir),
+                poetry_executable=colorize("b", self.bin_dir.joinpath("poetry")),
                 configure_message=POST_MESSAGE_CONFIGURE_UNIX.format(
-                    poetry_home_bin=colorize("comment", self._bin_dir)
+                    poetry_home_bin=colorize("comment", self.bin_dir)
                 ),
                 test_command=colorize("b", "poetry --version"),
             )
         )
 
-    def ensure_directories(cls) -> None:
-        self._data_dir.mkdir(parents=True, exist_ok=True)
-        self._bin_dir.mkdir(parents=True, exist_ok=True)
+    def ensure_directories(self) -> None:
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.bin_dir.mkdir(parents=True, exist_ok=True)
 
-    def get_version(cls):
+    def get_version(self):
         current_version = None
-        if self._data_dir.joinpath("VERSION").exists():
-            current_version = self._data_dir.joinpath("VERSION").read_text().strip()
+        if self.version_file.exists():
+            current_version = self.version_file.read_text().strip()
 
         self._write(colorize("info", "Retrieving Poetry metadata"))
 
@@ -770,7 +794,7 @@ class Installer:
         )
 
         if self._version and self._version not in releases:
-            msg = "Version {} does not exist.".format(self._version)
+            msg = f"Version {self._version} does not exist."
             self._write(colorize("error", msg))
 
             raise ValueError(msg)
@@ -788,19 +812,17 @@ class Installer:
 
         if current_version == version and not self._force:
             self._write(
-                "The latest version ({}) is already installed.".format(
-                    colorize("b", version)
-                )
+                f'The latest version ({colorize("b", version)}) is already installed.'
             )
 
             return None, current_version
 
         return version, current_version
 
-    def _write(cls, line) -> None:
+    def _write(self, line) -> None:
         sys.stdout.write(line + "\n")
 
-    def _overwrite(cls, line) -> None:
+    def _overwrite(self, line) -> None:
         if not is_decorated():
             return self._write(line)
 
@@ -808,7 +830,7 @@ class Installer:
         self._cursor.clear_line()
         self._write(line)
 
-    def _get(cls, url):
+    def _get(self, url):
         request = Request(url, headers={"User-Agent": "Python Poetry"})
 
         with closing(urlopen(request)) as r:
@@ -816,6 +838,13 @@ class Installer:
 
 
 def main():
+    if sys.version_info < (3, 6):
+        sys.stdout.write(
+            colorize("error", "Poetry installer requires Python 3.6 or newer to run!")
+        )
+        # return error code
+        return 1
+
     parser = argparse.ArgumentParser(
         description="Installs the latest (or given) version of poetry"
     )
@@ -877,8 +906,8 @@ def main():
         preview=args.preview or string_to_bool(os.getenv("POETRY_PREVIEW", "0")),
         force=args.force,
         accept_all=args.accept_all
-                   or string_to_bool(os.getenv("POETRY_ACCEPT", "0"))
-                   or not is_interactive(),
+        or string_to_bool(os.getenv("POETRY_ACCEPT", "0"))
+        or not is_interactive(),
         path=args.path,
         git=args.git,
     )
