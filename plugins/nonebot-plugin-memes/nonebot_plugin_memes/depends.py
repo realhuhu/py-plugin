@@ -17,7 +17,7 @@ REGEX_DICT = "REGEX_DICT"
 REGEX_GROUP = "REGEX_GROUP"
 REGEX_ARG = "REGEX_ARG"
 
-command_start = memes_config.memes_command_start or "|".join(
+command_start = memes_config.memes_command_start if memes_config.memes_command_start is None else "|".join(
     get_driver().config.command_start
 )
 
@@ -37,7 +37,7 @@ def regex(pattern: str) -> Rule:
             return False
 
         new_msg = msg.copy()
-        seg_text = seg_text[matched.end() :].lstrip()
+        seg_text = seg_text[matched.end():].lstrip()
         if seg_text:
             new_msg[0].data["text"] = seg_text
         else:
