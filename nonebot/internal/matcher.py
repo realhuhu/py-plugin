@@ -470,6 +470,7 @@ class Matcher(metaclass=MatcherMeta):
         """
         if message is not None:
             await cls.send(message, **kwargs)
+        raise FinishedException
 
     @classmethod
     async def pause(
