@@ -67,10 +67,11 @@ class GRPCDriver(Driver):
 
         for plugin in plugins:
             load_plugin(plugin.replace("-", "_"))
-        logger.info("Py started")
 
         self.install_signal_handlers()
         await self.startup()
+
+        logger.info("Py started")
 
         try:
             await self.server.wait_for_termination()
