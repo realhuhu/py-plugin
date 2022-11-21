@@ -6,8 +6,9 @@ from typing import Set, Union, Callable, Awaitable, cast
 from .log import logger
 from .internal.driver import Driver
 from .typing import overrides
-from .config import  Config
+from .config import Config
 from .utils import run_sync, is_coroutine_callable
+from .plugin import load_plugin
 from core.server.server import Server, create_server
 
 HOOK_FUNC = Union[Callable[[], None], Callable[[], Awaitable[None]]]
@@ -55,16 +56,18 @@ class GRPCDriver(Driver):
         return func
 
     @overrides(Driver)
-    def run(self, *args, **kwargs):
+    def run(self, plugins, *args, **kwargs):
         """启动 block driver"""
         super().run(*args, **kwargs)
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.serve())
+        loop.run_until_complete(self.serve(plugins))
 
-    async def serve(self):
+    async def serve(self, plugins):
         self.install_signal_handlers()
         await self.startup()
         await self.server.start()
+        for plugin in plugins:
+            load_plugin(plugin.replace("-", "_"))
         logger.info("Py started")
         try:
             await self.server.wait_for_termination()
@@ -91,7 +94,6 @@ class GRPCDriver(Driver):
                     "<r><bg #f8bbd0>Error when running startup function. "
                     "Ignored!</bg #f8bbd0></r>"
                 )
-
 
     async def main_loop(self):
         await self.should_exit.wait()

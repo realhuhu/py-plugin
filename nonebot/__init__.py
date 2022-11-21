@@ -43,9 +43,7 @@ def run(root: Path):
     for i in plugins_path.iterdir():
         sys.path.append(str(i))
 
-    for plugin in filter(lambda x: x, set(map(str, _driver.config.plugins))):
-        load_plugin(plugin.replace("-", "_"))
-    _driver.run()
+    _driver.run(filter(lambda x: x, set(map(str, _driver.config.plugins))))
 
 
 class Export:
