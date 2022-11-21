@@ -47,6 +47,7 @@ export class PyPlugin extends plugin {
   }
 
   async py_manage(e) {
+    if(!e.isMaster) return 
     let cfg = py_plugin_config
     let plugin = e.msg.replace(/#?(n)?py(下载|卸载|启用|禁用)插件/, "")
 
