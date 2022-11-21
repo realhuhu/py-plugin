@@ -63,20 +63,24 @@ class GRPCDriver(Driver):
         loop.run_until_complete(self.serve(plugins))
 
     async def serve(self, plugins):
-        self.install_signal_handlers()
-        await self.startup()
         await self.server.start()
+
         for plugin in plugins:
             load_plugin(plugin.replace("-", "_"))
         logger.info("Py started")
+
+        self.install_signal_handlers()
+        await self.startup()
+
         try:
             await self.server.wait_for_termination()
-        except:
-            pass
-        if self.should_exit.is_set():
-            return
-        await self.main_loop()
-        await self.shutdown()
+        except KeyboardInterrupt or asyncio.exceptions.CancelledError:
+            logger.info("Py stopped")
+        finally:
+            if self.should_exit.is_set():
+                return
+            await self.main_loop()
+            await self.shutdown()
 
     async def startup(self):
         # run startup
