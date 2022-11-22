@@ -274,11 +274,20 @@ class Bot(BaseBot):
             message: Union[str, Message, MessageSegment],
             **kwargs: Any,
     ) -> str:
+        if not isinstance(event, MessageEvent):
+            raise ValueError
+
+        message = Message(message)
+
+        if kwargs.pop("at_sender", None):
+            print(event.sender.user_id)
+            message = MessageSegment.at(event.sender.user_id) + message
+
         if isinstance(event, PrivateMessageEvent):
             await self.request_queue.put({
                 "PrivateMessageRequest": {
                     "user_id": event.sender.user_id,
-                    "message": await self.convert(Message(message))
+                    "message": await self.convert(message)
                 }
             })
             logger.success(f'[回复私聊][用户{event.user_id}] "{message}"')
@@ -289,7 +298,7 @@ class Bot(BaseBot):
             await self.request_queue.put({
                 "GroupMessageRequest": {
                     "group_id": event.group_id,
-                    "message": await self.convert(Message(message))
+                    "message": await self.convert(message)
                 }
             })
             logger.success(f'[回复群聊][群聊{event.group_id}] "{message}"')

@@ -25,12 +25,16 @@ const parse_message = async message => {
   for (let message_segment of message) {
     let type = message_segment.segment
     let data = message_segment[type]
+    console.log(message_segment);
     switch (type) {
-      case "TextSegment":
-        serialized_message.push(data.data)
+      case "AtSegment":
+        serialized_message.push(segment.at(Number(data.qq)))
         break
       case "ImageSegment":
         serialized_message.push(segment.image(data.file || data.content))
+        break
+      case "TextSegment":
+        serialized_message.push(data.data)
         break
     }
   }
