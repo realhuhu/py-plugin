@@ -25,7 +25,6 @@ const parse_message = async message => {
   for (let message_segment of message) {
     let type = message_segment.segment
     let data = message_segment[type]
-    console.log(message_segment);
     switch (type) {
       case "AtSegment":
         serialized_message.push(segment.at(Number(data.qq)))

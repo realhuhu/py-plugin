@@ -280,7 +280,6 @@ class Bot(BaseBot):
         message = Message(message)
 
         if kwargs.pop("at_sender", None):
-            print(event.sender.user_id)
             message = MessageSegment.at(event.sender.user_id) + message
 
         if isinstance(event, PrivateMessageEvent):
