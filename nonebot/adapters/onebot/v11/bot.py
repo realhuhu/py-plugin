@@ -16,13 +16,15 @@ from .event import (
     GroupMessageEvent,
 )
 
-from core.lib.parser import sender_parser, message_parser
+from core.lib.parser import sender_parser, message_parser, member_parser
 from core.queue import Queue
 from core.typing import (
     GRPCPrivateMessageResult,
     GRPCGroupMessageResult,
     GRPCDeleteMsgResult,
     GRPCGetMsgResult,
+    GRPCGetGroupMemberInfoResult,
+    GRPCGetGroupMemberListResult,
     GRPCSendPrivateForwardMsgResult,
     GRPCSendGroupForwardMsgResult,
 )
@@ -400,10 +402,25 @@ class Bot(BaseBot):
         ...
 
     async def get_group_member_info(self, group_id: int, user_id: int, no_cache: bool = False):
-        ...
+        await self.request_queue.put({
+            "GetGroupMemberInfoRequest": {
+                "group_id": group_id,
+                "user_id": user_id,
+            }
+        })
+        logger.success(f'[获取群员信息({group_id}:@{user_id})]')
+        result: GRPCGetGroupMemberInfoResult = (await self.result_queue.__anext__()).GetGroupMemberInfoResult
+        return member_parser(result)
 
     async def get_group_member_list(self, group_id: int):
-        ...
+        await self.request_queue.put({
+            "GetGroupMemberListRequest": {
+                "group_id": group_id,
+            }
+        })
+        logger.success(f'[获取群员列表({group_id})]')
+        result: GRPCGetGroupMemberListResult = (await self.result_queue.__anext__()).GetGroupMemberListResult
+        return [member_parser(member) for member in result.member_list]
 
     async def get_group_honor_info(self, group_id: int, type: str):
         ...
@@ -413,7 +430,7 @@ class Bot(BaseBot):
         for i in messages:
             message.append({
                 "name": i["data"]["name"],
-                "uin": i["data"]["uin"],
+                "uin": str(i["data"]["uin"]),
                 "content": await self.convert(Message(i["data"]["content"])),
             })
         await self.request_queue.put({
@@ -431,7 +448,7 @@ class Bot(BaseBot):
         for i in messages:
             message.append({
                 "name": i["data"]["name"],
-                "uin": i["data"]["uin"],
+                "uin": str(i["data"]["uin"]),
                 "content": await self.convert(Message(i["data"]["content"])),
             })
         await self.request_queue.put({

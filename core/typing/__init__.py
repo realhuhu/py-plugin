@@ -10,6 +10,8 @@ from core.rpc.hola_pb2 import (
     GroupMessageRequest as GRPCGroupMessageRequest,
     DeleteMsgRequest as GRPCDeleteMsgRequest,
     GetMsgRequest as GRPCRGetMsgRequest,
+    GetGroupMemberInfoRequest as GRPCGetGroupMemberInfoRequest,
+    GetGroupMemberListRequest as GRPCGetGetGroupMemberListRequest,
     SendGroupForwardMsgRequest as GRPCSendGroupForwardMsgRequest,
     SendPrivateForwardMsgRequest as GRPCSendPrivateForwardMsgRequest,
 
@@ -17,7 +19,8 @@ from core.rpc.hola_pb2 import (
     GroupMessageResult as GRPCGroupMessageResult,
     DeleteMsgResult as GRPCDeleteMsgResult,
     GetMsgResult as GRPCGetMsgResult,
+    GetGroupMemberInfoResult as GRPCGetGroupMemberInfoResult,
+    GetGroupMemberListResult as GRPCGetGroupMemberListResult,
     SendGroupForwardMsgResult as GRPCSendGroupForwardMsgResult,
     SendPrivateForwardMsgResult as GRPCSendPrivateForwardMsgResult,
-
 )

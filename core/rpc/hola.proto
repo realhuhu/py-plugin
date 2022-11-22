@@ -42,8 +42,10 @@ message Request {
         GroupMessageRequest GroupMessageRequest = 2;
         DeleteMsgRequest DeleteMsgRequest = 3;
         GetMsgRequest GetMsgRequest = 4;
-        SendPrivateForwardMsgRequest SendPrivateForwardMsgRequest = 5;
-        SendGroupForwardMsgRequest SendGroupForwardMsgRequest = 6;
+        GetGroupMemberInfoRequest GetGroupMemberInfoRequest = 5;
+        GetGroupMemberListRequest GetGroupMemberListRequest = 6;
+        SendPrivateForwardMsgRequest SendPrivateForwardMsgRequest = 7;
+        SendGroupForwardMsgRequest SendGroupForwardMsgRequest = 8;
     }
 }
 
@@ -53,8 +55,10 @@ message Result {
         GroupMessageResult GroupMessageResult = 2;
         DeleteMsgResult DeleteMsgResult = 3;
         GetMsgResult GetMsgResult = 4;
-        SendPrivateForwardMsgResult SendPrivateForwardMsgResult = 5;
-        SendGroupForwardMsgResult SendGroupForwardMsgResult = 6;
+        GetGroupMemberInfoResult GetGroupMemberInfoResult = 5;
+        GetGroupMemberListResult GetGroupMemberListResult = 6;
+        SendPrivateForwardMsgResult SendPrivateForwardMsgResult = 7;
+        SendGroupForwardMsgResult SendGroupForwardMsgResult = 8;
     }
 }
 //--------model---------//
@@ -401,6 +405,15 @@ message SendLikeRequest {
     int64 times = 2;
 }
 
+message GetGroupMemberInfoRequest {
+    int64 group_id = 1;
+    int64 user_id = 2;
+}
+
+message GetGroupMemberListRequest {
+    int64 group_id = 1;
+}
+
 message SendPrivateForwardMsgRequest {
     int64 user_id = 1;
     repeated _ForwardSegment message = 2;
@@ -430,6 +443,30 @@ message GetMsgResult {
 }
 
 message SendLikeResult {}
+
+message GetGroupMemberInfoResult {
+    int64 group_id = 1;
+    int64 user_id = 2;
+    string nickname = 3;
+    string card = 4;
+    string sex = 5;
+    int64 age = 6;
+    string area = 7;
+    int64 join_time = 8;
+    int64 last_sent_time = 9;
+    string level = 10;
+    string role = 11;
+    bool unfriendly = 12;
+    string title = 13;
+    int64 title_expire_time = 14;
+    bool card_changeable = 15;
+    int64 shut_up_timestamp = 16;
+}
+
+
+message GetGroupMemberListResult {
+    repeated GetGroupMemberInfoResult member_list = 1;
+}
 
 message SendPrivateForwardMsgResult {
     string message_id = 1;

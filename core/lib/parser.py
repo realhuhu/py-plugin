@@ -166,3 +166,24 @@ async def anonymous_parser(anonymous: typing.GRPCAnonymous):
         name=anonymous.name,
         flag=anonymous.flag,
     )
+
+
+def member_parser(member):
+    return {
+        "group_id": member.group_id,
+        "user_id": member.user_id,
+        "nickname": member.nickname,
+        "card": member.card,
+        "sex": member.sex,
+        "age": member.age,
+        "area": member.area,
+        "join_time": member.join_time,
+        "last_sent_time": member.last_sent_time,
+        "level": member.level,
+        "role": member.role,
+        "unfriendly": member.unfriendly,
+        "title": member.title,
+        "title_expire_time": member.title_expire_time,
+        "card_changeable": member.card_changeable,
+        "shut_up_timestamp": member.shut_up_timestamp,
+    }

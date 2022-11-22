@@ -51,8 +51,8 @@ class Channel(hola_pb2_grpc.ChannelServicer):
         try:
             await result_iterator.__anext__()
             logger.success("成功建立双向连接")
-            async for i in self.request_queue:
-                yield hola_pb2.Request(**i)
+            async for request in self.request_queue:
+                yield hola_pb2.Request(**request)
                 await self.result_queue.put(await result_iterator.__anext__())
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)

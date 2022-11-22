@@ -1,5 +1,24 @@
 import {segment} from "oicq";
 
+const parse_member = member => {
+  return {
+    group_id: member.group_id,
+    user_id: member.user_id,
+    nickname: member.nickname,
+    card: member.card,
+    sex: member.sex,
+    age: member.age,
+    area: member.area,
+    join_time: member.join_time,
+    last_sent_time: member.last_sent_time,
+    level: member.level.toString(),
+    role: member.role,
+    unfriendly: false,//OVERWRITE
+    title_expire_time: member.title_expire_time,
+    card_changeable: false,//OVERWRITE
+    shut_up_timestamp: member.shutup_time,
+  }
+}
 
 const parse_message = async message => {
   let serialized_message = []
@@ -33,6 +52,10 @@ const resolve_request = async request => {
       } else {
         return await Bot.pickFriend(Number(load[1])).recallMsg(load[2])
       }
+    case "GetGroupMemberInfoRequest":
+      return await Bot.pickMember(load.group_id, load.user_id).renew()
+    case "GetGroupMemberListRequest":
+      return await Bot.pickGroup(load.group_id).getMemberMap()
     case "SendPrivateForwardMsgRequest":
       let private_forward_message = []
       for (let i of load.message) {
@@ -74,7 +97,17 @@ const create_response = async (request, raw) => {
       }
     case "DeleteMsgRequest":
       return {
-        "DeleteMsgResult": {}
+        DeleteMsgResult: {}
+      }
+    case "GetGroupMemberInfoRequest":
+      return {
+        GetGroupMemberInfoResult: parse_member(raw)
+      }
+    case "GetGroupMemberListRequest":
+      return {
+        GetGroupMemberListResult: {
+          member_list: [...raw.values()].map(x => parse_member(x))
+        }
       }
     case "SendPrivateForwardMsgRequest":
       return {
