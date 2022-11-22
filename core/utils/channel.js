@@ -32,8 +32,14 @@ const parse_message = async message => {
       case "ImageSegment":
         serialized_message.push(segment.image(data.file || data.content))
         break
+      case "RecordSegment":
+        serialized_message.push(segment.record(data.file || data.content))
+        break
       case "TextSegment":
         serialized_message.push(data.data)
+        break
+      case "VideoSegment":
+        serialized_message.push(segment.video(data.file || data.content))
         break
     }
   }

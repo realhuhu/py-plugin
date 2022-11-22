@@ -218,9 +218,11 @@ class Bot(BaseBot):
                     }
                 }
             elif message_segment.type == "record":
+                file = message_segment.data.get("file")
                 data = {
                     "RecordSegment": {
-                        "content": message_segment.data.get("file"),
+                        "file": file if isinstance(file, str) else None,
+                        "content": file if isinstance(file, bytes) else None,
                         "timeout": message_segment.data.get("timeout"),
                     }
                 }
@@ -250,9 +252,11 @@ class Bot(BaseBot):
                     }
                 }
             elif message_segment.type == "video":
+                file = message_segment.data.get("file")
                 data = {
-                    "ImageSegment": {
-                        "content": message_segment.data.get("file"),
+                    "VideoSegment": {
+                        "file": file if isinstance(file, str) else None,
+                        "content": file if isinstance(file, bytes) else None,
                         "timeout": message_segment.data.get("timeout"),
                     }
                 }
@@ -278,7 +282,6 @@ class Bot(BaseBot):
             raise ValueError
 
         message = Message(message)
-
         if kwargs.pop("at_sender", None):
             message = MessageSegment.at(event.sender.user_id) + message
 
