@@ -9,7 +9,6 @@ from nonebot.adapters import Bot as BaseBot
 
 from .message import Message, MessageSegment
 from .event import (
-    Reply,
     Event,
     MessageEvent,
     PrivateMessageEvent,
@@ -17,7 +16,8 @@ from .event import (
 )
 
 from core.lib.parser import sender_parser, message_parser, member_parser
-from core.queue import Queue
+from core.lib.async_queue import AsyncQueue
+from core.lib.async_map import AsyncMap
 from core.typing import (
     GRPCPrivateMessageResult,
     GRPCGroupMessageResult,
@@ -127,8 +127,8 @@ def _check_nickname(bot: "Bot", event: MessageEvent) -> None:
 class Bot(BaseBot):
     def __init__(self, config):
         super().__init__(config)
-        self.request_queue = Queue("request")
-        self.result_queue = Queue("result")
+        self.request_queue = AsyncQueue("request")
+        self.result_map = AsyncMap("result")
 
     async def handle_event(self, event: Event) -> None:
         if not event:
@@ -286,46 +286,46 @@ class Bot(BaseBot):
             message = MessageSegment.at(event.sender.user_id) + message
 
         if isinstance(event, PrivateMessageEvent):
-            await self.request_queue.put({
+            request_id = await self.request_queue.put({
                 "PrivateMessageRequest": {
                     "user_id": event.sender.user_id,
                     "message": await self.convert(message)
                 }
             })
             logger.success(f'[回复私聊][用户{event.user_id}] "{message}"')
-            result: GRPCPrivateMessageResult = (await self.result_queue.__anext__()).PrivateMessageResult
+            result: GRPCPrivateMessageResult = (await self.result_map.get(request_id)).PrivateMessageResult
             return result.message_id
 
         elif isinstance(event, GroupMessageEvent):
-            await self.request_queue.put({
+            request_id = await self.request_queue.put({
                 "GroupMessageRequest": {
                     "group_id": event.group_id,
                     "message": await self.convert(message)
                 }
             })
             logger.success(f'[回复群聊][群聊{event.group_id}] "{message}"')
-            result: GRPCGroupMessageResult = (await self.result_queue.__anext__()).GroupMessageResult
+            result: GRPCGroupMessageResult = (await self.result_map.get(request_id)).GroupMessageResult
             return result.message_id
 
     async def delete_msg(self, message_id: str) -> None:
         type, id, real_message_id = message_id.split("|")
-        await self.request_queue.put({
+        request_id = await self.request_queue.put({
             "DeleteMsgRequest": {
                 "message_id": message_id,
             }
         })
         logger.success(f'[撤回消息({type}:{id})] "{real_message_id}"')
-        result: GRPCDeleteMsgResult = (await self.result_queue.__anext__()).DeleteMsgResult
+        result: GRPCDeleteMsgResult = (await self.result_map.get(request_id)).DeleteMsgResult
         return None
 
     async def get_msg(self, message_id: int):
-        await self.request_queue.put({
+        request_id = await self.request_queue.put({
             "GetMsgRequest": {
                 "message_id": message_id,
             }
         })
         logger.success(f'[获取消息] "{message_id}"')
-        result: GRPCGetMsgResult = await self.result_queue.__anext__()
+        result: GRPCGetMsgResult = await self.result_map.get(request_id)
         return {
             "message_id": result.message_id,
             "real_id": result.real_id,
@@ -338,14 +338,14 @@ class Bot(BaseBot):
         ...
 
     async def send_like(self, user_id: int, times: int = 1):
-        await self.request_queue.put({
+        request_id = await self.request_queue.put({
             "SendLikeRequest": {
                 "user_id": user_id,
                 "times": times,
             }
         })
         logger.success(f'[点赞] "给{user_id}点赞{times}次"')
-        result = await self.result_queue.__anext__()
+        result = await self.result_map.get(request_id)
         return None
 
     async def set_group_kick(self, group_id: int, user_id: int, reject_add_request: bool = False):
@@ -413,24 +413,24 @@ class Bot(BaseBot):
         ...
 
     async def get_group_member_info(self, group_id: int, user_id: int, no_cache: bool = False):
-        await self.request_queue.put({
+        request_id = await self.request_queue.put({
             "GetGroupMemberInfoRequest": {
                 "group_id": group_id,
                 "user_id": user_id,
             }
         })
         logger.success(f'[获取群员信息({group_id}:@{user_id})]')
-        result: GRPCGetGroupMemberInfoResult = (await self.result_queue.__anext__()).GetGroupMemberInfoResult
+        result: GRPCGetGroupMemberInfoResult = (await self.result_map.get(request_id)).GetGroupMemberInfoResult
         return member_parser(result)
 
     async def get_group_member_list(self, group_id: int):
-        await self.request_queue.put({
+        request_id = await self.request_queue.put({
             "GetGroupMemberListRequest": {
                 "group_id": group_id,
             }
         })
         logger.success(f'[获取群员列表({group_id})]')
-        result: GRPCGetGroupMemberListResult = (await self.result_queue.__anext__()).GetGroupMemberListResult
+        result: GRPCGetGroupMemberListResult = (await self.result_map.get(request_id)).GetGroupMemberListResult
         return [member_parser(member) for member in result.member_list]
 
     async def get_group_honor_info(self, group_id: int, type: str):
@@ -444,14 +444,14 @@ class Bot(BaseBot):
                 "uin": str(i["data"]["uin"]),
                 "content": await self.convert(Message(i["data"]["content"])),
             })
-        await self.request_queue.put({
+        request_id = await self.request_queue.put({
             "SendGroupForwardMsgRequest": {
                 "group_id": group_id,
                 "message": message
             }
         })
         logger.success(f'[发送合并消息][群聊{group_id}] "[合并消息 length={len(messages)}]"')
-        result: GRPCSendGroupForwardMsgResult = (await self.result_queue.__anext__()).SendGroupForwardMsgResult
+        result: GRPCSendGroupForwardMsgResult = (await self.result_map.get(request_id)).SendGroupForwardMsgResult
         return result.message_id
 
     async def send_private_forward_msg(self, user_id: int, messages):
@@ -462,12 +462,12 @@ class Bot(BaseBot):
                 "uin": str(i["data"]["uin"]),
                 "content": await self.convert(Message(i["data"]["content"])),
             })
-        await self.request_queue.put({
+        request_id = await self.request_queue.put({
             "SendPrivateForwardMsgRequest": {
                 "user_id": user_id,
                 "message": message
             }
         })
         logger.success(f'[发送合并消息][用户{user_id}] "[合并消息 length={len(messages)}]"')
-        result: GRPCSendPrivateForwardMsgResult = (await self.result_queue.__anext__()).SendPrivateForwardMsgResult
+        result: GRPCSendPrivateForwardMsgResult = (await self.result_map.get(request_id)).SendPrivateForwardMsgResult
         return result.message_id

@@ -1,18 +1,19 @@
+from uuid import uuid4
 from typing import Optional, Dict
 from asyncio.queues import LifoQueue
 
 
-class QueueMCS(type):
-    instance: Dict[str, Optional["Queue"]] = {}
+class AsyncQueueMCS(type):
+    instance: Dict[str, Optional["AsyncQueue"]] = {}
 
-    def __call__(cls: "Queue", type: str, *args, **kwargs) -> "Queue":
+    def __call__(cls: "AsyncQueue", type: str, *args, **kwargs) -> "AsyncQueue":
         if not cls.__class__.instance.get(type):
             cls.__class__.instance[type] = super().__call__(type, *args, **kwargs)
 
         return cls.__class__.instance[type]
 
 
-class Queue(metaclass=QueueMCS):
+class AsyncQueue(metaclass=AsyncQueueMCS):
     def __init__(self, type):
         self.queue = LifoQueue()
         self.type = type
@@ -21,15 +22,17 @@ class Queue(metaclass=QueueMCS):
         return self
 
     def __str__(self):
-        return f"<Queue({self.type}) id={id(self)}>"
+        return f"<AsyncQueue({self.type}) id={id(self)}>"
 
     async def __anext__(self):
         return await self.queue.get()
 
     async def put(self, data):
-        await self.queue.put(data)
+        request_id = str(uuid4())
+        await self.queue.put((request_id, data))
+        return request_id
 
 
 __all__ = [
-    "Queue"
+    "AsyncQueue"
 ]

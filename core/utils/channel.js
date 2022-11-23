@@ -133,13 +133,13 @@ const create_response = async (request, raw) => {
   }
 }
 
-export const channel_test = async (client) => new Promise(resolve => {
+export const channel_test = async client => new Promise(resolve => {
   client.option({code: 100}, (err, response) => {
     resolve(err && err.details)
   })
 })
 
-export const channel_setup = async (client) => {
+export const channel_setup = async client => {
   const call = client.callBack()
   call.on("data", request => {
     resolve_request(request).then(raw => {
@@ -157,11 +157,14 @@ export const channel_setup = async (client) => {
       }, 5000)
     }
   });
+  call.on('end', function () {
+    console.log('on end');
+  });
 
   call.write({Empty: {}})
 }
 
-export const setup = async (client) => {
+export const setup = async client => {
   let err = await channel_test(client)
   if (err) {
     return err

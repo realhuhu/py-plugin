@@ -3,14 +3,14 @@ from pathlib import Path
 from typing import AsyncGenerator, Any
 
 import grpc
-from omegaconf import OmegaConf
 from grpc import Server, ServicerContext
 
 import nonebot
 from nonebot.log import logger
 from nonebot.adapters.onebot.v11 import Bot
 from core.rpc import hola_pb2_grpc, hola_pb2
-from core.queue import Queue
+from core.lib.async_queue import AsyncQueue
+from core.lib.async_map import AsyncMap
 from core.lib.event import event_parser
 
 
@@ -18,8 +18,8 @@ class Channel(hola_pb2_grpc.ChannelServicer):
     def __init__(self, server: Server, bot: Bot):
         self.server = server
         self.bot = bot
-        self.request_queue = Queue("request")
-        self.result_queue = Queue("result")
+        self.request_queue = AsyncQueue("request")
+        self.result_map = AsyncMap("result")
 
     async def option(
             self,
@@ -51,9 +51,9 @@ class Channel(hola_pb2_grpc.ChannelServicer):
         try:
             await result_iterator.__anext__()
             logger.success("成功建立双向连接")
-            async for request in self.request_queue:
+            async for request_id, request in self.request_queue:
                 yield hola_pb2.Request(**request)
-                await self.result_queue.put(await result_iterator.__anext__())
+                await self.result_map.set(request_id, await result_iterator.__anext__())
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(traceback.format_exc())
