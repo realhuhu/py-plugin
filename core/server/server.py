@@ -37,7 +37,6 @@ class Channel(hola_pb2_grpc.ChannelServicer):
             context: ServicerContext
     ) -> hola_pb2.OptionCode:
         try:
-            print(self.request_queue.num, self.result_map.num)
             if self.request_queue.num != self.result_map.num:
                 return hola_pb2.OptionCode(code=1)
 
