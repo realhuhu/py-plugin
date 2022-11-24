@@ -40,10 +40,11 @@ message Request {
         GroupMessageRequest GroupMessageRequest = 2;
         DeleteMsgRequest DeleteMsgRequest = 3;
         GetMsgRequest GetMsgRequest = 4;
-        GetGroupMemberInfoRequest GetGroupMemberInfoRequest = 5;
-        GetGroupMemberListRequest GetGroupMemberListRequest = 6;
-        SendPrivateForwardMsgRequest SendPrivateForwardMsgRequest = 7;
-        SendGroupForwardMsgRequest SendGroupForwardMsgRequest = 8;
+        GetStrangerInfoRequest GetStrangerInfoRequest = 5;
+        GetGroupMemberInfoRequest GetGroupMemberInfoRequest = 6;
+        GetGroupMemberListRequest GetGroupMemberListRequest = 7;
+        SendPrivateForwardMsgRequest SendPrivateForwardMsgRequest = 8;
+        SendGroupForwardMsgRequest SendGroupForwardMsgRequest = 9;
     }
 }
 
@@ -53,10 +54,11 @@ message Result {
         GroupMessageResult GroupMessageResult = 2;
         DeleteMsgResult DeleteMsgResult = 3;
         GetMsgResult GetMsgResult = 4;
-        GetGroupMemberInfoResult GetGroupMemberInfoResult = 5;
-        GetGroupMemberListResult GetGroupMemberListResult = 6;
-        SendPrivateForwardMsgResult SendPrivateForwardMsgResult = 7;
-        SendGroupForwardMsgResult SendGroupForwardMsgResult = 8;
+        GetStrangerInfoResult GetStrangerInfoResult = 5;
+        GetGroupMemberInfoResult GetGroupMemberInfoResult = 6;
+        GetGroupMemberListResult GetGroupMemberListResult = 7;
+        SendPrivateForwardMsgResult SendPrivateForwardMsgResult = 8;
+        SendGroupForwardMsgResult SendGroupForwardMsgResult = 9;
     }
 }
 //--------model---------//
@@ -403,6 +405,10 @@ message SendLikeRequest {
     int64 times = 2;
 }
 
+message GetStrangerInfoRequest {
+    int64 user_id = 1;
+}
+
 message GetGroupMemberInfoRequest {
     int64 group_id = 1;
     int64 user_id = 2;
@@ -441,6 +447,13 @@ message GetMsgResult {
 }
 
 message SendLikeResult {}
+
+message GetStrangerInfoResult {
+    int64 user_id = 1;
+    string nickname = 2;
+    string sex = 3;
+    int64 age = 4;
+}
 
 message GetGroupMemberInfoResult {
     int64 group_id = 1;

@@ -61,6 +61,8 @@ const resolve_request = async request => {
       } else {
         return await Bot.pickFriend(Number(load[1])).recallMsg(load[2])
       }
+    case "GetStrangerInfoRequest":
+      return await Bot.getStrangerInfo(load.user_id)
     case "GetGroupMemberInfoRequest":
       return await Bot.pickMember(load.group_id, load.user_id).renew()
     case "GetGroupMemberListRequest":
@@ -107,6 +109,10 @@ const create_response = async (request, raw) => {
     case "DeleteMsgRequest":
       return {
         DeleteMsgResult: {}
+      }
+    case "GetStrangerInfoRequest":
+      return {
+        GetStrangerInfoResult: raw
       }
     case "GetGroupMemberInfoRequest":
       return {

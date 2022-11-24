@@ -23,6 +23,7 @@ from core.typing import (
     GRPCGroupMessageResult,
     GRPCDeleteMsgResult,
     GRPCGetMsgResult,
+    GRPCGetStrangerInfoResult,
     GRPCGetGroupMemberInfoResult,
     GRPCGetGroupMemberListResult,
     GRPCSendPrivateForwardMsgResult,
@@ -401,7 +402,19 @@ class Bot(BaseBot):
         ...
 
     async def get_stranger_info(self, user_id: int, no_cache: bool = False):
-        ...
+        request_id = await self.request_queue.put({
+            "GetStrangerInfoRequest": {
+                "user_id": user_id,
+            }
+        })
+        logger.success(f'[获取陌生人信息(@{user_id})]')
+        result: GRPCGetStrangerInfoResult = (await self.result_map.get(request_id)).GetStrangerInfoResult
+        return {
+            "user_id": result.user_id,
+            "nickname": result.nickname,
+            "sex": result.sex,
+            "age": result.age,
+        }
 
     async def get_friend_list(self):
         ...
