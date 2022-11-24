@@ -15,6 +15,7 @@ class AsyncQueueMCS(type):
 
 class AsyncQueue(metaclass=AsyncQueueMCS):
     def __init__(self, type):
+        self.num = 0
         self.queue = LifoQueue()
         self.type = type
 
@@ -28,9 +29,14 @@ class AsyncQueue(metaclass=AsyncQueueMCS):
         return await self.queue.get()
 
     async def put(self, data):
+        self.num += 1
         request_id = str(uuid4())
         await self.queue.put((request_id, data))
         return request_id
+
+    def clear(self):
+        self.num = 0
+        self.queue = LifoQueue()
 
 
 __all__ = [

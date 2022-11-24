@@ -26,10 +26,10 @@ export const create_client = config => {
   });
 }
 
-export const setup_server = setup_client => new Promise((resolve, reject) => {
-  if(py_plugin_config.independent) {
+export const setup_server = () => new Promise((resolve, reject) => {
+  if (py_plugin_config.independent) {
     resolve()
-  }else {
+  } else {
     py_plugin_client.option({code: 1}, function (err, response) {
       logger.info("python服务器启动中");
       const cmd = spawn(
@@ -76,17 +76,41 @@ export const setup_client = () => {
     if (err) logger.error(err)
     Bot.on("request", async event => {
       let err = await request_receiver(event, py_plugin_client)
-      if (err) logger.warn(err)
+      switch (err) {
+        case "0":
+          break
+        case "1":
+          await setup_client()
+          break
+        default:
+          logger.warn(err)
+      }
     })
 
     Bot.on("message", async event => {
       let err = await message_receiver(event, py_plugin_client)
-      if (err) logger.warn(err)
+      switch (err) {
+        case "0":
+          break
+        case "1":
+          await setup_client()
+          break
+        default:
+          logger.warn(err)
+      }
     })
 
     Bot.on("notice", async event => {
       let err = await notice_receiver(event, py_plugin_client)
-      if (err) logger.warn(err)
+      switch (err) {
+        case "0":
+          break
+        case "1":
+          await setup_client()
+          break
+        default:
+          logger.warn(err)
+      }
     })
   })
 }

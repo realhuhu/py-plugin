@@ -72,16 +72,12 @@ class GRPCDriver(Driver):
         await self.startup()
 
         logger.info("Py started")
+        await self.server.wait_for_termination()
 
-        try:
-            await self.server.wait_for_termination()
-        except KeyboardInterrupt or asyncio.exceptions.CancelledError:
-            logger.info("Py stopped")
-        finally:
-            if self.should_exit.is_set():
-                return
-            await self.main_loop()
-            await self.shutdown()
+        if self.should_exit.is_set():
+            return
+        await self.main_loop()
+        await self.shutdown()
 
     async def startup(self):
         # run startup

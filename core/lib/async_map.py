@@ -15,6 +15,7 @@ class AsyncMapMCS(type):
 
 class AsyncMap(metaclass=AsyncMapMCS):
     def __init__(self, type):
+        self.num = 0
         self.type = type
         self._map = {}
         self._getters = deque()
@@ -31,6 +32,7 @@ class AsyncMap(metaclass=AsyncMapMCS):
                 break
 
     async def set(self, key: Union[int, str], value: Any) -> None:
+        self.num += 1
         self._map[key] = value
         self._wakeup_next(self._getters)
 
@@ -52,6 +54,10 @@ class AsyncMap(metaclass=AsyncMapMCS):
         item = self._map[key]
         del self._map[key]
         return item
+
+    def clear(self):
+        self.num = 0
+        self._map = {}
 
 
 __all__ = [

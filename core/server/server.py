@@ -35,10 +35,15 @@ class Channel(hola_pb2_grpc.ChannelServicer):
             self,
             event: hola_pb2.Event,
             context: ServicerContext
-    ) -> hola_pb2.Empty:
+    ) -> hola_pb2.OptionCode:
         try:
+            print(self.request_queue.num, self.result_map.num)
+            if self.request_queue.num != self.result_map.num:
+                return hola_pb2.OptionCode(code=1)
+
             await self.bot.handle_event(await event_parser(event))
-            return hola_pb2.Empty()
+            return hola_pb2.OptionCode(code=0)
+
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(traceback.format_exc())
@@ -48,12 +53,17 @@ class Channel(hola_pb2_grpc.ChannelServicer):
             result_iterator: AsyncGenerator[hola_pb2.Result, Any],
             context: ServicerContext
     ) -> AsyncGenerator[hola_pb2.Request, Any]:
+        self.request_queue.clear()
+        self.result_map.clear()
         try:
             await result_iterator.__anext__()
             logger.success("成功建立双向连接")
             async for request_id, request in self.request_queue:
                 yield hola_pb2.Request(**request)
                 await self.result_map.set(request_id, await result_iterator.__anext__())
+        except StopAsyncIteration:
+            logger.warning("中断连接")
+            pass
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(traceback.format_exc())

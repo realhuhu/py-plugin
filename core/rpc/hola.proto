@@ -6,13 +6,11 @@ package hola;
 
 service Channel {
     rpc option (OptionCode) returns (OptionCode) {}
-    rpc match (Event) returns (Empty) {}
+    rpc match (Event) returns (OptionCode) {}
     rpc callBack (stream Result) returns (stream Request) {}
 }
 
 //--------message---------//
-message Empty {}
-
 message OptionCode {
     uint64 code = 1;
 }

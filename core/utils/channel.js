@@ -140,7 +140,10 @@ export const channel_test = async client => new Promise(resolve => {
 })
 
 export const channel_setup = async client => {
-  const call = client.callBack()
+  if (global.call) {
+    global.call.end();
+  }
+  global.call = client.callBack()
   call.on("data", request => {
     resolve_request(request).then(raw => {
       return create_response(request, raw)

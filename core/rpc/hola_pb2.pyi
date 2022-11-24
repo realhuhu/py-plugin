@@ -65,10 +65,6 @@ class DiceSegment(_message.Message):
     __slots__ = []
     def __init__(self) -> None: ...
 
-class Empty(_message.Message):
-    __slots__ = []
-    def __init__(self) -> None: ...
-
 class Event(_message.Message):
     __slots__ = ["FriendAddNoticeEvent", "FriendRecallNoticeEvent", "FriendRequestEvent", "GroupAdminNoticeEvent", "GroupBanNoticeEvent", "GroupDecreaseNoticeEvent", "GroupIncreaseNoticeEvent", "GroupMessageEvent", "GroupRecallNoticeEvent", "GroupRequestEvent", "PokeNotifyEvent", "PrivateMessageEvent"]
     FRIENDADDNOTICEEVENT_FIELD_NUMBER: _ClassVar[int]
