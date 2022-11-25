@@ -1,5 +1,5 @@
 import asyncio
-from typing import Union, Any, Dict, Optional,Tuple
+from typing import Union, Any, Dict, Optional, Tuple
 
 
 class AsyncMapMCS(type):
@@ -14,8 +14,8 @@ class AsyncMapMCS(type):
 
 class AsyncMap(metaclass=AsyncMapMCS):
     def __init__(self, type):
-        self.type:str = type
-        self._map:Dict[str,asyncio.Future] = {}
+        self.type: str = type
+        self._map: Dict[str, asyncio.Future] = {}
 
     def __str__(self):
         return f"<AsyncMap({self.type}) id={id(self)}>"

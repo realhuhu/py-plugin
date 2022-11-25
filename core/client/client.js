@@ -65,7 +65,7 @@ export const setup_server = () => new Promise((resolve, reject) => {
 
       cmd.on("error", err => {
         logger.warn("python服务器启动失败");
-        logger.warn(iconv.decode(err, py_plugin_config.encoding || "utf-8"));
+        logger.warn(err);
       });
     });
   }
