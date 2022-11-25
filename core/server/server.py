@@ -35,37 +35,46 @@ class Channel(hola_pb2_grpc.ChannelServicer):
             self,
             event: hola_pb2.Event,
             context: ServicerContext
-    ) -> hola_pb2.OptionCode:
+    ) -> hola_pb2.Empty:
         try:
-            # if self.request_queue.num != self.result_map.num:
-            #     return hola_pb2.OptionCode(code=1)
-
             await self.bot.handle_event(await event_parser(event))
-            return hola_pb2.OptionCode(code=0)
+            return hola_pb2.Empty()
 
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(traceback.format_exc())
 
-    async def callBack(
+    async def request(
             self,
-            result_iterator: AsyncGenerator[hola_pb2.Result, Any],
+            empty: hola_pb2.Empty,
             context: ServicerContext
     ) -> AsyncGenerator[hola_pb2.Request, Any]:
-        self.request_queue.clear()
-        self.result_map.clear()
+        logger.success("成功建立request连接")
         try:
-            await result_iterator.__anext__()
-            logger.success("成功建立双向连接")
-            async for request_id, request in self.request_queue:
+            async for request in self.request_queue:
                 yield hola_pb2.Request(**request)
-                await self.result_map.set(request_id, await result_iterator.__anext__())
         except StopAsyncIteration:
-            logger.warning("中断连接")
-            pass
+            logger.warning("中断request连接")
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(traceback.format_exc())
+
+    async def result(
+            self,
+            result_iterator: AsyncGenerator[hola_pb2.Result, Any],
+            context
+    ) -> hola_pb2.Empty:
+        logger.success("成功建立result连接")
+        try:
+            async for result in result_iterator:
+                await self.result_map.set(result.request_id, result)
+        except StopAsyncIteration:
+            logger.warning("中断result连接")
+        except Exception:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(traceback.format_exc())
+        finally:
+            return hola_pb2.Empty()
 
 
 def create_server(host, port):

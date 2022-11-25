@@ -6,11 +6,14 @@ package hola;
 
 service Channel {
     rpc option (OptionCode) returns (OptionCode) {}
-    rpc match (Event) returns (OptionCode) {}
-    rpc callBack (stream Result) returns (stream Request) {}
+    rpc match (Event) returns (Empty) {}
+    rpc request (Empty) returns (stream Request) {}
+    rpc result (stream Result) returns (Empty) {}
 }
 
 //--------message---------//
+message Empty {}
+
 message OptionCode {
     uint64 code = 1;
 }
@@ -35,30 +38,32 @@ message Event {
 }
 
 message Request {
+    string request_id = 1;
     oneof request {
-        PrivateMessageRequest PrivateMessageRequest = 1;
-        GroupMessageRequest GroupMessageRequest = 2;
-        DeleteMsgRequest DeleteMsgRequest = 3;
-        GetMsgRequest GetMsgRequest = 4;
-        GetStrangerInfoRequest GetStrangerInfoRequest = 5;
-        GetGroupMemberInfoRequest GetGroupMemberInfoRequest = 6;
-        GetGroupMemberListRequest GetGroupMemberListRequest = 7;
-        SendPrivateForwardMsgRequest SendPrivateForwardMsgRequest = 8;
-        SendGroupForwardMsgRequest SendGroupForwardMsgRequest = 9;
+        PrivateMessageRequest PrivateMessageRequest = 2;
+        GroupMessageRequest GroupMessageRequest = 3;
+        DeleteMsgRequest DeleteMsgRequest = 4;
+        GetMsgRequest GetMsgRequest = 5;
+        GetStrangerInfoRequest GetStrangerInfoRequest = 6;
+        GetGroupMemberInfoRequest GetGroupMemberInfoRequest = 7;
+        GetGroupMemberListRequest GetGroupMemberListRequest = 8;
+        SendPrivateForwardMsgRequest SendPrivateForwardMsgRequest = 9;
+        SendGroupForwardMsgRequest SendGroupForwardMsgRequest = 10;
     }
 }
 
 message Result {
+    string request_id = 1;
     oneof result {
-        PrivateMessageResult PrivateMessageResult = 1;
-        GroupMessageResult GroupMessageResult = 2;
-        DeleteMsgResult DeleteMsgResult = 3;
-        GetMsgResult GetMsgResult = 4;
-        GetStrangerInfoResult GetStrangerInfoResult = 5;
-        GetGroupMemberInfoResult GetGroupMemberInfoResult = 6;
-        GetGroupMemberListResult GetGroupMemberListResult = 7;
-        SendPrivateForwardMsgResult SendPrivateForwardMsgResult = 8;
-        SendGroupForwardMsgResult SendGroupForwardMsgResult = 9;
+        PrivateMessageResult PrivateMessageResult = 2;
+        GroupMessageResult GroupMessageResult = 3;
+        DeleteMsgResult DeleteMsgResult = 4;
+        GetMsgResult GetMsgResult = 5;
+        GetStrangerInfoResult GetStrangerInfoResult = 6;
+        GetGroupMemberInfoResult GetGroupMemberInfoResult = 7;
+        GetGroupMemberListResult GetGroupMemberListResult = 8;
+        SendPrivateForwardMsgResult SendPrivateForwardMsgResult = 9;
+        SendGroupForwardMsgResult SendGroupForwardMsgResult = 10;
     }
 }
 //--------model---------//

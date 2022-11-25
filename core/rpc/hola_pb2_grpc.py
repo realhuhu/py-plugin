@@ -22,12 +22,17 @@ class ChannelStub(object):
         self.match = channel.unary_unary(
                 '/hola.Channel/match',
                 request_serializer=core_dot_rpc_dot_hola__pb2.Event.SerializeToString,
-                response_deserializer=core_dot_rpc_dot_hola__pb2.OptionCode.FromString,
+                response_deserializer=core_dot_rpc_dot_hola__pb2.Empty.FromString,
                 )
-        self.callBack = channel.stream_stream(
-                '/hola.Channel/callBack',
-                request_serializer=core_dot_rpc_dot_hola__pb2.Result.SerializeToString,
+        self.request = channel.unary_stream(
+                '/hola.Channel/request',
+                request_serializer=core_dot_rpc_dot_hola__pb2.Empty.SerializeToString,
                 response_deserializer=core_dot_rpc_dot_hola__pb2.Request.FromString,
+                )
+        self.result = channel.stream_unary(
+                '/hola.Channel/result',
+                request_serializer=core_dot_rpc_dot_hola__pb2.Result.SerializeToString,
+                response_deserializer=core_dot_rpc_dot_hola__pb2.Empty.FromString,
                 )
 
 
@@ -46,7 +51,13 @@ class ChannelServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def callBack(self, request_iterator, context):
+    def request(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def result(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -63,12 +74,17 @@ def add_ChannelServicer_to_server(servicer, server):
             'match': grpc.unary_unary_rpc_method_handler(
                     servicer.match,
                     request_deserializer=core_dot_rpc_dot_hola__pb2.Event.FromString,
-                    response_serializer=core_dot_rpc_dot_hola__pb2.OptionCode.SerializeToString,
+                    response_serializer=core_dot_rpc_dot_hola__pb2.Empty.SerializeToString,
             ),
-            'callBack': grpc.stream_stream_rpc_method_handler(
-                    servicer.callBack,
-                    request_deserializer=core_dot_rpc_dot_hola__pb2.Result.FromString,
+            'request': grpc.unary_stream_rpc_method_handler(
+                    servicer.request,
+                    request_deserializer=core_dot_rpc_dot_hola__pb2.Empty.FromString,
                     response_serializer=core_dot_rpc_dot_hola__pb2.Request.SerializeToString,
+            ),
+            'result': grpc.stream_unary_rpc_method_handler(
+                    servicer.result,
+                    request_deserializer=core_dot_rpc_dot_hola__pb2.Result.FromString,
+                    response_serializer=core_dot_rpc_dot_hola__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -110,12 +126,12 @@ class Channel(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/hola.Channel/match',
             core_dot_rpc_dot_hola__pb2.Event.SerializeToString,
-            core_dot_rpc_dot_hola__pb2.OptionCode.FromString,
+            core_dot_rpc_dot_hola__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def callBack(request_iterator,
+    def request(request,
             target,
             options=(),
             channel_credentials=None,
@@ -125,8 +141,25 @@ class Channel(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_stream(request_iterator, target, '/hola.Channel/callBack',
-            core_dot_rpc_dot_hola__pb2.Result.SerializeToString,
+        return grpc.experimental.unary_stream(request, target, '/hola.Channel/request',
+            core_dot_rpc_dot_hola__pb2.Empty.SerializeToString,
             core_dot_rpc_dot_hola__pb2.Request.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def result(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_unary(request_iterator, target, '/hola.Channel/result',
+            core_dot_rpc_dot_hola__pb2.Result.SerializeToString,
+            core_dot_rpc_dot_hola__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

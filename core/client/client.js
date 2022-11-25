@@ -76,41 +76,17 @@ export const setup_client = () => {
     if (err) logger.error(err)
     Bot.on("request", async event => {
       let err = await request_receiver(event, py_plugin_client)
-      switch (err) {
-        case "0":
-          break
-        case "1":
-          await setup_client()
-          break
-        default:
-          logger.warn(err)
-      }
+      err && logger.warn(err)
     })
 
     Bot.on("message", async event => {
       let err = await message_receiver(event, py_plugin_client)
-      switch (err) {
-        case "0":
-          break
-        case "1":
-          await setup_client()
-          break
-        default:
-          logger.warn(err)
-      }
+      err && logger.warn(err)
     })
 
     Bot.on("notice", async event => {
       let err = await notice_receiver(event, py_plugin_client)
-      switch (err) {
-        case "0":
-          break
-        case "1":
-          await setup_client()
-          break
-        default:
-          logger.warn(err)
-      }
+      err && logger.warn(err)
     })
   })
 }

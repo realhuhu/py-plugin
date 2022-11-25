@@ -93,49 +93,62 @@ const resolve_request = async request => {
 const create_response = async (request, raw) => {
   let type = request.request
   let load = request[type]
+  let data
   switch (type) {
     case "PrivateMessageRequest":
-      return {
+      data = {
         PrivateMessageResult: {
           message_id: `private|${load.user_id}|${raw.message_id}`
         }
       }
+      break
     case "GroupMessageRequest":
-      return {
+      data = {
         GroupMessageRequest: {
           message_id: `group|${load.group_id}|${raw.message_id}`
         }
       }
+      break
     case "DeleteMsgRequest":
-      return {
+      data = {
         DeleteMsgResult: {}
       }
+      break
     case "GetStrangerInfoRequest":
-      return {
+      data = {
         GetStrangerInfoResult: raw
       }
+      break
     case "GetGroupMemberInfoRequest":
-      return {
+      data = {
         GetGroupMemberInfoResult: parse_member(raw)
       }
+      break
     case "GetGroupMemberListRequest":
-      return {
+      data = {
         GetGroupMemberListResult: {
           member_list: [...raw.values()].map(x => parse_member(x))
         }
       }
+      break
     case "SendPrivateForwardMsgRequest":
-      return {
+      data = {
         SendPrivateForwardMsgResult: {
           message_id: `private|${load.user_id}|${raw.message_id}`
         }
       }
+      break
     case "SendGroupForwardMsgRequest":
-      return {
+      data = {
         SendGroupForwardMsgResult: {
           message_id: `group|${load.group_id}|${raw.message_id}`
         }
       }
+      break
+  }
+  if (data) {
+    data.request_id = request.request_id
+    return data
   }
 }
 
@@ -146,18 +159,20 @@ export const channel_test = async client => new Promise(resolve => {
 })
 
 export const channel_setup = async client => {
-  if (global.call) {
-    global.call.end();
-  }
-  global.call = client.callBack()
-  call.on("data", request => {
+  let request_call = client.request({
+    Empty: {}
+  })
+  let result_call = client.result(() => {
+  })
+  request_call.on("data", request => {
     resolve_request(request).then(raw => {
       return create_response(request, raw)
     }).then(response => {
-      call.write(response)
+      result_call.write(response)
     })
   });
-  call.on("error", err => {
+
+  request_call.on("error", err => {
     logger.error(err.details);
     if (err.details) {
       logger.error("py服务器连接丢失，5秒后尝试重连");
@@ -166,11 +181,6 @@ export const channel_setup = async client => {
       }, 5000)
     }
   });
-  call.on('end', function () {
-    console.log('on end');
-  });
-
-  call.write({Empty: {}})
 }
 
 export const setup = async client => {

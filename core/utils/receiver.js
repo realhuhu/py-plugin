@@ -169,12 +169,8 @@ async function parse_anonymous(anonymous) {
 
 async function call_back(data, client, type) {
   return new Promise(resolve => {
-    data && client.match(data, (err, response) => {
-      if (response && response.code) {
-        resolve(response.code)
-      } else {
-        resolve(err && `[py-plugin][after-match-${type}] ${err.details}`)
-      }
+    data && client.match(data, err => {
+      resolve(err && `[py-plugin][after-match-${type}] ${err.details}`)
     })
   })
 }
