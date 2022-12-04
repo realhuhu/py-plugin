@@ -3,8 +3,7 @@ __pycache__
 .idea/
 config.yaml
 plugins/*
-!plugins/nonebot-plugin-memes/
-!plugins/nonebot-plugin-petpet/
+!plugins/readme.txt
 data/*
 !data/fonts
 poetry-installer*
