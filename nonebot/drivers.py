@@ -58,6 +58,7 @@ class GRPCDriver(Driver):
         if self.config.startup_check is not False:
             await self.startup()
 
+        await asyncio.sleep(2)
         logger.info("Py服务器已开机(Py started)")
 
         try:

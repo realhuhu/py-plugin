@@ -10,10 +10,7 @@ superusers:
   - 123456
   - 654321
 need_at: no #是否需要@机器人或加上机器人名字，默认no
-plugins:
-  - nonebot-plugin-petpet
-  - nonebot-plugin-memes
-  # 加载哪些插件就继续往下加
+plugins: [] #加载哪些插件就继续往下加
 host: 127.0.0.1
 port: 50052
 independent: false #py服务器与云崽本体分开启动
