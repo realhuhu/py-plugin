@@ -24,6 +24,7 @@ from core.typing import (
     GRPCDeleteMsgResult,
     GRPCGetMsgResult,
     GRPCGetStrangerInfoResult,
+    GRPCGetGroupInfoResult,
     GRPCGetGroupMemberInfoResult,
     GRPCGetGroupMemberListResult,
     GRPCSendPrivateForwardMsgResult,
@@ -420,7 +421,22 @@ class Bot(BaseBot):
         ...
 
     async def get_group_info(self, group_id: int, no_cache: bool = False):
-        ...
+        request_id = await self.request_queue.put({
+            "GetGroupInfoRequest": {
+                "group_id": group_id,
+            }
+        })
+        logger.success(f'[获取群聊信息({group_id})]')
+        result: GRPCGetGroupInfoResult = (await self.result_map.get(request_id)).GetGroupInfoResult
+        return {
+            "group_id": result.group_id,
+            "group_name": result.group_name,
+            "group_memo": result.group_memo,
+            "group_create_time": result.group_create_time,
+            "group_level": result.group_level,
+            "member_count": result.member_count,
+            "max_member_count": result.max_member_count,
+        }
 
     async def get_group_list(self, group_id: int, no_cache: bool = False):
         ...

@@ -45,10 +45,11 @@ message Request {
         DeleteMsgRequest DeleteMsgRequest = 4;
         GetMsgRequest GetMsgRequest = 5;
         GetStrangerInfoRequest GetStrangerInfoRequest = 6;
-        GetGroupMemberInfoRequest GetGroupMemberInfoRequest = 7;
-        GetGroupMemberListRequest GetGroupMemberListRequest = 8;
-        SendPrivateForwardMsgRequest SendPrivateForwardMsgRequest = 9;
-        SendGroupForwardMsgRequest SendGroupForwardMsgRequest = 10;
+        GetGroupInfoRequest GetGroupInfoRequest = 7;
+        GetGroupMemberInfoRequest GetGroupMemberInfoRequest = 8;
+        GetGroupMemberListRequest GetGroupMemberListRequest = 9;
+        SendPrivateForwardMsgRequest SendPrivateForwardMsgRequest = 10;
+        SendGroupForwardMsgRequest SendGroupForwardMsgRequest = 11;
     }
 }
 
@@ -60,10 +61,11 @@ message Result {
         DeleteMsgResult DeleteMsgResult = 4;
         GetMsgResult GetMsgResult = 5;
         GetStrangerInfoResult GetStrangerInfoResult = 6;
-        GetGroupMemberInfoResult GetGroupMemberInfoResult = 7;
-        GetGroupMemberListResult GetGroupMemberListResult = 8;
-        SendPrivateForwardMsgResult SendPrivateForwardMsgResult = 9;
-        SendGroupForwardMsgResult SendGroupForwardMsgResult = 10;
+        GetGroupInfoResult GetGroupInfoResult = 7;
+        GetGroupMemberInfoResult GetGroupMemberInfoResult = 8;
+        GetGroupMemberListResult GetGroupMemberListResult = 9;
+        SendPrivateForwardMsgResult SendPrivateForwardMsgResult = 10;
+        SendGroupForwardMsgResult SendGroupForwardMsgResult = 11;
     }
 }
 //--------model---------//
@@ -414,6 +416,10 @@ message GetStrangerInfoRequest {
     int64 user_id = 1;
 }
 
+message GetGroupInfoRequest {
+    int64 group_id = 1;
+}
+
 message GetGroupMemberInfoRequest {
     int64 group_id = 1;
     int64 user_id = 2;
@@ -458,6 +464,17 @@ message GetStrangerInfoResult {
     string nickname = 2;
     string sex = 3;
     int64 age = 4;
+}
+
+
+message GetGroupInfoResult {
+    int64 group_id = 1;
+    string group_name = 2;
+    string group_memo = 3;
+    int64 group_create_time = 4;
+    int64 group_level = 5;
+    int64 member_count = 6;
+    int64 max_member_count = 7;
 }
 
 message GetGroupMemberInfoResult {

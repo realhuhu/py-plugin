@@ -63,6 +63,8 @@ const resolve_request = async request => {
       }
     case "GetStrangerInfoRequest":
       return await Bot.getStrangerInfo(load.user_id)
+    case "GetGroupInfoRequest":
+      return await Bot.getGroupInfo(load.group_id)
     case "GetGroupMemberInfoRequest":
       return await Bot.pickMember(load.group_id, load.user_id).renew()
     case "GetGroupMemberListRequest":
@@ -117,6 +119,19 @@ const create_response = async (request, raw) => {
     case "GetStrangerInfoRequest":
       data = {
         GetStrangerInfoResult: raw
+      }
+      break
+    case "GetGroupInfoRequest":
+      data = {
+        GetGroupInfoResult: {
+          group_id: raw.group_id,
+          group_name: raw.group_name,
+          group_memo: "未知",//OVERWRITE
+          group_create_time: raw.create_time,
+          group_level: raw.grade,
+          member_count: raw.member_count,
+          max_member_count: raw.max_member_count,
+        }
       }
       break
     case "GetGroupMemberInfoRequest":
