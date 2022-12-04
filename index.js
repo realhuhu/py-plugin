@@ -1,8 +1,9 @@
 import fs from "node:fs";
 import YAML from 'yaml'
 import path from "path";
+import iconv from 'iconv-lite'
 import plugin from '../../lib/plugins/plugin.js'
-import {spawn} from "child_process";
+import {exec} from "child_process";
 import {create_client, setup_server, setup_client} from "./core/client/client.js";
 
 
@@ -33,7 +34,7 @@ export class PyPlugin extends plugin {
           fnc: 'py_help'
         },
         {
-          reg: "#?(n)?py(下载|卸载|启用|禁用)插件.*",
+          reg: "#?(n)?py(下载|卸载|启用|禁用|更新)插件.*",
           fnc: 'py_manage'
         },
       ]
@@ -49,14 +50,13 @@ export class PyPlugin extends plugin {
   async py_manage(e) {
     if (!e.isMaster) return
     let cfg = py_plugin_config
-    let plugin = e.msg.replace(/#?(n)?py(下载|卸载|启用|禁用)插件/, "")
+    let plugin = e.msg.replace(/#?(n)?py(下载|卸载|启用|禁用|更新)插件/, "")
 
     if (e.msg.indexOf("下载") !== -1) {
       e.reply(`下载中:${plugin}`)
       let err = await this.poetry_run("pip", "install", plugin)
       if (err) {
-        logger.error(err)
-        e.reply("出错了，请查看控制台")
+        e.reply(`出错了:${err}`)
         return
       }
       e.reply(`下载完成:${plugin}`)
@@ -69,10 +69,9 @@ export class PyPlugin extends plugin {
         return
       }
       e.reply(`卸载中:${plugin}`)
-      let err = await this.poetry_run("pip", "uninstall", plugin)
+      let err = await this.poetry_run("pip", "uninstall", plugin, "-y")
       if (err) {
-        logger.error(err)
-        e.reply("出错了，请查看控制台")
+        e.reply(`出错了:${err}`)
         return
       }
       e.reply(`卸载完成:${plugin}`)
@@ -103,6 +102,17 @@ export class PyPlugin extends plugin {
       }
     }
 
+    if (e.msg.indexOf("更新") !== -1) {
+      e.reply(`更新中:${plugin}`)
+      let err = await this.poetry_run("pip", "install", "--upgrade", plugin)
+      if (err) {
+        e.reply(`出错了:${err}`)
+        return
+      }
+      e.reply(`更新完成:${plugin}`)
+      cfg.plugins.push(plugin)
+    }
+
     await this.save_cfg(cfg)
     await setup_server()
     e.reply(`已重启python服务器`)
@@ -110,19 +120,13 @@ export class PyPlugin extends plugin {
 
   async poetry_run(...args) {
     return new Promise(resolve => {
-      const cmd = spawn(
-        "poetry",
-        ["run", ...args],
-        {
-          cwd: global.py_plugin_path,
-        },
+      exec(
+        `poetry run ${args.join(" ")}`,
+        {cwd: py_plugin_path},
+        (error, stdout, stderr) => {
+          resolve(error && error.message)
+        }
       );
-
-      cmd.on("exit", () => {
-        resolve()
-      })
-
-      cmd.on("error", resolve)
     })
   }
 

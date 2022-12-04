@@ -366,9 +366,11 @@ def command(*cmds: Union[str, Tuple[str, ...]]) -> Rule:
     命令内容与后续消息间无需空格!
     :::
     """
+    from nonebot import get_driver
 
-    command_start = {"#"}
-    command_sep = {"."}
+    config = get_driver().config
+    command_start = config.command_start
+    command_sep = config.command_sep
     commands: List[Tuple[str, ...]] = []
     for command in cmds:
         if isinstance(command, str):
@@ -458,9 +460,11 @@ def shell_command(
 ) -> Rule:
     if parser is not None and not isinstance(parser, ArgumentParser):
         raise TypeError("`parser` must be an instance of nonebot.rule.ArgumentParser")
+    from nonebot import get_driver
 
-    command_start = {"#"}
-    command_sep = {"."}
+    config = get_driver().config
+    command_start = config.command_start
+    command_sep = config.command_sep
     commands: List[Tuple[str, ...]] = []
     for command in cmds:
         if isinstance(command, str):

@@ -158,7 +158,7 @@ def require(name: str) -> ModuleType:
     异常:
         RuntimeError: 插件无法加载
     """
-    if name == "nonebot_plugin_apscheduler":
+    if name in ("nonebot_plugin_apscheduler", "nonebot_plugin_imageutils"):
         return importlib.import_module(name)
     plugin = get_plugin(_module_name_to_plugin_name(name))
     if not plugin:

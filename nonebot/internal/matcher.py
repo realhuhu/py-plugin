@@ -238,9 +238,7 @@ class Matcher(metaclass=MatcherMeta):
         )
 
         logger.trace(f"Define new matcher {NewMatcher}")
-
         matchers[priority].append(NewMatcher)
-
         return NewMatcher
 
     @classmethod

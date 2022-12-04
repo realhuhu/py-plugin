@@ -1,4 +1,8 @@
 log_level: INFO
+command_start:
+  - "#"
+command_sep:
+  - "."
 nickname:
   - 云崽
   - yunzai
@@ -13,4 +17,5 @@ plugins:
 host: 127.0.0.1
 port: 50052
 independent: false #py服务器与云崽本体分开启动
-#encoding: gbk #如果输出乱码，可以开启这项试试看，主要是windows平台
+encoding: utf-8 #如果输出乱码，可以开启这项试试看，主要是windows平台
+setup_check: true #开机时检查资源

@@ -375,13 +375,14 @@ def on_command(
         command(*commands) & rule, block=block, **kwargs, _depth=_depth + 1
     )
 
+
 def on_shell_command(
-    cmd: Union[str, Tuple[str, ...]],
-    rule: Optional[Union[Rule, T_RuleChecker]] = None,
-    aliases: Optional[Set[Union[str, Tuple[str, ...]]]] = None,
-    parser: Optional[ArgumentParser] = None,
-    _depth: int = 0,
-    **kwargs,
+        cmd: Union[str, Tuple[str, ...]],
+        rule: Optional[Union[Rule, T_RuleChecker]] = None,
+        aliases: Optional[Set[Union[str, Tuple[str, ...]]]] = None,
+        parser: Optional[ArgumentParser] = None,
+        _depth: int = 0,
+        **kwargs,
 ) -> Type[Matcher]:
     """注册一个支持 `shell_like` 解析参数的命令消息事件响应器。
 
@@ -409,6 +410,7 @@ def on_shell_command(
         **kwargs,
         _depth=_depth + 1,
     )
+
 
 def on_regex(
         pattern: str,

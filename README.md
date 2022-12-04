@@ -12,19 +12,39 @@
 
 ### 安装python
 
-​	python版本>=3.9
+​	python版本>=3.8
 
 ​	安装教程请百度
 
-​	如果是Linux系统，建议采用源码编译的方式，编译前请一定要安装以下依赖！否则以后可能出现无法安装依赖的情况
+​	ubuntu系统使用apt-get即可，如果是centos系统，建议采用源码编译的方式，编译前请一定要安装以下依赖！否则以后可能出现无法安装依赖的情况
 
 ```shell
 zlib-devel bzip2-devel expat-devel gdbm-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gcc make libffi-devel
 ```
 
-​	Linux安装python可以参考https://blog.csdn.net/weixin_41287692/article/details/105434826
+​	centos安装python可以参考https://blog.csdn.net/weixin_41287692/article/details/105434826
 
 ​	注意，安装完成后不要删除源码文件夹，未来可能有用
+
+### 安装poetry
+
+[poetry官网](https://python-poetry.org/docs/)
+
+**Linux, macOS**
+
+```shell
+curl -sSL https://install.python-poetry.org | python -
+```
+
+**Windows **
+
+```shell
+(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+```
+
+注意这里的```python```指你的python解释器，若你的python对应的命令为python3或其它自定义的命令，请注意替换原命令中的```python```
+
+等待安装完成，输入`poetry`查看是否有输出，有则说明poetry安装完成
 
 # 2.使用
 
@@ -36,13 +56,7 @@ zlib-devel bzip2-devel expat-devel gdbm-devel openssl-devel ncurses-devel sqlite
 git clone https://github.com/realhuhu/py-plugin.git
 ```
 
-​	进入py-plugin文件夹，输入
-
-```shell
-python install
-```
-
-​	等待安装完成，输入`poetry`查看是否有输出，有则说明poetry安装完成，然后安装依赖，有两种选择：
+​	然后安装python依赖，首先进入py-plugin目录，然后有两种选择：
 
 **方法一（推荐）：**	
 
@@ -63,10 +77,6 @@ poetry run pip install -r requirements.txt --trusted-host mirrors.aliyun.com
 ```
 
 ​	等待安装完成即可，之后重启云崽
-
-​	如果无法安装poetry，可以百度方法，*不推荐用pip install poetry安装*
-
-​	第一次启动时，需要下载petpet和memes的依赖，需要等待一段时间
 
 ### 2.2 使用
 
@@ -142,6 +152,10 @@ nonebot机器人的命令以/开头，注意替换为#
 
 ```yaml
 log_level: INFO #大于等于log_level的日志才会打印
+command_start: #命令前缀，可以写多个
+  - "#"
+command_sep:
+  - "."
 nickname: #机器人的名字
   - 云崽
   - yunzai
@@ -156,7 +170,8 @@ plugins: #运行哪些插件
 host: 127.0.0.1 #python服务器启动的地址
 port: 50052 #python服务器启动的端口
 independent: false #py服务器是否独立运行，开启此项后需要你手动启动py服务器，然后启动云崽
-#encoding: gbk #如果输出乱码，可以开启这项试试看，主要是windows平台
+encoding: gbk #如果输出乱码，可以开启这项试试看，主要是windows平台
+setup_check: utf-8 #启动时是否检查资源
 ```
 
 若插件支持配置，在config.yaml中配置即可
@@ -165,7 +180,34 @@ independent: false #py服务器是否独立运行，开启此项后需要你手�
 
 ![image-20221117164106239](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171641279.png)
 
-# 3.常见问题
+# 3.部分插件安装方法
+
+**直接 #py下载插件[插件名] 或 进入py-plugin目录输入 poetry run pip install [插件名]**
+
+| 插件名称                                                     | 备注                                       |
+| ------------------------------------------------------------ | ------------------------------------------ |
+| [nonebot-plugin-status](https://github.com/cscs181/QQ-GitHub-Bot/tree/master/src/plugins/nonebot_plugin_status) |                                            |
+| [haruka-bot](https://github.com/SK-415/HarukaBot)            |                                            |
+| [nonebot-plugin-picsearcher]()                               | 需要配置，如exhentai的cookie，具体见原插件 |
+| [nonebot-plugin-biliav](https://github.com/knva/nonebot_plugin_biliav) |                                            |
+| [nonebot-plugin-abbrreply](https://github.com/anlen123/nonebot_plugin_abbrreply) | 无需命令前缀                               |
+| [nonebot-plugin-guess](https://github.com/ffreemt/nonebot-plugin-guess-game) | 自带题库少，需要自定义题目                 |
+| [nonebot-plugin-r6s](https://github.com/abrahum/nonebot_plugin_r6s) |                                            |
+
+太多了，懒得写了...
+
+**git clone安装**
+
+*崩坏三*
+
+在py的plugins文件夹git clone -b nonebot https://github.com/chingkingm/honkai_mys.git
+到plugins/honkai_mys 把config_default.yaml复制一份，命名为config.yaml，填上自己cookie
+在py plugin文件夹输入poetry run pip install genshinhelper sqlitedict
+最后在config.yaml加上插件honkai_mys就行了
+
+也许还有其它插件，懒得找了...
+
+# 4.常见问题
 
 如果启动时报错，先重启一两遍看看能不能正常运行，如果还是报错按下面方法修复
 
@@ -260,6 +302,6 @@ sudo make && sudo make install
 [PyBot][08:49:49.898]][SUCCESS] 成功建立双向连接
 ```
 
-# 4.使用远程
+# 5.使用远程
 
 敬请期待

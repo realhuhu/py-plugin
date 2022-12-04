@@ -1,9 +1,6 @@
 # DONE
 from datetime import timedelta
 from ipaddress import IPv4Address
-from typing import Set, Union, Optional
-
-from pydantic import IPvAnyAddress
 
 
 class Env:
@@ -18,13 +15,14 @@ class Config(dict):
         kwargs["api_timeout"] = float(kwargs.get("api_timeout", 30.0))
         kwargs["superusers"] = set(map(str, kwargs.get("superusers", {})))
         kwargs["nickname"] = set(map(str, kwargs.get("nickname", {})))
-        kwargs["command_start"] = {"#"}
-        kwargs["command_start"] = {"."}
+        kwargs["command_start"] = set(kwargs.get("command_start", {"#"}))
+        kwargs["command_sep"] = set(kwargs.get("command_sep", {"."}))
         kwargs["session_expire_timeout"] = timedelta(minutes=2)
+        kwargs["startup_check"] = kwargs.get("startup_check", True)
+        kwargs["shutdown_check"] = kwargs.get("shutdown_check", True)
         super().__init__(kwargs)
-
-    def __getattr__(self, item):
-        return self.get(item)
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
     def dict(self):
         return self
