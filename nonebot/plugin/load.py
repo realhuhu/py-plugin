@@ -5,7 +5,6 @@ FrontMatter:
     description: nonebot.plugin.load 模块
 """
 import json
-import importlib
 from pathlib import Path
 from types import ModuleType
 from typing import Set, Union, Iterable, Optional
@@ -159,7 +158,8 @@ def require(name: str) -> ModuleType:
         RuntimeError: 插件无法加载
     """
     if name in ("nonebot_plugin_apscheduler", "nonebot_plugin_imageutils"):
-        return importlib.import_module(name)
+        return __import__(name)
+
     plugin = get_plugin(_module_name_to_plugin_name(name))
     if not plugin:
         if manager := _find_manager_by_name(name):

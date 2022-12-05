@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import YAML from 'yaml'
 import path from "path";
-import iconv from 'iconv-lite'
 import plugin from '../../lib/plugins/plugin.js'
 import {exec} from "child_process";
 import {create_client, setup_server, setup_client} from "./core/client/client.js";
@@ -12,6 +11,7 @@ if (!fs.existsSync(path.join(py_plugin_path, "config.yaml"))) {
   fs.copyFileSync(path.join(py_plugin_path, "config_default.yaml"), path.join(py_plugin_path, "config.yaml"));
 }
 global.py_plugin_config = YAML.parse(fs.readFileSync(path.join(global.py_plugin_path, "config.yaml"), 'utf8'))
+py_plugin_config.plugins = py_plugin_config.plugins || []
 global.py_plugin_client = create_client(py_plugin_config)
 
 setup_server().then(msg => {
@@ -133,6 +133,7 @@ export class PyPlugin extends plugin {
   async save_cfg(data) {
     return new Promise(resolve => {
       let yamlStr = YAML.stringify(data);
+      yamlStr = yamlStr.replace("plugins: []", "plugins:")
       fs.writeFile(path.join(py_plugin_path, "config.yaml"), yamlStr, () => {
         resolve()
       });

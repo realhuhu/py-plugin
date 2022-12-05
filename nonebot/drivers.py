@@ -52,7 +52,7 @@ class GRPCDriver(Driver):
 
         await self.server.start()
 
-        for plugin in sorted(set(plugins), key=plugins.index):
+        for plugin in set(filter(lambda x: x, plugins)):
             load_plugin(plugin.replace("-", "_"))
 
         if self.config.startup_check is not False:

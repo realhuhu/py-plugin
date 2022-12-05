@@ -30,6 +30,7 @@ def get_bot() -> Bot:
 def init(config_path: Path) -> None:
     global _driver, _bot
     config = Config(**OmegaConf.load(config_path))
+    config.plugins = config.plugins or []
     _bot = Bot(config)
     _driver = GRPCDriver(config=config)
 

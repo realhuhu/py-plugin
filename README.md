@@ -12,7 +12,7 @@
 
 ### 安装python
 
-​	python版本>=3.8
+​	python版本>=3.8 **不要使用python3.11**
 
 ​	安装教程请百度
 
@@ -35,14 +35,17 @@ zlib-devel bzip2-devel expat-devel gdbm-devel openssl-devel ncurses-devel sqlite
 ```shell
 curl -sSL https://install.python-poetry.org | python -
 ```
+poetry可执行文件位于```$HOME/.local/bin```，将其添加到环境变量或给```$HOME/.local/bin/poetry```添加软连接
 
-**Windows **
+**Windows**
 
 ```shell
 (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
 ```
 
 注意这里的```python```指你的python解释器，若你的python对应的命令为python3或其它自定义的命令，请注意替换原命令中的```python```
+
+然后将```%APPDATA%\Python\Scripts```添加到PATH环境变量
 
 等待安装完成，输入`poetry`查看是否有输出，有则说明poetry安装完成
 
