@@ -37,14 +37,17 @@ export class PyPlugin extends plugin {
           reg: "#?n?py(下载|卸载|启用|禁用|更新|全部|更新全部)插件.*",
           fnc: 'py_manage'
         },
+        {
+          reg: "#?n?py(强制)?重启",
+          fnc: 'py_restart'
+        },
       ]
     })
 
   }
 
   async py_help(e) {
-
-    e.reply("还没写")
+    e.reply("py下载|卸载|启用|禁用|更新插件+插件名\npy更新全部插件\npy全部插件\npy重启")
   }
 
   async py_manage(e) {
@@ -130,6 +133,15 @@ export class PyPlugin extends plugin {
     await this.save_cfg(py_plugin_config)
     await setup_server()
     e.reply(`已重启python服务器`)
+  }
+
+  async py_restart(e) {
+    setup_server().then(() => {
+      e.reply("已重启")
+    }).catch(err => {
+      e.reply("重启失败，请查看控制台")
+      logger.warn(err)
+    })
   }
 
   async poetry_run(...args) {
