@@ -4,5 +4,5 @@ __pycache__
 config.yaml
 plugins/*
 !plugins/readme.txt
-data/*
+data/
 !data/fonts
