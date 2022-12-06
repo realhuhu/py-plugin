@@ -41,13 +41,18 @@ export class PyPlugin extends plugin {
           reg: "#?n?py(强制)?重启",
           fnc: 'py_restart'
         },
+        {
+          reg: "#?n?py(查看|修改)配置.*",
+          fnc: 'py_modify'
+        },
       ]
     })
 
   }
 
   async py_help(e) {
-    e.reply("py下载|卸载|启用|禁用|更新插件+插件名\npy更新全部插件\npy全部插件\npy重启")
+    if (!e.isMaster) return
+    e.reply("py下载|卸载|启用|禁用|更新插件+插件名\npy更新全部插件\npy全部插件\npy重启\npy查看|修改配置")
   }
 
   async py_manage(e) {
@@ -131,18 +136,42 @@ export class PyPlugin extends plugin {
     }
     py_plugin_config.plugins = [...new Set(py_plugin_config.plugins)]
     await this.save_cfg(py_plugin_config)
-    await setup_server()
-    e.reply(`已重启python服务器`)
+    await this.py_restart(e)
   }
 
   async py_restart(e) {
+    if (!e.isMaster) return
     setup_server().then(() => {
-      e.reply("已重启")
+      e.reply("已重启python服务器")
     }).catch(err => {
       e.reply("重启失败，请查看控制台")
       logger.warn(err)
     })
   }
+
+  async py_modify(e) {
+    if (!e.isMaster) return
+    let command = e.msg.match(/(?<=#?n?py)(查看|修改)/g)[0]
+
+    switch (command) {
+      case "查看":
+        e.reply(YAML.stringify(py_plugin_config))
+        break
+      case "修改":
+        let config = py_plugin_config
+        try {
+          eval(e.msg.replace(/#?n?py(查看|修改)配置/, ""))
+        } catch (err) {
+          e.reply(`语法错误:${err.message}`)
+          return
+        }
+        e.reply(YAML.stringify(config) + "\n配置已保存，重启python服务器中")
+        await this.save_cfg(config)
+        await this.py_restart(e)
+        break
+    }
+  }
+
 
   async poetry_run(...args) {
     return new Promise(resolve => {
