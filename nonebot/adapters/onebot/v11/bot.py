@@ -1,8 +1,7 @@
 # DONE TODO
 import re
-from typing import Any, Union, Type, Dict, List
+from typing import Any, Union, Dict, List
 
-from nonebot.typing import overrides
 from nonebot.message import handle_event
 from nonebot.log import logger
 from nonebot.adapters import Bot as BaseBot
@@ -273,7 +272,6 @@ class Bot(BaseBot):
             serialized_message.append(data)
         return serialized_message
 
-    @overrides(BaseBot)
     async def send(
             self,
             event: Event,
@@ -308,6 +306,28 @@ class Bot(BaseBot):
             logger.success(f'[回复群聊][群聊{event.group_id}] "{message}"')
             result: GRPCGroupMessageResult = (await self.result_map.get(request_id)).GroupMessageResult
             return result.message_id
+
+    async def send_private_msg(self, user_id: int, message: Union[str, Message, MessageSegment], auto_escape: bool):
+        request_id = await self.request_queue.put({
+            "PrivateMessageRequest": {
+                "user_id": user_id,
+                "message": await self.convert(message)
+            }
+        })
+        logger.success(f'[回复私聊][用户{user_id}] "{message}"')
+        result: GRPCPrivateMessageResult = (await self.result_map.get(request_id)).PrivateMessageResult
+        return result.message_id
+
+    async def send_group_msg(self, group_id: int, message: Union[str, Message, MessageSegment], auto_escape: bool):
+        request_id = await self.request_queue.put({
+            "GroupMessageRequest": {
+                "group_id": group_id,
+                "message": await self.convert(message)
+            }
+        })
+        logger.success(f'[回复群聊][群聊{group_id}] "{message}"')
+        result: GRPCGroupMessageResult = (await self.result_map.get(request_id)).GroupMessageResult
+        return result.message_id
 
     async def delete_msg(self, message_id: str) -> None:
         type, id, real_message_id = message_id.split("|")
