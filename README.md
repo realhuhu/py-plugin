@@ -191,7 +191,7 @@ setup_check: utf-8 #启动时是否检查资源
 | ------------------------------------------------------------ | ------------------------------------------ |
 | [nonebot-plugin-status](https://github.com/cscs181/QQ-GitHub-Bot/tree/master/src/plugins/nonebot_plugin_status) |                                            |
 | [haruka-bot](https://github.com/SK-415/HarukaBot)            |                                            |
-| [nonebot-plugin-picsearcher]()                               | 需要配置，如exhentai的cookie，具体见原插件 |
+| [nonebot-plugin-picsearcher](https://github.com/synodriver/nonebot_plugin_picsearcher)                               | 需要配置，如exhentai的cookie，具体见原插件 |
 | [nonebot-plugin-biliav](https://github.com/knva/nonebot_plugin_biliav) |                                            |
 | [nonebot-plugin-abbrreply](https://github.com/anlen123/nonebot_plugin_abbrreply) | 无需命令前缀                               |
 | [nonebot-plugin-guess](https://github.com/ffreemt/nonebot-plugin-guess-game) | 自带题库少，需要自定义题目                 |
