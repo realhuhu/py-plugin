@@ -58,11 +58,11 @@ class Bot(abc.ABC):
 
         if not skip_calling_api:
             try:
-                if hasattr(self,api):
-                    result = await getattr(self, api)(**data)
-                else:
-                    raise NotImplementedError()
+                result = await getattr(self, api)(**data)
             except Exception as e:
+                if isinstance(e, RecursionError):
+                    logger.warning(f"接口未实现:{api}")
+
                 exception = e
 
         if coros := [

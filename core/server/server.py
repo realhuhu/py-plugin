@@ -36,7 +36,6 @@ class Channel(hola_pb2_grpc.ChannelServicer):
             event: hola_pb2.Event,
             context: ServicerContext
     ) -> hola_pb2.Empty:
-        print(event.plugins)
         try:
             await self.bot.handle_event(event.plugins, await event_parser(event))
             return hola_pb2.Empty()
