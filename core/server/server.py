@@ -1,5 +1,4 @@
 import traceback
-from pathlib import Path
 from typing import AsyncGenerator, Any
 
 import grpc
@@ -7,19 +6,13 @@ from grpc import Server, ServicerContext
 
 import nonebot
 from nonebot.log import logger
-from nonebot.adapters.onebot.v11 import Bot
 from core.rpc import hola_pb2_grpc, hola_pb2
-from core.lib.async_queue import AsyncQueue
-from core.lib.async_map import AsyncMap
 from core.lib.event import event_parser
 
 
 class Channel(hola_pb2_grpc.ChannelServicer):
-    def __init__(self, server: Server, bot: Bot):
+    def __init__(self, server: Server):
         self.server = server
-        self.bot = bot
-        self.request_queue = AsyncQueue("request")
-        self.result_map = AsyncMap("result")
 
     async def option(
             self,
@@ -28,7 +21,6 @@ class Channel(hola_pb2_grpc.ChannelServicer):
     ) -> hola_pb2.OptionCode:
         if request.code == 1:
             await self.server.stop(0)
-
         return hola_pb2.OptionCode(code=request.code)
 
     async def match(
@@ -37,7 +29,7 @@ class Channel(hola_pb2_grpc.ChannelServicer):
             context: ServicerContext
     ) -> hola_pb2.Empty:
         try:
-            await self.bot.handle_event(await event_parser(event))
+            await nonebot.get_bot(str(event.self_id)).handle_event(await event_parser(event), event.plugins)
             return hola_pb2.Empty()
 
         except Exception:
@@ -46,12 +38,13 @@ class Channel(hola_pb2_grpc.ChannelServicer):
 
     async def request(
             self,
-            empty: hola_pb2.Empty,
+            head: hola_pb2.Head,
             context: ServicerContext
     ) -> AsyncGenerator[hola_pb2.Request, Any]:
         logger.success("成功建立request连接")
+        bot = nonebot.get_bot(str(head.self_id))
         try:
-            async for request in self.request_queue:
+            async for request in bot.request_queue:
                 yield hola_pb2.Request(**request)
         except StopAsyncIteration:
             logger.warning("中断request连接")
@@ -65,9 +58,10 @@ class Channel(hola_pb2_grpc.ChannelServicer):
             context
     ) -> hola_pb2.Empty:
         logger.success("成功建立result连接")
+        bot = nonebot.get_bot(str((await result_iterator.__anext__()).self_id))
         try:
             async for result in result_iterator:
-                await self.result_map.set(result.request_id, result)
+                await bot.result_map.set(result.request_id, result)
         except StopAsyncIteration:
             logger.warning("中断result连接")
         except Exception:
@@ -85,5 +79,5 @@ def create_server(host, port):
         ]
     )
     server.add_insecure_port(f'{host or "127.0.0.1"}:{port or 50052}')
-    hola_pb2_grpc.add_ChannelServicer_to_server(Channel(server, nonebot.get_bot()), server)
+    hola_pb2_grpc.add_ChannelServicer_to_server(Channel(server), server)
     return server

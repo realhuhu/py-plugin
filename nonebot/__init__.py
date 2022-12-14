@@ -5,12 +5,11 @@ from omegaconf import OmegaConf
 
 from .log import logger
 from .utils import run_sync, is_coroutine_callable
-from .adapters.onebot.v11 import Bot
+from .adapters.onebot.v11 import Bot, Dict
 from .config import Config
 from .drivers import GRPCDriver
 
 _driver: Optional[GRPCDriver] = None
-_bot: Optional[Bot] = None
 
 
 def get_driver() -> GRPCDriver:
@@ -20,18 +19,27 @@ def get_driver() -> GRPCDriver:
     return _driver
 
 
-def get_bot() -> Bot:
-    global _bot
-    if _bot is None:
-        raise ValueError("Bot has not been initialized.")
-    return _bot
+def get_bots() -> Dict[str, Bot]:
+    return get_driver().bots
+
+
+def get_bot(self_id: Optional[str] = None) -> Bot:
+    driver = get_driver()
+    if self_id is not None:
+        if not driver.bots.get(self_id):
+            driver.create_bot(self_id)
+        return driver.bots[self_id]
+
+    for bot in driver.bots.values():
+        return bot
+
+    raise ValueError("There are no bots to get.")
 
 
 def init(config_path: Path) -> None:
-    global _driver, _bot
+    global _driver
     config = Config(**OmegaConf.load(config_path))
     config.plugins = config.plugins or []
-    _bot = Bot(config)
     _driver = GRPCDriver(config=config)
 
 

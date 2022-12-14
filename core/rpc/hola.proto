@@ -7,7 +7,7 @@ package hola;
 service Channel {
     rpc option (OptionCode) returns (OptionCode) {}
     rpc match (Event) returns (Empty) {}
-    rpc request (Empty) returns (stream Request) {}
+    rpc request (Head) returns (stream Request) {}
     rpc result (stream Result) returns (Empty) {}
 }
 
@@ -19,53 +19,61 @@ message OptionCode {
 }
 
 message Event {
+    repeated string plugins = 1;
+    int64 self_id = 2;
     oneof event {
-        FriendRequestEvent FriendRequestEvent = 1;
-        GroupRequestEvent GroupRequestEvent = 2;
+        FriendRequestEvent FriendRequestEvent = 3;
+        GroupRequestEvent GroupRequestEvent = 4;
 
-        PrivateMessageEvent PrivateMessageEvent = 3;
-        GroupMessageEvent GroupMessageEvent = 4;
+        PrivateMessageEvent PrivateMessageEvent = 5;
+        GroupMessageEvent GroupMessageEvent = 6;
 
-        FriendAddNoticeEvent FriendAddNoticeEvent = 5;
-        FriendRecallNoticeEvent FriendRecallNoticeEvent = 6;
-        GroupIncreaseNoticeEvent GroupIncreaseNoticeEvent = 7;
-        GroupDecreaseNoticeEvent GroupDecreaseNoticeEvent = 8;
-        GroupRecallNoticeEvent GroupRecallNoticeEvent = 9;
-        GroupBanNoticeEvent GroupBanNoticeEvent = 10;
-        GroupAdminNoticeEvent GroupAdminNoticeEvent = 11;
-        PokeNotifyEvent PokeNotifyEvent = 12;
+        FriendAddNoticeEvent FriendAddNoticeEvent = 7;
+        FriendRecallNoticeEvent FriendRecallNoticeEvent = 8;
+        GroupIncreaseNoticeEvent GroupIncreaseNoticeEvent = 9;
+        GroupDecreaseNoticeEvent GroupDecreaseNoticeEvent = 10;
+        GroupRecallNoticeEvent GroupRecallNoticeEvent = 11;
+        GroupBanNoticeEvent GroupBanNoticeEvent = 12;
+        GroupAdminNoticeEvent GroupAdminNoticeEvent = 13;
+        PokeNotifyEvent PokeNotifyEvent = 14;
     }
+}
+
+message Head {
+    int64 self_id = 1;
 }
 
 message Request {
     string request_id = 1;
+    int64 self_id = 2;
     oneof request {
-        PrivateMessageRequest PrivateMessageRequest = 2;
-        GroupMessageRequest GroupMessageRequest = 3;
-        DeleteMsgRequest DeleteMsgRequest = 4;
-        GetMsgRequest GetMsgRequest = 5;
-        GetStrangerInfoRequest GetStrangerInfoRequest = 6;
-        GetGroupInfoRequest GetGroupInfoRequest = 7;
-        GetGroupMemberInfoRequest GetGroupMemberInfoRequest = 8;
-        GetGroupMemberListRequest GetGroupMemberListRequest = 9;
-        SendPrivateForwardMsgRequest SendPrivateForwardMsgRequest = 10;
-        SendGroupForwardMsgRequest SendGroupForwardMsgRequest = 11;
+        PrivateMessageRequest PrivateMessageRequest = 3;
+        GroupMessageRequest GroupMessageRequest = 4;
+        DeleteMsgRequest DeleteMsgRequest = 5;
+        GetMsgRequest GetMsgRequest = 6;
+        GetStrangerInfoRequest GetStrangerInfoRequest = 7;
+        GetGroupInfoRequest GetGroupInfoRequest = 8;
+        GetGroupMemberInfoRequest GetGroupMemberInfoRequest = 9;
+        GetGroupMemberListRequest GetGroupMemberListRequest = 10;
+        SendPrivateForwardMsgRequest SendPrivateForwardMsgRequest = 11;
+        SendGroupForwardMsgRequest SendGroupForwardMsgRequest = 12;
     }
 }
 
 message Result {
     string request_id = 1;
+    int64 self_id = 2;
     oneof result {
-        PrivateMessageResult PrivateMessageResult = 2;
-        GroupMessageResult GroupMessageResult = 3;
-        DeleteMsgResult DeleteMsgResult = 4;
-        GetMsgResult GetMsgResult = 5;
-        GetStrangerInfoResult GetStrangerInfoResult = 6;
-        GetGroupInfoResult GetGroupInfoResult = 7;
-        GetGroupMemberInfoResult GetGroupMemberInfoResult = 8;
-        GetGroupMemberListResult GetGroupMemberListResult = 9;
-        SendPrivateForwardMsgResult SendPrivateForwardMsgResult = 10;
-        SendGroupForwardMsgResult SendGroupForwardMsgResult = 11;
+        PrivateMessageResult PrivateMessageResult = 3;
+        GroupMessageResult GroupMessageResult = 4;
+        DeleteMsgResult DeleteMsgResult = 5;
+        GetMsgResult GetMsgResult = 6;
+        GetStrangerInfoResult GetStrangerInfoResult = 7;
+        GetGroupInfoResult GetGroupInfoResult = 8;
+        GetGroupMemberInfoResult GetGroupMemberInfoResult = 9;
+        GetGroupMemberListResult GetGroupMemberListResult = 10;
+        SendPrivateForwardMsgResult SendPrivateForwardMsgResult = 11;
+        SendGroupForwardMsgResult SendGroupForwardMsgResult = 12;
     }
 }
 //--------model---------//

@@ -1,11 +1,12 @@
 import asyncio
-from typing import Set, Union, Callable, Awaitable
+from typing import Set, Dict, Union, Callable, Awaitable
 
 from .log import logger
 from .internal.driver import Driver
 from .typing import overrides
 from .config import Config
 from .plugin import load_plugin
+from .adapters.onebot.v11 import Bot
 from core.server.server import Server, create_server
 
 HOOK_FUNC = Union[Callable[[], None], Callable[[], Awaitable[None]]]
@@ -17,6 +18,7 @@ class GRPCDriver(Driver):
         self.startup_funcs: Set[HOOK_FUNC] = set()
         self.shutdown_funcs: Set[HOOK_FUNC] = set()
         self.server: Server = create_server(config.host, config.port)
+        self._bots: Dict[str, "Bot"] = {}
 
     @property
     @overrides(Driver)
@@ -46,6 +48,10 @@ class GRPCDriver(Driver):
             loop.run_until_complete(self.serve(plugins))
         except KeyboardInterrupt or asyncio.exceptions.CancelledError:
             logger.info("已强制退出Py服务器")
+
+    def create_bot(self, self_id: str):
+        logger.success(f"创建连接成功:{self_id}")
+        self._bots[self_id] = Bot(self.config, self_id)
 
     async def serve(self, plugins):
         logger.info("Py服务器开机中")

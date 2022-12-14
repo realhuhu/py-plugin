@@ -70,7 +70,7 @@ class Empty(_message.Message):
     def __init__(self) -> None: ...
 
 class Event(_message.Message):
-    __slots__ = ["FriendAddNoticeEvent", "FriendRecallNoticeEvent", "FriendRequestEvent", "GroupAdminNoticeEvent", "GroupBanNoticeEvent", "GroupDecreaseNoticeEvent", "GroupIncreaseNoticeEvent", "GroupMessageEvent", "GroupRecallNoticeEvent", "GroupRequestEvent", "PokeNotifyEvent", "PrivateMessageEvent"]
+    __slots__ = ["FriendAddNoticeEvent", "FriendRecallNoticeEvent", "FriendRequestEvent", "GroupAdminNoticeEvent", "GroupBanNoticeEvent", "GroupDecreaseNoticeEvent", "GroupIncreaseNoticeEvent", "GroupMessageEvent", "GroupRecallNoticeEvent", "GroupRequestEvent", "PokeNotifyEvent", "PrivateMessageEvent", "plugins", "self_id"]
     FRIENDADDNOTICEEVENT_FIELD_NUMBER: _ClassVar[int]
     FRIENDRECALLNOTICEEVENT_FIELD_NUMBER: _ClassVar[int]
     FRIENDREQUESTEVENT_FIELD_NUMBER: _ClassVar[int]
@@ -91,11 +91,15 @@ class Event(_message.Message):
     GroupMessageEvent: GroupMessageEvent
     GroupRecallNoticeEvent: GroupRecallNoticeEvent
     GroupRequestEvent: GroupRequestEvent
+    PLUGINS_FIELD_NUMBER: _ClassVar[int]
     POKENOTIFYEVENT_FIELD_NUMBER: _ClassVar[int]
     PRIVATEMESSAGEEVENT_FIELD_NUMBER: _ClassVar[int]
     PokeNotifyEvent: PokeNotifyEvent
     PrivateMessageEvent: PrivateMessageEvent
-    def __init__(self, FriendRequestEvent: _Optional[_Union[FriendRequestEvent, _Mapping]] = ..., GroupRequestEvent: _Optional[_Union[GroupRequestEvent, _Mapping]] = ..., PrivateMessageEvent: _Optional[_Union[PrivateMessageEvent, _Mapping]] = ..., GroupMessageEvent: _Optional[_Union[GroupMessageEvent, _Mapping]] = ..., FriendAddNoticeEvent: _Optional[_Union[FriendAddNoticeEvent, _Mapping]] = ..., FriendRecallNoticeEvent: _Optional[_Union[FriendRecallNoticeEvent, _Mapping]] = ..., GroupIncreaseNoticeEvent: _Optional[_Union[GroupIncreaseNoticeEvent, _Mapping]] = ..., GroupDecreaseNoticeEvent: _Optional[_Union[GroupDecreaseNoticeEvent, _Mapping]] = ..., GroupRecallNoticeEvent: _Optional[_Union[GroupRecallNoticeEvent, _Mapping]] = ..., GroupBanNoticeEvent: _Optional[_Union[GroupBanNoticeEvent, _Mapping]] = ..., GroupAdminNoticeEvent: _Optional[_Union[GroupAdminNoticeEvent, _Mapping]] = ..., PokeNotifyEvent: _Optional[_Union[PokeNotifyEvent, _Mapping]] = ...) -> None: ...
+    SELF_ID_FIELD_NUMBER: _ClassVar[int]
+    plugins: _containers.RepeatedScalarFieldContainer[str]
+    self_id: int
+    def __init__(self, plugins: _Optional[_Iterable[str]] = ..., self_id: _Optional[int] = ..., FriendRequestEvent: _Optional[_Union[FriendRequestEvent, _Mapping]] = ..., GroupRequestEvent: _Optional[_Union[GroupRequestEvent, _Mapping]] = ..., PrivateMessageEvent: _Optional[_Union[PrivateMessageEvent, _Mapping]] = ..., GroupMessageEvent: _Optional[_Union[GroupMessageEvent, _Mapping]] = ..., FriendAddNoticeEvent: _Optional[_Union[FriendAddNoticeEvent, _Mapping]] = ..., FriendRecallNoticeEvent: _Optional[_Union[FriendRecallNoticeEvent, _Mapping]] = ..., GroupIncreaseNoticeEvent: _Optional[_Union[GroupIncreaseNoticeEvent, _Mapping]] = ..., GroupDecreaseNoticeEvent: _Optional[_Union[GroupDecreaseNoticeEvent, _Mapping]] = ..., GroupRecallNoticeEvent: _Optional[_Union[GroupRecallNoticeEvent, _Mapping]] = ..., GroupBanNoticeEvent: _Optional[_Union[GroupBanNoticeEvent, _Mapping]] = ..., GroupAdminNoticeEvent: _Optional[_Union[GroupAdminNoticeEvent, _Mapping]] = ..., PokeNotifyEvent: _Optional[_Union[PokeNotifyEvent, _Mapping]] = ...) -> None: ...
 
 class FaceSegment(_message.Message):
     __slots__ = ["id"]
@@ -447,6 +451,12 @@ class GroupRequestEvent(_message.Message):
     user_id: int
     def __init__(self, time: _Optional[int] = ..., self_id: _Optional[int] = ..., post_type: _Optional[str] = ..., request_type: _Optional[str] = ..., sub_type: _Optional[str] = ..., group_id: _Optional[int] = ..., user_id: _Optional[int] = ..., comment: _Optional[str] = ..., flag: _Optional[str] = ...) -> None: ...
 
+class Head(_message.Message):
+    __slots__ = ["self_id"]
+    SELF_ID_FIELD_NUMBER: _ClassVar[int]
+    self_id: int
+    def __init__(self, self_id: _Optional[int] = ...) -> None: ...
+
 class ImageSegment(_message.Message):
     __slots__ = ["content", "file", "timeout", "type", "url"]
     CONTENT_FIELD_NUMBER: _ClassVar[int]
@@ -642,7 +652,7 @@ class ReplySegment(_message.Message):
     def __init__(self, id: _Optional[str] = ...) -> None: ...
 
 class Request(_message.Message):
-    __slots__ = ["DeleteMsgRequest", "GetGroupInfoRequest", "GetGroupMemberInfoRequest", "GetGroupMemberListRequest", "GetMsgRequest", "GetStrangerInfoRequest", "GroupMessageRequest", "PrivateMessageRequest", "SendGroupForwardMsgRequest", "SendPrivateForwardMsgRequest", "request_id"]
+    __slots__ = ["DeleteMsgRequest", "GetGroupInfoRequest", "GetGroupMemberInfoRequest", "GetGroupMemberListRequest", "GetMsgRequest", "GetStrangerInfoRequest", "GroupMessageRequest", "PrivateMessageRequest", "SendGroupForwardMsgRequest", "SendPrivateForwardMsgRequest", "request_id", "self_id"]
     DELETEMSGREQUEST_FIELD_NUMBER: _ClassVar[int]
     DeleteMsgRequest: DeleteMsgRequest
     GETGROUPINFOREQUEST_FIELD_NUMBER: _ClassVar[int]
@@ -660,15 +670,17 @@ class Request(_message.Message):
     PRIVATEMESSAGEREQUEST_FIELD_NUMBER: _ClassVar[int]
     PrivateMessageRequest: PrivateMessageRequest
     REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    SELF_ID_FIELD_NUMBER: _ClassVar[int]
     SENDGROUPFORWARDMSGREQUEST_FIELD_NUMBER: _ClassVar[int]
     SENDPRIVATEFORWARDMSGREQUEST_FIELD_NUMBER: _ClassVar[int]
     SendGroupForwardMsgRequest: SendGroupForwardMsgRequest
     SendPrivateForwardMsgRequest: SendPrivateForwardMsgRequest
     request_id: str
-    def __init__(self, request_id: _Optional[str] = ..., PrivateMessageRequest: _Optional[_Union[PrivateMessageRequest, _Mapping]] = ..., GroupMessageRequest: _Optional[_Union[GroupMessageRequest, _Mapping]] = ..., DeleteMsgRequest: _Optional[_Union[DeleteMsgRequest, _Mapping]] = ..., GetMsgRequest: _Optional[_Union[GetMsgRequest, _Mapping]] = ..., GetStrangerInfoRequest: _Optional[_Union[GetStrangerInfoRequest, _Mapping]] = ..., GetGroupInfoRequest: _Optional[_Union[GetGroupInfoRequest, _Mapping]] = ..., GetGroupMemberInfoRequest: _Optional[_Union[GetGroupMemberInfoRequest, _Mapping]] = ..., GetGroupMemberListRequest: _Optional[_Union[GetGroupMemberListRequest, _Mapping]] = ..., SendPrivateForwardMsgRequest: _Optional[_Union[SendPrivateForwardMsgRequest, _Mapping]] = ..., SendGroupForwardMsgRequest: _Optional[_Union[SendGroupForwardMsgRequest, _Mapping]] = ...) -> None: ...
+    self_id: int
+    def __init__(self, request_id: _Optional[str] = ..., self_id: _Optional[int] = ..., PrivateMessageRequest: _Optional[_Union[PrivateMessageRequest, _Mapping]] = ..., GroupMessageRequest: _Optional[_Union[GroupMessageRequest, _Mapping]] = ..., DeleteMsgRequest: _Optional[_Union[DeleteMsgRequest, _Mapping]] = ..., GetMsgRequest: _Optional[_Union[GetMsgRequest, _Mapping]] = ..., GetStrangerInfoRequest: _Optional[_Union[GetStrangerInfoRequest, _Mapping]] = ..., GetGroupInfoRequest: _Optional[_Union[GetGroupInfoRequest, _Mapping]] = ..., GetGroupMemberInfoRequest: _Optional[_Union[GetGroupMemberInfoRequest, _Mapping]] = ..., GetGroupMemberListRequest: _Optional[_Union[GetGroupMemberListRequest, _Mapping]] = ..., SendPrivateForwardMsgRequest: _Optional[_Union[SendPrivateForwardMsgRequest, _Mapping]] = ..., SendGroupForwardMsgRequest: _Optional[_Union[SendGroupForwardMsgRequest, _Mapping]] = ...) -> None: ...
 
 class Result(_message.Message):
-    __slots__ = ["DeleteMsgResult", "GetGroupInfoResult", "GetGroupMemberInfoResult", "GetGroupMemberListResult", "GetMsgResult", "GetStrangerInfoResult", "GroupMessageResult", "PrivateMessageResult", "SendGroupForwardMsgResult", "SendPrivateForwardMsgResult", "request_id"]
+    __slots__ = ["DeleteMsgResult", "GetGroupInfoResult", "GetGroupMemberInfoResult", "GetGroupMemberListResult", "GetMsgResult", "GetStrangerInfoResult", "GroupMessageResult", "PrivateMessageResult", "SendGroupForwardMsgResult", "SendPrivateForwardMsgResult", "request_id", "self_id"]
     DELETEMSGRESULT_FIELD_NUMBER: _ClassVar[int]
     DeleteMsgResult: DeleteMsgResult
     GETGROUPINFORESULT_FIELD_NUMBER: _ClassVar[int]
@@ -686,12 +698,14 @@ class Result(_message.Message):
     PRIVATEMESSAGERESULT_FIELD_NUMBER: _ClassVar[int]
     PrivateMessageResult: PrivateMessageResult
     REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    SELF_ID_FIELD_NUMBER: _ClassVar[int]
     SENDGROUPFORWARDMSGRESULT_FIELD_NUMBER: _ClassVar[int]
     SENDPRIVATEFORWARDMSGRESULT_FIELD_NUMBER: _ClassVar[int]
     SendGroupForwardMsgResult: SendGroupForwardMsgResult
     SendPrivateForwardMsgResult: SendPrivateForwardMsgResult
     request_id: str
-    def __init__(self, request_id: _Optional[str] = ..., PrivateMessageResult: _Optional[_Union[PrivateMessageResult, _Mapping]] = ..., GroupMessageResult: _Optional[_Union[GroupMessageResult, _Mapping]] = ..., DeleteMsgResult: _Optional[_Union[DeleteMsgResult, _Mapping]] = ..., GetMsgResult: _Optional[_Union[GetMsgResult, _Mapping]] = ..., GetStrangerInfoResult: _Optional[_Union[GetStrangerInfoResult, _Mapping]] = ..., GetGroupInfoResult: _Optional[_Union[GetGroupInfoResult, _Mapping]] = ..., GetGroupMemberInfoResult: _Optional[_Union[GetGroupMemberInfoResult, _Mapping]] = ..., GetGroupMemberListResult: _Optional[_Union[GetGroupMemberListResult, _Mapping]] = ..., SendPrivateForwardMsgResult: _Optional[_Union[SendPrivateForwardMsgResult, _Mapping]] = ..., SendGroupForwardMsgResult: _Optional[_Union[SendGroupForwardMsgResult, _Mapping]] = ...) -> None: ...
+    self_id: int
+    def __init__(self, request_id: _Optional[str] = ..., self_id: _Optional[int] = ..., PrivateMessageResult: _Optional[_Union[PrivateMessageResult, _Mapping]] = ..., GroupMessageResult: _Optional[_Union[GroupMessageResult, _Mapping]] = ..., DeleteMsgResult: _Optional[_Union[DeleteMsgResult, _Mapping]] = ..., GetMsgResult: _Optional[_Union[GetMsgResult, _Mapping]] = ..., GetStrangerInfoResult: _Optional[_Union[GetStrangerInfoResult, _Mapping]] = ..., GetGroupInfoResult: _Optional[_Union[GetGroupInfoResult, _Mapping]] = ..., GetGroupMemberInfoResult: _Optional[_Union[GetGroupMemberInfoResult, _Mapping]] = ..., GetGroupMemberListResult: _Optional[_Union[GetGroupMemberListResult, _Mapping]] = ..., SendPrivateForwardMsgResult: _Optional[_Union[SendPrivateForwardMsgResult, _Mapping]] = ..., SendGroupForwardMsgResult: _Optional[_Union[SendGroupForwardMsgResult, _Mapping]] = ...) -> None: ...
 
 class RpsSegment(_message.Message):
     __slots__ = []

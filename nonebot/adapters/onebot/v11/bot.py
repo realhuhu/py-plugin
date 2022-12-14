@@ -1,6 +1,6 @@
 # DONE TODO
 import re
-from typing import Any, Union, Dict, List
+from typing import Any, Union, Dict, List, Iterator
 
 from nonebot.message import handle_event
 from nonebot.log import logger
@@ -126,12 +126,12 @@ def _check_nickname(bot: "Bot", event: MessageEvent) -> None:
 
 
 class Bot(BaseBot):
-    def __init__(self, config):
+    def __init__(self, config, self_id: str):
         super().__init__(config)
-        self.request_queue = AsyncQueue("request")
-        self.result_map = AsyncMap("result")
+        self.request_queue = AsyncQueue(self_id)
+        self.result_map = AsyncMap(self_id)
 
-    async def handle_event(self, event: Event) -> None:
+    async def handle_event(self, event: Event, plugins: Iterator[str]) -> None:
         if not event:
             return
         if isinstance(event, MessageEvent):
@@ -140,7 +140,7 @@ class Bot(BaseBot):
             _check_nickname(self, event)
             _check_first_at(self, event)
 
-        await handle_event(self, event)
+        await handle_event(self, event, plugins)
 
     @staticmethod
     async def convert(message: Message) -> List[Dict[str, Any]]:

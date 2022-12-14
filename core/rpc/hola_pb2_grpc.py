@@ -26,7 +26,7 @@ class ChannelStub(object):
                 )
         self.request = channel.unary_stream(
                 '/hola.Channel/request',
-                request_serializer=core_dot_rpc_dot_hola__pb2.Empty.SerializeToString,
+                request_serializer=core_dot_rpc_dot_hola__pb2.Head.SerializeToString,
                 response_deserializer=core_dot_rpc_dot_hola__pb2.Request.FromString,
                 )
         self.result = channel.stream_unary(
@@ -78,7 +78,7 @@ def add_ChannelServicer_to_server(servicer, server):
             ),
             'request': grpc.unary_stream_rpc_method_handler(
                     servicer.request,
-                    request_deserializer=core_dot_rpc_dot_hola__pb2.Empty.FromString,
+                    request_deserializer=core_dot_rpc_dot_hola__pb2.Head.FromString,
                     response_serializer=core_dot_rpc_dot_hola__pb2.Request.SerializeToString,
             ),
             'result': grpc.stream_unary_rpc_method_handler(
@@ -142,7 +142,7 @@ class Channel(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/hola.Channel/request',
-            core_dot_rpc_dot_hola__pb2.Empty.SerializeToString,
+            core_dot_rpc_dot_hola__pb2.Head.SerializeToString,
             core_dot_rpc_dot_hola__pb2.Request.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

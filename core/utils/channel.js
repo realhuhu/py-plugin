@@ -175,9 +175,12 @@ export const channel_test = async client => new Promise(resolve => {
 
 export const channel_setup = async client => {
   let request_call = client.request({
-    Empty: {}
+    self_id: Bot.uin
   })
   let result_call = client.result(() => {
+  })
+  result_call.write({
+    self_id: Bot.uin
   })
   request_call.on("data", request => {
     resolve_request(request).then(raw => {
