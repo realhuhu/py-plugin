@@ -63,7 +63,7 @@ export class PyPlugin extends plugin {
     console.log(command, plugin)
     switch (command) {
       case "下载":
-        if (py_plugin_config.plugins !== "127.0.0.1") {
+        if (py_plugin_config.host !== "127.0.0.1") {
           e.reply("远程模式下不需要下载插件，请使用 #py启用插件")
           return
         }
@@ -77,7 +77,7 @@ export class PyPlugin extends plugin {
         py_plugin_config.plugins.push(plugin)
         break
       case "卸载":
-        if (py_plugin_config.plugins !== "127.0.0.1") {
+        if (py_plugin_config.host !== "127.0.0.1") {
           e.reply("远程模式下不需要卸载插件，请使用 #py禁用插件")
           return
         }
@@ -117,7 +117,7 @@ export class PyPlugin extends plugin {
         }
         break
       case "更新":
-        if (py_plugin_config.plugins !== "127.0.0.1") {
+        if (py_plugin_config.host !== "127.0.0.1") {
           e.reply("远程模式下无法更新插件")
           return
         }
@@ -134,7 +134,7 @@ export class PyPlugin extends plugin {
         e.reply(`已加载插件:\n${py_plugin_config.plugins.join("\n")}`)
         return
       case "更新全部":
-        if (py_plugin_config.plugins !== "127.0.0.1") {
+        if (py_plugin_config.host !== "127.0.0.1") {
           e.reply("远程模式下无法更新插件")
           return
         }
