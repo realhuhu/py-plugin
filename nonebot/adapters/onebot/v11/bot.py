@@ -1,6 +1,9 @@
 # DONE TODO
 import re
-from typing import Any, Union, Dict, List, Iterator
+import os
+from urllib.request import url2pathname
+from urllib.parse import urlparse, unquote
+from typing import Any, Union, Dict, List, Iterator, Optional
 
 from nonebot.message import handle_event
 from nonebot.log import logger
@@ -142,8 +145,13 @@ class Bot(BaseBot):
 
         await handle_event(self, event, plugins)
 
-    @staticmethod
-    async def convert(message: Message) -> List[Dict[str, Any]]:
+    def format_file(self, file):
+        if self.config.server and isinstance(file, str) and file.startswith("file"):
+            with open(os.path.normpath(url2pathname(unquote(urlparse(file).path))), "rb") as f:
+                return f.read()
+        return file
+
+    async def convert(self, message: Message) -> List[Dict[str, Any]]:
         serialized_message = []
         for message_segment in message:
             if message_segment.type == "anonymous":
@@ -176,7 +184,7 @@ class Bot(BaseBot):
                     }
                 }
             elif message_segment.type == "image":
-                file = message_segment.data.get("file")
+                file = self.format_file(message_segment.data.get("file"))
                 data = {
                     "ImageSegment": {
                         "file": file if isinstance(file, str) else None,
@@ -219,7 +227,7 @@ class Bot(BaseBot):
                     }
                 }
             elif message_segment.type == "record":
-                file = message_segment.data.get("file")
+                file = self.format_file(message_segment.data.get("file"))
                 data = {
                     "RecordSegment": {
                         "file": file if isinstance(file, str) else None,
@@ -253,7 +261,7 @@ class Bot(BaseBot):
                     }
                 }
             elif message_segment.type == "video":
-                file = message_segment.data.get("file")
+                file = self.format_file(message_segment.data.get("file"))
                 data = {
                     "VideoSegment": {
                         "file": file if isinstance(file, str) else None,
@@ -306,6 +314,22 @@ class Bot(BaseBot):
             logger.success(f'[回复群聊][群聊{event.group_id}] "{message}"')
             result: GRPCGroupMessageResult = (await self.result_map.get(request_id)).GroupMessageResult
             return result.message_id
+
+    async def send_msg(
+            self,
+            *,
+            message_type: str = ...,
+            user_id: Optional[int] = ...,
+            group_id: Optional[int] = ...,
+            message: Union[str, Message],
+            auto_escape: bool = ...,
+    ) -> str:
+        if message_type == "private" or user_id:
+            return await self.send_private_msg(user_id, message, auto_escape)
+        elif message_type == "group" or group_id:
+            return await self.send_group_msg(group_id, message, auto_escape)
+        else:
+            logger.error("send_msg失败,无法解析")
 
     async def send_private_msg(self, user_id: int, message: Union[str, Message, MessageSegment], auto_escape: bool):
         request_id = await self.request_queue.put({
