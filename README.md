@@ -300,7 +300,7 @@ sudo make && sudo make install
 
 # 5.使用远程
 
-在config.yaml中将host改为159.75.113.47即可，需要使用什么插件就在plugin添加
+在config.yaml中将host改为159.75.113.47即可，需要使用什么插件就在plugin添加  
 目前支持的插件
   - [nonebot-plugin-memes](https://github.com/noneplugin/nonebot-plugin-memes)
   - [nonebot-plugin-petpet](https://github.com/noneplugin/nonebot-plugin-petpet)

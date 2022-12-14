@@ -8,6 +8,7 @@ from .utils import run_sync, is_coroutine_callable
 from .adapters.onebot.v11 import Bot, Dict
 from .config import Config
 from .drivers import GRPCDriver
+from .internal.driver import Driver
 
 _driver: Optional[GRPCDriver] = None
 

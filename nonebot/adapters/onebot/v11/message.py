@@ -318,6 +318,7 @@ class Message(BaseMessage[MessageSegment]):
     def _construct(msg: str) -> Iterable[MessageSegment]:
         def _iter_message(msg: str) -> Iterable[Tuple[str, str]]:
             text_begin = 0
+            py_map = {"图片": "image", "视频": "video", "音频": "record"}
             for cqcode in re.finditer(
                     r"\[CQ:(?P<type>[a-zA-Z0-9-_.]+)"
                     r"(?P<params>"
@@ -328,6 +329,12 @@ class Message(BaseMessage[MessageSegment]):
                 yield "text", msg[text_begin: cqcode.pos + cqcode.start()]
                 text_begin = cqcode.pos + cqcode.end()
                 yield cqcode.group("type"), cqcode.group("params").lstrip(",")
+            for pycode in re.finditer(
+                    r"\[(?P<type>(图片|视频|音频))\((?P<file>.*)\)\]",
+                    msg
+            ):
+                yield py_map[pycode.group("type")], f'file={pycode.group("file")}'
+                text_begin = pycode.pos + pycode.end()
             yield "text", msg[text_begin:]
 
         for type_, data in _iter_message(msg):
