@@ -63,6 +63,10 @@ export class PyPlugin extends plugin {
     console.log(command, plugin)
     switch (command) {
       case "下载":
+        if (py_plugin_config.host !== "127.0.0.1") {
+          e.reply("远程模式下不需要下载插件，直接 #py启用插件 即可")
+          return
+        }
         e.reply(`下载中:${plugin}`)
         err = await this.poetry_run("pip", "install", plugin)
         if (err) {
@@ -73,6 +77,10 @@ export class PyPlugin extends plugin {
         py_plugin_config.plugins.push(plugin)
         break
       case "卸载":
+        if (py_plugin_config.host !== "127.0.0.1") {
+          e.reply("远程模式下不需要卸载插件，直接 #py禁用插件 即可")
+          return
+        }
         if (fs.readdirSync(path.join(py_plugin_path, "plugins")).indexOf(plugin) !== -1) {
           e.reply(`无法卸载:${plugin}，只能卸载通过pip安装和指令安装的插件`)
           return
@@ -109,6 +117,10 @@ export class PyPlugin extends plugin {
         }
         break
       case "更新":
+        if (py_plugin_config.host !== "127.0.0.1") {
+          e.reply("远程模式下无法插件")
+          return
+        }
         e.reply(`更新中:${plugin}`)
         err = await this.poetry_run("pip", "install", "--upgrade", plugin)
         if (err) {
@@ -122,6 +134,10 @@ export class PyPlugin extends plugin {
         e.reply(`已加载插件:\n${py_plugin_config.plugins.join("\n")}`)
         return
       case "更新全部":
+        if (py_plugin_config.host !== "127.0.0.1") {
+          e.reply("远程模式下无法插件")
+          return
+        }
         e.reply(`更新全部插件:\n${py_plugin_config.plugins.join("\n")}`)
         let result = await Promise.all(py_plugin_config.plugins.map(plugin => new Promise(resolve => {
           this.poetry_run("pip", "install", "--upgrade", plugin).then(err => resolve({plugin, err}))

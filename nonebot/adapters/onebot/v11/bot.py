@@ -131,7 +131,7 @@ class Bot(BaseBot):
         self.request_queue = AsyncQueue("request")
         self.result_map = AsyncMap("result")
 
-    async def handle_event(self, event: Event) -> None:
+    async def handle_event(self, plugins, event: Event) -> None:
         if not event:
             return
         if isinstance(event, MessageEvent):
@@ -140,7 +140,7 @@ class Bot(BaseBot):
             _check_nickname(self, event)
             _check_first_at(self, event)
 
-        await handle_event(self, event)
+        await handle_event(self, plugins, event)
 
     @staticmethod
     async def convert(message: Message) -> List[Dict[str, Any]]:

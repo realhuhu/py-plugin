@@ -19,21 +19,22 @@ message OptionCode {
 }
 
 message Event {
+    repeated string plugins = 1;
     oneof event {
-        FriendRequestEvent FriendRequestEvent = 1;
-        GroupRequestEvent GroupRequestEvent = 2;
+        FriendRequestEvent FriendRequestEvent = 2;
+        GroupRequestEvent GroupRequestEvent = 3;
 
-        PrivateMessageEvent PrivateMessageEvent = 3;
-        GroupMessageEvent GroupMessageEvent = 4;
+        PrivateMessageEvent PrivateMessageEvent = 4;
+        GroupMessageEvent GroupMessageEvent = 5;
 
-        FriendAddNoticeEvent FriendAddNoticeEvent = 5;
-        FriendRecallNoticeEvent FriendRecallNoticeEvent = 6;
-        GroupIncreaseNoticeEvent GroupIncreaseNoticeEvent = 7;
-        GroupDecreaseNoticeEvent GroupDecreaseNoticeEvent = 8;
-        GroupRecallNoticeEvent GroupRecallNoticeEvent = 9;
-        GroupBanNoticeEvent GroupBanNoticeEvent = 10;
-        GroupAdminNoticeEvent GroupAdminNoticeEvent = 11;
-        PokeNotifyEvent PokeNotifyEvent = 12;
+        FriendAddNoticeEvent FriendAddNoticeEvent = 6;
+        FriendRecallNoticeEvent FriendRecallNoticeEvent = 7;
+        GroupIncreaseNoticeEvent GroupIncreaseNoticeEvent = 8;
+        GroupDecreaseNoticeEvent GroupDecreaseNoticeEvent = 9;
+        GroupRecallNoticeEvent GroupRecallNoticeEvent = 10;
+        GroupBanNoticeEvent GroupBanNoticeEvent = 11;
+        GroupAdminNoticeEvent GroupAdminNoticeEvent = 12;
+        PokeNotifyEvent PokeNotifyEvent = 13;
     }
 }
 
