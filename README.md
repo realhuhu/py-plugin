@@ -299,4 +299,13 @@ sudo make && sudo make install
 ```
 
 # 5.使用远程
-敬请期待
+
+在config.yaml中将host改为159.75.113.47即可，需要使用什么插件就在plugin添加
+目前支持的插件
+  - nonebot-plugin-memes
+  - nonebot-plugin-petpet
+  - nonebot-plugin-minesweeper
+  - nonebot-plugin-remake
+  - nonebot-plugin-abstract
+  - nonebot-plugin-gspanel
+  - honkai-mys
