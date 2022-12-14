@@ -302,10 +302,25 @@ sudo make && sudo make install
 
 在config.yaml中将host改为159.75.113.47即可，需要使用什么插件就在plugin添加
 目前支持的插件
-  - nonebot-plugin-memes
-  - nonebot-plugin-petpet
-  - nonebot-plugin-minesweeper
-  - nonebot-plugin-remake
-  - nonebot-plugin-abstract
-  - nonebot-plugin-gspanel
-  - honkai-mys
+  - [nonebot-plugin-memes](https://github.com/noneplugin/nonebot-plugin-memes)
+  - [nonebot-plugin-petpet](https://github.com/noneplugin/nonebot-plugin-petpet)
+  - [nonebot-plugin-minesweeper](https://github.com/noneplugin/nonebot-plugin-minesweeper)
+  - [nonebot-plugin-remake](https://github.com/noneplugin/nonebot-plugin-remake)
+  - [nonebot-plugin-abstract](https://github.com/CherryCherries/nonebot-plugin-abstract)
+  - [nonebot-plugin-gspanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)
+  - [honkai-mys](https://github.com/chingkingm/honkai_mys)
+  - [nonebot-plugin-reborn](https://github.com/Aziteee/nonebot_plugin_reborn)
+  - [nonebot-plugin-sky](https://github.com/Kaguya233qwq/nonebot_plugin_sky)
+  - [nonebot-plugin-roll](https://github.com/MinatoAquaCrews/nonebot_plugin_roll)
+  - [nonebot-plugin-analysis-bilibili](https://github.com/mengshouer/nonebot_plugin_analysis_bilibili)
+  - [nonebot-plugin-miragetank](https://github.com/RafuiiChan/nonebot_plugin_miragetank)
+  - [nonebot-plugin-wordle](https://github.com/noneplugin/nonebot-plugin-wordle)
+  - [nonebot-plugin-wordsnorote](https://github.com/GC-ZF/nonebot_plugin_wordsnorote)
+  - [nonebot-plugin-abstract](https://github.com/CherryCherries/nonebot-plugin-abstract)
+  - [nonebot-plugin-mystool](https://github.com/Ljzd-PRO/nonebot-plugin-mystool)
+  - [nonebot-plugin-tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot)
+  - [nonebot-plugin-groupmate-waifu](https://github.com/KarisAya/nonebot_plugin_groupmate_waifu)
+  - [nonebot-plugin-atri](https://github.com/FYWinds/nonebot-plugin-atri)
+  - [nonebot-plugin-withdraw](https://github.com/noneplugin/nonebot-plugin-withdraw)
+  - [nonebot-plugin-abbrreply](https://github.com/anlen123/nonebot_plugin_abbrreply)
+  - [nonebot-plugin-emojimix](https://github.com/noneplugin/nonebot-plugin-emojimix)
