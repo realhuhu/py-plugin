@@ -146,7 +146,7 @@ class Bot(BaseBot):
         await handle_event(self, event, plugins)
 
     def format_file(self, file):
-        if self.config.server and isinstance(file, str) and file.startswith("file"):
+        if hasattr(self.config, "server") and isinstance(file, str) and file.startswith("file"):
             with open(os.path.normpath(url2pathname(unquote(urlparse(file).path))), "rb") as f:
                 return f.read()
         return file
