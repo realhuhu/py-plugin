@@ -27,7 +27,7 @@ export const create_client = config => {
 }
 
 export const setup_server = () => new Promise((resolve, reject) => {
-  if (py_plugin_config.independent || py_plugin_config.plugins !== "127.0.0.1") {
+  if (py_plugin_config.independent || py_plugin_config.host !== "127.0.0.1") {
     resolve()
   } else {
     py_plugin_client.option({code: 1}, function (err, response) {
