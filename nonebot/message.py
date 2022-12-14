@@ -3,7 +3,7 @@ import asyncio
 import contextlib
 from datetime import datetime
 from contextlib import AsyncExitStack
-from typing import TYPE_CHECKING, Any, Set, Dict, Type, Optional, List
+from typing import TYPE_CHECKING, Any, Set, Dict, Type, Optional
 
 from .log import logger
 from .rule import TrieRule
@@ -214,8 +214,15 @@ async def _run_matcher(
     return
 
 
-async def handle_event(bot: "Bot", plugins: Optional[List[str]], event: "Event") -> None:
+async def handle_event(bot: "Bot", event: "Event") -> None:
     show_log = True
+    # log_msg = ""
+    # try:
+    #     log_msg += event.get_log_string()
+    # except NoLogException:
+    #     show_log = False
+    # if show_log:
+    #     logger.opt(colors=True).success(log_msg)
 
     state: Dict[Any, Any] = {}
     dependency_cache: T_DependencyCache = {}
@@ -269,7 +276,7 @@ async def handle_event(bot: "Bot", plugins: Optional[List[str]], event: "Event")
                 _check_matcher(
                     priority, matcher, bot, event, state.copy(), stack, dependency_cache
                 )
-                for matcher in matchers[priority] if matcher.plugin.name.replace("-", "_") in plugins or not plugins
+                for matcher in matchers[priority]
             ]
 
             results = await asyncio.gather(*pending_tasks, return_exceptions=True)

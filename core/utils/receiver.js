@@ -169,10 +169,7 @@ async function parse_anonymous(anonymous) {
 
 async function call_back(data, client, type) {
   return new Promise(resolve => {
-    data && client.match({
-      plugins: py_plugin_config.plugins.map(x => x.replace(/-/g, "_")),
-      ...data
-    }, err => {
+    data && client.match(data, err => {
       resolve(err && `[py-plugin][after-match-${type}] ${err.details}`)
     })
   })

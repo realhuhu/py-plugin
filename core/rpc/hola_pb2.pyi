@@ -70,7 +70,7 @@ class Empty(_message.Message):
     def __init__(self) -> None: ...
 
 class Event(_message.Message):
-    __slots__ = ["FriendAddNoticeEvent", "FriendRecallNoticeEvent", "FriendRequestEvent", "GroupAdminNoticeEvent", "GroupBanNoticeEvent", "GroupDecreaseNoticeEvent", "GroupIncreaseNoticeEvent", "GroupMessageEvent", "GroupRecallNoticeEvent", "GroupRequestEvent", "PokeNotifyEvent", "PrivateMessageEvent", "plugins"]
+    __slots__ = ["FriendAddNoticeEvent", "FriendRecallNoticeEvent", "FriendRequestEvent", "GroupAdminNoticeEvent", "GroupBanNoticeEvent", "GroupDecreaseNoticeEvent", "GroupIncreaseNoticeEvent", "GroupMessageEvent", "GroupRecallNoticeEvent", "GroupRequestEvent", "PokeNotifyEvent", "PrivateMessageEvent"]
     FRIENDADDNOTICEEVENT_FIELD_NUMBER: _ClassVar[int]
     FRIENDRECALLNOTICEEVENT_FIELD_NUMBER: _ClassVar[int]
     FRIENDREQUESTEVENT_FIELD_NUMBER: _ClassVar[int]
@@ -91,13 +91,11 @@ class Event(_message.Message):
     GroupMessageEvent: GroupMessageEvent
     GroupRecallNoticeEvent: GroupRecallNoticeEvent
     GroupRequestEvent: GroupRequestEvent
-    PLUGINS_FIELD_NUMBER: _ClassVar[int]
     POKENOTIFYEVENT_FIELD_NUMBER: _ClassVar[int]
     PRIVATEMESSAGEEVENT_FIELD_NUMBER: _ClassVar[int]
     PokeNotifyEvent: PokeNotifyEvent
     PrivateMessageEvent: PrivateMessageEvent
-    plugins: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, plugins: _Optional[_Iterable[str]] = ..., FriendRequestEvent: _Optional[_Union[FriendRequestEvent, _Mapping]] = ..., GroupRequestEvent: _Optional[_Union[GroupRequestEvent, _Mapping]] = ..., PrivateMessageEvent: _Optional[_Union[PrivateMessageEvent, _Mapping]] = ..., GroupMessageEvent: _Optional[_Union[GroupMessageEvent, _Mapping]] = ..., FriendAddNoticeEvent: _Optional[_Union[FriendAddNoticeEvent, _Mapping]] = ..., FriendRecallNoticeEvent: _Optional[_Union[FriendRecallNoticeEvent, _Mapping]] = ..., GroupIncreaseNoticeEvent: _Optional[_Union[GroupIncreaseNoticeEvent, _Mapping]] = ..., GroupDecreaseNoticeEvent: _Optional[_Union[GroupDecreaseNoticeEvent, _Mapping]] = ..., GroupRecallNoticeEvent: _Optional[_Union[GroupRecallNoticeEvent, _Mapping]] = ..., GroupBanNoticeEvent: _Optional[_Union[GroupBanNoticeEvent, _Mapping]] = ..., GroupAdminNoticeEvent: _Optional[_Union[GroupAdminNoticeEvent, _Mapping]] = ..., PokeNotifyEvent: _Optional[_Union[PokeNotifyEvent, _Mapping]] = ...) -> None: ...
+    def __init__(self, FriendRequestEvent: _Optional[_Union[FriendRequestEvent, _Mapping]] = ..., GroupRequestEvent: _Optional[_Union[GroupRequestEvent, _Mapping]] = ..., PrivateMessageEvent: _Optional[_Union[PrivateMessageEvent, _Mapping]] = ..., GroupMessageEvent: _Optional[_Union[GroupMessageEvent, _Mapping]] = ..., FriendAddNoticeEvent: _Optional[_Union[FriendAddNoticeEvent, _Mapping]] = ..., FriendRecallNoticeEvent: _Optional[_Union[FriendRecallNoticeEvent, _Mapping]] = ..., GroupIncreaseNoticeEvent: _Optional[_Union[GroupIncreaseNoticeEvent, _Mapping]] = ..., GroupDecreaseNoticeEvent: _Optional[_Union[GroupDecreaseNoticeEvent, _Mapping]] = ..., GroupRecallNoticeEvent: _Optional[_Union[GroupRecallNoticeEvent, _Mapping]] = ..., GroupBanNoticeEvent: _Optional[_Union[GroupBanNoticeEvent, _Mapping]] = ..., GroupAdminNoticeEvent: _Optional[_Union[GroupAdminNoticeEvent, _Mapping]] = ..., PokeNotifyEvent: _Optional[_Union[PokeNotifyEvent, _Mapping]] = ...) -> None: ...
 
 class FaceSegment(_message.Message):
     __slots__ = ["id"]
