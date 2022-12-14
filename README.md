@@ -276,35 +276,36 @@ sudo make && sudo make install
 
 ### 6.发送命令无反应
 
-说明python服务未启动，绝大部分出现于node app启动的情况下。启动时有提示`成功建立双向连接`才说明启动成功。如果没有这个提示请重启
+说明python服务未启动，绝大部分出现于node app启动的情况下。启动时有提示`成功建立连接`才说明启动成功。如果没有这个提示请重启
 
 ```shell
-[YzBot][16:49:46.170][INFO] 加载插件中..
-[YzBot][16:49:46.355][INFO] python服务器启动中
-[YzBot][16:49:46.383][INFO] 加载定时任务[2个]
-[YzBot][16:49:46.384][INFO] 加载插件完成[15个]
-[YzBot][16:49:46.384][INFO] -----------
-[PyBot][08:49:47.742]][WARNING] Failed to extract font properties from F:\Bot\YunZaiV3\plugins\py-plugin\data\fonts\consola.ttf: In FT2Font: Can not load face (invalid stream operation; error code 0x55)
-[PyBot][08:49:47.743]][WARNING] Failed to extract font properties from F:\Bot\YunZaiV3\plugins\py-plugin\data\fonts\FZSEJW.ttf: In FT2Font: Can not load face (invalid stream operation; error code 0x55)
-[PyBot][08:49:47.743]][WARNING] Failed to extract font properties from F:\Bot\YunZaiV3\plugins\py-plugin\data\fonts\FZSJ-QINGCRJ.ttf: In FT2Font: Can not load face (invalid stream operation; error code 0x55)
-[PyBot][08:49:47.743]][WARNING] Failed to extract font properties from F:\Bot\YunZaiV3\plugins\py-plugin\data\fonts\FZXS14.ttf: In FT2Font: Can not load face (invalid stream operation; error code 0x55)
-[PyBot][08:49:47.744]][WARNING] Failed to extract font properties from F:\Bot\YunZaiV3\plugins\py-plugin\data\fonts\NotoSansSC-Regular.otf: In FT2Font: Can not load face (invalid stream operation; error code 0x55)
-[PyBot][08:49:47.744]][WARNING] Failed to extract font properties from F:\Bot\YunZaiV3\plugins\py-plugin\data\fonts\NotoSerifSC-Regular.otf: In FT2Font: Can not load face (invalid stream operation; error code 0x55)
-[PyBot][08:49:47.745]][SUCCESS] 插件导入成功： "nonebot_plugin_imageutils"
-[PyBot][08:49:48.511]][SUCCESS] 插件导入成功： "nonebot_plugin_petpet"
-[PyBot][08:49:48.770]][SUCCESS] 插件导入成功： "nonebot_plugin_memes"
-[PyBot][08:49:48.845]][SUCCESS] 插件导入成功： "nonebot_plugin_analysis_bilibili"
-[PyBot][08:49:48.857]][SUCCESS] 插件导入成功： "nonebot_plugin_remake"
-[PyBot][08:49:48.857]][INFO] petpet正在检查资源文件...
-[PyBot][08:49:48.870]][INFO] memes正在检查资源文件...
-[PyBot][08:49:49.745]][INFO] memes资源文件检查完成
-[PyBot][08:49:49.888]][INFO] petpet资源文件检查完成
-[PyBot][08:49:49.888]][INFO] Py服务器已启动
-[YzBot][16:49:49.894][INFO] python服务器启动成功
-[YzBot][16:49:49.895][INFO] py服务器连接成功
-[PyBot][08:49:49.898]][SUCCESS] 成功建立双向连接
+[PyBot][14:03:07.125][INFO] [drivers]Py服务器开机中
+[PyBot][14:03:07.786][SUCCESS] [plugin.manager]插件导入成功： "nonebot_plugin_gspanel"
+[PyBot][14:03:07.909][SUCCESS] [plugin.manager]插件导入成功： "nonebot_plugin_abstract"
+[PyBot][14:03:07.989][SUCCESS] [plugin.manager]插件导入成功： "nonebot_plugin_minesweeper"
+[PyBot][14:03:08.001][SUCCESS] [plugin.manager]插件导入成功： "nonebot_plugin_remake"
+[PyBot][14:03:08.060][SUCCESS] [plugin.manager]插件导入成功： "honkai_mys"
+[PyBot][14:03:08.862][SUCCESS] [plugin.manager]插件导入成功： "nonebot_plugin_memes"
+[PyBot][14:03:10.015][SUCCESS] [plugin.manager]插件导入成功： "nonebot_plugin_petpet"
+[PyBot][14:03:10.015][INFO] [gspanel.__utils__]正在检查面板插件所需资源...
+[PyBot][14:03:10.017][INFO] [gspanel.__utils__]面板插件所需资源检查完毕！
+[PyBot][14:03:10.253][INFO] [htmlrender.browser]使用 chromium 启动
+[PyBot][14:03:10.385][INFO] [htmlrender]Browser Started.
+[PyBot][14:03:10.385][INFO] [memes.download]正在检查资源文件...
+[PyBot][14:03:10.386][INFO] [petpet.download]正在检查资源文件...
+[PyBot][14:03:12.387][INFO] [drivers]Py服务器已开机(Py started)
+[PyBot][14:05:03.188][SUCCESS] [core.server.server]成功建立request连接
+[PyBot][14:05:03.188][SUCCESS] [core.server.server]成功建立result连接
 ```
 
 # 5.使用远程
 
-敬请期待
+在config.yaml中将host改为159.75.113.47即可，需要使用什么插件就在plugin添加
+目前支持的插件
+  - nonebot-plugin-memes
+  - nonebot-plugin-petpet
+  - nonebot-plugin-minesweeper
+  - nonebot-plugin-remake
+  - nonebot-plugin-abstract
+  - nonebot-plugin-gspanel
+  - honkai-mys
