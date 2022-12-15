@@ -183,6 +183,7 @@ export const channel_setup = async client => {
     self_id: Bot.uin
   })
   request_call.on("data", request => {
+    console.log(request);
     resolve_request(request).then(raw => {
       return create_response(request, raw)
     }).then(response => {

@@ -21,9 +21,9 @@ class Bot(abc.ABC):
     _calling_api_hook: Set[T_CallingAPIHook] = set()
     _called_api_hook: Set[T_CalledAPIHook] = set()
 
-    def __init__(self, config):
+    def __init__(self, config, self_id: str):
         self.config = config
-        self.self_id = ""
+        self.self_id = self_id
 
     def __repr__(self) -> str:
         return f"Bot(type={self.type!r})"

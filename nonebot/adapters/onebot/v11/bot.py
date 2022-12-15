@@ -130,7 +130,7 @@ def _check_nickname(bot: "Bot", event: MessageEvent) -> None:
 
 class Bot(BaseBot):
     def __init__(self, config, self_id: str):
-        super().__init__(config)
+        super().__init__(config, self_id)
         self.request_queue = AsyncQueue(self_id)
         self.result_map = AsyncMap(self_id)
 
