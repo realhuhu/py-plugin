@@ -336,6 +336,7 @@ class Bot(BaseBot):
             message: Union[str, Message, MessageSegment],
             auto_escape: bool = False
     ):
+        message = Message(message)
         request_id = await self.request_queue.put({
             "PrivateMessageRequest": {
                 "user_id": user_id,
@@ -352,6 +353,7 @@ class Bot(BaseBot):
             message: Union[str, Message, MessageSegment],
             auto_escape: bool = False
     ):
+        message = Message(message)
         request_id = await self.request_queue.put({
             "GroupMessageRequest": {
                 "group_id": group_id,
