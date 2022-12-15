@@ -286,34 +286,17 @@ class Bot(BaseBot):
             message: Union[str, Message, MessageSegment],
             **kwargs: Any,
     ) -> str:
-        if not isinstance(event, MessageEvent):
-            raise ValueError
-
         message = Message(message)
+
         if kwargs.pop("at_sender", None):
             message = MessageSegment.at(event.sender.user_id) + message
 
         if isinstance(event, PrivateMessageEvent):
-            request_id = await self.request_queue.put({
-                "PrivateMessageRequest": {
-                    "user_id": event.sender.user_id,
-                    "message": await self.convert(message)
-                }
-            })
-            logger.success(f'[回复私聊][用户{event.user_id}] "{message}"')
-            result: GRPCPrivateMessageResult = (await self.result_map.get(request_id)).PrivateMessageResult
-            return result.message_id
-
+            return await self.send_private_msg(event.sender.user_id, message)
         elif isinstance(event, GroupMessageEvent):
-            request_id = await self.request_queue.put({
-                "GroupMessageRequest": {
-                    "group_id": event.group_id,
-                    "message": await self.convert(message)
-                }
-            })
-            logger.success(f'[回复群聊][群聊{event.group_id}] "{message}"')
-            result: GRPCGroupMessageResult = (await self.result_map.get(request_id)).GroupMessageResult
-            return result.message_id
+            return await self.send_group_msg(event.group_id, message)
+        else:
+            logger.error("send失败,无法解析")
 
     async def send_msg(
             self,
@@ -332,7 +315,8 @@ class Bot(BaseBot):
             logger.error("send_msg失败,无法解析")
 
     async def send_private_msg(
-            self, user_id: int,
+            self,
+            user_id: int,
             message: Union[str, Message, MessageSegment],
             auto_escape: bool = False
     ):
