@@ -288,6 +288,10 @@ class Bot(BaseBot):
     ) -> str:
         message = Message(message)
 
+        if not isinstance(event, MessageEvent):
+            logger.error("send失败,无法解析")
+            return ""
+
         if kwargs.pop("at_sender", None):
             message = MessageSegment.at(event.sender.user_id) + message
 
@@ -295,8 +299,6 @@ class Bot(BaseBot):
             return await self.send_private_msg(event.sender.user_id, message)
         elif isinstance(event, GroupMessageEvent):
             return await self.send_group_msg(event.group_id, message)
-        else:
-            logger.error("send失败,无法解析")
 
     async def send_msg(
             self,
@@ -313,6 +315,7 @@ class Bot(BaseBot):
             return await self.send_group_msg(group_id, message, auto_escape)
         else:
             logger.error("send_msg失败,无法解析")
+            return ""
 
     async def send_private_msg(
             self,

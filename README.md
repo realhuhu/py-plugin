@@ -301,14 +301,14 @@ sudo make && sudo make install
 # 5.使用远程
 
 在config.yaml中将host改为159.75.113.47即可，需要使用什么插件就在plugin添加  
-目前支持的插件
+### 支持的插件
+
   - [nonebot-plugin-memes](https://github.com/noneplugin/nonebot-plugin-memes)
   - [nonebot-plugin-petpet](https://github.com/noneplugin/nonebot-plugin-petpet)
   - [nonebot-plugin-minesweeper](https://github.com/noneplugin/nonebot-plugin-minesweeper)
   - [nonebot-plugin-remake](https://github.com/noneplugin/nonebot-plugin-remake)
   - [nonebot-plugin-abstract](https://github.com/CherryCherries/nonebot-plugin-abstract)
   - [nonebot-plugin-gspanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)
-  - [honkai-mys](https://github.com/chingkingm/honkai_mys)
   - [nonebot-plugin-reborn](https://github.com/Aziteee/nonebot_plugin_reborn)
   - [nonebot-plugin-sky](https://github.com/Kaguya233qwq/nonebot_plugin_sky)
   - [nonebot-plugin-roll](https://github.com/MinatoAquaCrews/nonebot_plugin_roll)
@@ -317,10 +317,31 @@ sudo make && sudo make install
   - [nonebot-plugin-wordle](https://github.com/noneplugin/nonebot-plugin-wordle)
   - [nonebot-plugin-wordsnorote](https://github.com/GC-ZF/nonebot_plugin_wordsnorote)
   - [nonebot-plugin-abstract](https://github.com/CherryCherries/nonebot-plugin-abstract)
-  - [nonebot-plugin-mystool](https://github.com/Ljzd-PRO/nonebot-plugin-mystool)
   - [nonebot-plugin-tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot)
   - [nonebot-plugin-groupmate-waifu](https://github.com/KarisAya/nonebot_plugin_groupmate_waifu)
   - [nonebot-plugin-atri](https://github.com/FYWinds/nonebot-plugin-atri)
   - [nonebot-plugin-withdraw](https://github.com/noneplugin/nonebot-plugin-withdraw)
   - [nonebot-plugin-abbrreply](https://github.com/anlen123/nonebot_plugin_abbrreply)
   - [nonebot-plugin-emojimix](https://github.com/noneplugin/nonebot-plugin-emojimix)
+  - [nonebot-plugin-arktools](https://github.com/NumberSir/nonebot_plugin_arktools)
+  - [nonebot-plugin-arkrecord](https://github.com/zheuziihau/nonebot_plugin_arkrecord)
+  - [nonebot-plugin-cchess](https://github.com/noneplugin/nonebot-plugin-cchess)
+  - [nonebot-plugin-animeres](https://github.com/Melodyknit/nonebot_plugin_animeres)
+
+
+### 不支持的插件
+
+  - [nonebot-plugin-mystool](https://github.com/Ljzd-PRO/nonebot-plugin-mystool)  无法分bot存储数据
+  - [honkai-mys](https://github.com/chingkingm/honkai_mys) 无法分bot存储数据
+  - [nonebot-plugin-trpglogger](https://github.com/thereisnodice/TRPGLogger) 无法分bot存储数据
+  - [nonebot-plugin-cocdicer](https://github.com/abrahum/nonebot_plugin_cocdicer) 不支持onebot12
+  - [nonebot-plugin-directlinker](https://github.com/ninthseason/nonebot-plugin-directlinker) 不支持群文件搜索
+  - [nonebot-plugin-myb-exchange](https://github.com/CMHopeSunshine/LittlePaimon/tree/Bot/src/plugins/nonebot_plugin_myb_exchange) 无法分bot发消息
+  - [LittlePaimon](https://github.com/CMHopeSunshine/LittlePaimon/tree/nonebot2) 无法分bot发消息
+  - [nonebot-plugin-novelai](https://github.com/sena-nana/nonebot-plugin-novelai) 没钱买账号
+  - [GenshinUID](https://github.com/KimigaiiWuyi/GenshinUID/tree/nonebot2-beta1) 我绑不上cookie
+
+
+### 未来支持的插件
+  - [nonebot-plugin-epicfree](https://github.com/monsterxcn/nonebot_plugin_epicfree) 待修复bug
+  - [YetAnotherPicSearch](https://github.com/NekoAria/YetAnotherPicSearch) 待修复bug
