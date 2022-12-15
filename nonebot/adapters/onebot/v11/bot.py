@@ -322,7 +322,7 @@ class Bot(BaseBot):
             user_id: Optional[int] = ...,
             group_id: Optional[int] = ...,
             message: Union[str, Message],
-            auto_escape: bool = ...,
+            auto_escape: bool = False,
     ) -> str:
         if message_type == "private" or user_id:
             return await self.send_private_msg(user_id, message, auto_escape)
@@ -331,7 +331,11 @@ class Bot(BaseBot):
         else:
             logger.error("send_msg失败,无法解析")
 
-    async def send_private_msg(self, user_id: int, message: Union[str, Message, MessageSegment], auto_escape: bool):
+    async def send_private_msg(
+            self, user_id: int,
+            message: Union[str, Message, MessageSegment],
+            auto_escape: bool = False
+    ):
         request_id = await self.request_queue.put({
             "PrivateMessageRequest": {
                 "user_id": user_id,
@@ -342,7 +346,12 @@ class Bot(BaseBot):
         result: GRPCPrivateMessageResult = (await self.result_map.get(request_id)).PrivateMessageResult
         return result.message_id
 
-    async def send_group_msg(self, group_id: int, message: Union[str, Message, MessageSegment], auto_escape: bool):
+    async def send_group_msg(
+            self,
+            group_id: int,
+            message: Union[str, Message, MessageSegment],
+            auto_escape: bool = False
+    ):
         request_id = await self.request_queue.put({
             "GroupMessageRequest": {
                 "group_id": group_id,
