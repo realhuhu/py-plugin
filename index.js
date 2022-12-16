@@ -58,7 +58,7 @@ export class PyPlugin extends plugin {
   async py_manage(e) {
     if (!e.isMaster) return
     let command = e.msg.match(/(?<=#?n?py)(下载|卸载|启用|禁用|更新全部|更新|全部)/g)[0]
-    let plugin = e.msg.replace(/#?(n)?py(下载|卸载|启用|禁用|更新|全部|更新全部)插件/, "")
+    let plugin = e.msg.replace(/#?(n)?py(下载|卸载|启用|禁用|更新|全部|更新全部)插件/, "").replace(/\s*/g,"")
     let err, index
     console.log(command, plugin)
     switch (command) {
