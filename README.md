@@ -327,8 +327,7 @@ sudo make && sudo make install
   - [nonebot-plugin-arkrecord](https://github.com/zheuziihau/nonebot_plugin_arkrecord)
   - [nonebot-plugin-cchess](https://github.com/noneplugin/nonebot-plugin-cchess)
   - [nonebot-plugin-animeres](https://github.com/Melodyknit/nonebot_plugin_animeres)
-
-
+  - [nonebot-plugin-epicfree](https://github.com/monsterxcn/nonebot_plugin_epicfree)
 ### 不支持的插件
 
   - [nonebot-plugin-mystool](https://github.com/Ljzd-PRO/nonebot-plugin-mystool)  无法分bot存储数据
@@ -343,5 +342,4 @@ sudo make && sudo make install
 
 
 ### 未来支持的插件
-  - [nonebot-plugin-epicfree](https://github.com/monsterxcn/nonebot_plugin_epicfree) 待修复bug
   - [YetAnotherPicSearch](https://github.com/NekoAria/YetAnotherPicSearch) 待修复bug
