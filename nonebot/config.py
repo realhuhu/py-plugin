@@ -9,6 +9,8 @@ class Env:
 
 class Config(dict):
     def __init__(self, **kwargs):
+        kwargs = {k.lower(): v for k, v in kwargs.items()}
+        print(kwargs)
         kwargs["host"] = IPv4Address(kwargs.get("host", "127.0.0.1"))
         kwargs["port"] = int(kwargs.get("port", 50052))
         kwargs["log_level"] = kwargs.get("log_level", "INFO")
