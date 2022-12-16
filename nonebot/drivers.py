@@ -50,8 +50,8 @@ class GRPCDriver(Driver):
             logger.info("已强制退出Py服务器")
 
     def create_bot(self, self_id: str):
-        logger.success(f"创建连接成功:{self_id}")
         self._bots[self_id] = Bot(self.config, self_id)
+        logger.success(f"创建连接({len(self._bots)})成功:{self_id}")
 
     async def serve(self, plugins):
         logger.info("Py服务器开机中")

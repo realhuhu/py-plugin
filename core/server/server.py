@@ -19,8 +19,12 @@ class Channel(hola_pb2_grpc.ChannelServicer):
             request: hola_pb2.OptionCode,
             context: ServicerContext
     ) -> hola_pb2.OptionCode:
+        if hasattr(nonebot.get_driver().config, "server"):
+            return hola_pb2.OptionCode(code=request.code)
+
         if request.code == 1:
             await self.server.stop(0)
+
         return hola_pb2.OptionCode(code=request.code)
 
     async def match(
