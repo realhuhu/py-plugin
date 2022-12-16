@@ -231,11 +231,13 @@ class Message(List[TMS], abc.ABC):
     def count(self, value: Union[TMS, str]) -> int:
         return len(self[value]) if isinstance(value, str) else super().count(value)
 
-    def append(self: TM, obj: Union[str, TMS]) -> TM:
+    def append(self: TM, obj: Union[str, TMS, dict]) -> TM:
         if isinstance(obj, MessageSegment):
             super().append(obj)
         elif isinstance(obj, str):
             self.extend(self._construct(obj))
+        elif isinstance(obj, dict):
+            super().append(self.get_segment_class()(**obj))
         else:
             raise ValueError(f"Unexpected type: {type(obj)} {obj}")  # pragma: no cover
         return self

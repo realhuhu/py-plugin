@@ -509,11 +509,11 @@ class Bot(BaseBot):
 
     async def send_group_forward_msg(self, group_id: int, messages):
         message = []
-        for i in messages:
+        for i in Message(messages):
             message.append({
-                "name": i["data"]["name"],
-                "uin": str(i["data"]["uin"]),
-                "content": await self.convert(Message(i["data"]["content"])),
+                "name": i.data.get("name") or i.data.get("nickname"),
+                "uin": i.data.get("uin") or i.data.get("user_id"),
+                "content": await self.convert(Message(i.data["content"])),
             })
         request_id = await self.request_queue.put({
             "SendGroupForwardMsgRequest": {
@@ -527,11 +527,11 @@ class Bot(BaseBot):
 
     async def send_private_forward_msg(self, user_id: int, messages):
         message = []
-        for i in messages:
+        for i in Message(messages):
             message.append({
-                "name": i["data"]["name"],
-                "uin": str(i["data"]["uin"]),
-                "content": await self.convert(Message(i["data"]["content"])),
+                "name": i.data.get("name") or i.data.get("nickname"),
+                "uin": i.data.get("uin") or i.data.get("user_id"),
+                "content": await self.convert(Message(i.data["content"])),
             })
         request_id = await self.request_queue.put({
             "SendPrivateForwardMsgRequest": {
