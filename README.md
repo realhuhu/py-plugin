@@ -1,4 +1,4 @@
-# ！！！Windows系统不要用git执行命令，用cmd执行命令！！！
+# ！！！Windows系统不要用git执行命令，用cmd或Powershell执行命令！！！
 
 # 1.前期准备
 
@@ -8,13 +8,13 @@
 
 ​	如果是v2版本云崽，输入`npm install iconv-lite @grpc/grpc-js @grpc/proto-loader`
 
-​	如果是v3版本云崽，输入`pnpm install iconv-lite @grpc/grpc-js @grpc/proto-loader  -w`
+​	如果是v3版本云崽，输入`pnpm add iconv-lite @grpc/grpc-js @grpc/proto-loader -w`
 
 ### 安装python
 
 ​	python版本>=3.8 **不要使用python3.11**
 
-​	安装教程请百度
+​	Linux系统安装python教程请百度
 
 ​	ubuntu系统使用apt-get即可，如果是centos系统，建议采用源码编译的方式，编译前请一定要安装以下依赖！否则以后可能出现无法安装依赖的情况
 
@@ -22,9 +22,12 @@
 zlib-devel bzip2-devel expat-devel gdbm-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gcc make libffi-devel
 ```
 
-​	centos安装python可以参考https://blog.csdn.net/weixin_41287692/article/details/105434826
+​	centos系统安装python可以参考https://blog.csdn.net/weixin_41287692/article/details/105434826
 
 ​	注意，安装完成后不要删除源码文件夹，未来可能有用
+
+​	Windows安装python，请下载软件一路安装过去，[python3.9.10](https://www.123pan.com/s/jqW9-w78JH.html)
+
 
 ### 安装poetry
 
@@ -39,13 +42,15 @@ poetry可执行文件位于```$HOME/.local/bin```，将其添加到环境变量�
 
 **Windows**
 
+请按住shift键+右键打开Powershell运行下面命令
+
 ```shell
 (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
 ```
 
 注意这里的```python```指你的python解释器，若你的python对应的命令为python3或其它自定义的命令，请注意替换原命令中的```python```
 
-然后将```%APPDATA%\Python\Scripts```添加到PATH环境变量
+然后将```%APPDATA%\Python\Scripts```添加到PATH环境变量(位置在右键此电脑→属性→高级系统设置→环境变量)
 
 等待安装完成，输入`poetry`查看是否有输出，有则说明poetry安装完成
 
@@ -53,10 +58,10 @@ poetry可执行文件位于```$HOME/.local/bin```，将其添加到环境变量�
 
 ### 2.1 安装
 
-​	进入云崽plugins目录，输入
+​	进入云崽根目录，输入
 
 ```shell
-git clone https://github.com/realhuhu/py-plugin.git
+git clone https://github.com/realhuhu/py-plugin.git ./plugins/py-plugin/
 ```
 
 ​	然后安装python依赖，首先进入py-plugin目录，然后有两种选择：
