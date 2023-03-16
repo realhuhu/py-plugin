@@ -106,7 +106,7 @@ const create_response = async (request, raw) => {
       break
     case "GroupMessageRequest":
       data = {
-        GroupMessageRequest: {
+        GroupMessageResult: {
           message_id: `group|${load.group_id}|${raw.message_id}`
         }
       }
