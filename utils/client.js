@@ -8,35 +8,36 @@ import {setup_channel} from "./channel.js";
 import {request_receiver, message_receiver, notice_receiver} from "./receiver.js";
 
 const py_logger = raw => {
-  try {
-    let head = chalk.blue(raw.match(/\[.*?\]\[.*?\]/g)[0])
-    let level = raw.match(/(?<=\[.*?\]\[.*?\])\[.*?\]/g)[0]
-    switch (level) {
-      case"[TRACE]":
-        level = chalk.grey(level)
-        break
-      case"[DEBUG]":
-        level = chalk.gray(level)
-        break
-      case"[SUCCESS]":
-        level = chalk.green(level)
-        break
-      case"[WARNING]":
-        level = chalk.yellow(level)
-        break
-      case"[ERROR]":
-        level = chalk.red(level)
-        break
-      case"[CRITICAL]":
-        level = chalk.bgRed(level)
-        break
-    }
-    let name = chalk.yellow(raw.match(/(?<=\[.*?\]\[.*?\]\[.*?\] )\[.*?\]/g)[0])
-    let message = raw.match(/(?<=\[.*?\]\[.*?\]\[.*?\] \[.*?\]).*/g)[0]
-    console.log(head + level, name, message);
-  } catch {
-    console.log(raw);
-  }
+  // try {
+  //   let head = chalk.blue(raw.match(/\[.*?\]\[.*?\]/g)[0])
+  //   let level = raw.match(/(?<=\[.*?\]\[.*?\])\[.*?\]/g)[0]
+  //   switch (level) {
+  //     case"[TRACE]":
+  //       level = chalk.grey(level)
+  //       break
+  //     case"[DEBUG]":
+  //       level = chalk.gray(level)
+  //       break
+  //     case"[SUCCESS]":
+  //       level = chalk.green(level)
+  //       break
+  //     case"[WARNING]":
+  //       level = chalk.yellow(level)
+  //       break
+  //     case"[ERROR]":
+  //       level = chalk.red(level)
+  //       break
+  //     case"[CRITICAL]":
+  //       level = chalk.bgRed(level)
+  //       break
+  //   }
+  //   let name = chalk.yellow(raw.match(/(?<=\[.*?\]\[.*?\]\[.*?\] )\[.*?\]/g)[0])
+  //   let message = raw.match(/(?<=\[.*?\]\[.*?\]\[.*?\] \[.*?\]).*/g)[0]
+  //   console.log(head + level, name, message);
+  // } catch {
+  //   console.log(raw);
+  // }
+  process.stdout.write(raw);
 }
 export const create_client = config => {
   const packageDefinition = protoLoader.loadSync(path.join(py_plugin_path, "yunzai_nonebot", "rpc", "hola.proto"), {
@@ -100,9 +101,9 @@ export const setup_server = () => new Promise((resolve, reject) => {
 
 export const setup_client = (ignore, retry) => {
   setup_channel(py_plugin_client, ignore, retry).then(channel => {
-    Bot.on("request", event => request_receiver(channel,event))
-    Bot.on("message", event => message_receiver(channel,event))
-    Bot.on("notice", event => notice_receiver(channel,event))
+    Bot.on("request", event => request_receiver(channel, event))
+    Bot.on("message", event => message_receiver(channel, event))
+    Bot.on("notice", event => notice_receiver(channel, event))
   }).catch(err => {
     logger.error(err)
   })
