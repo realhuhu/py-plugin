@@ -83,9 +83,9 @@ const resolve_request = async request => {
   switch (type) {
     case "send_message":
       let {serialized_message, source, anonymous, music} = await parse_grpc_message(load.message), client
-      client = load.detail_type === "group" || load.group_id ? Bot.pickGroup(load.group_id) : await Bot.pickFriend(load.user_id)
+      client = (load.detail_type === "group" || Number(load.group_id)) ? Bot.pickGroup(load.group_id) : Bot.pickFriend(load.user_id)
       if (music) return await client.shareMusic(music.type, music.id)
-      return client.sendMsg(serialized_message, source, anonymous)
+      return await client.sendMsg(serialized_message, source, anonymous)
     case "delete_message":
       return await Bot.deleteMsg(load.message_id)
     case "get_message":
