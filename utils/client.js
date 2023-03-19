@@ -63,7 +63,7 @@ export const setup_server = () => new Promise((resolve, reject) => {
     resolve("[py-plugin] 连接服务器中，请确保Py服务器已启动")
   } else {
     py_plugin_client.Option({code: 1}, function (err, response) {
-      let encoding = py_plugin_config.encoding || process.platform === "win32" ? "gbk" : "utf-8"
+      let encoding = py_plugin_config.encoding || (process.platform === "win32" ? "gbk" : "utf-8")
       logger.info("[py-plugin] python服务器启动中");
       const cmd = spawn(
         "poetry",
@@ -75,7 +75,7 @@ export const setup_server = () => new Promise((resolve, reject) => {
       );
 
       cmd.stdout.on("data", data => {
-        py_logger(iconv.decode(data, encoding).toString());
+        py_logger(iconv.decode(data, encoding));
         if (data.toString().includes("Py started")) {
           py_plugin_client.Option({code: 100}, function (err, response) {
             response.code === "100" ? resolve("[py-plugin] python服务器启动成功") : reject(err || response)
