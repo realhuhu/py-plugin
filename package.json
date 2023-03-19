@@ -1,0 +1,23 @@
+{
+  "name": "py-plugin",
+  "description": "Yunzai-Bot插件",
+  "type": "module",
+  "module": "index.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "云崽",
+    "原神",
+    "Yunzai-Bot",
+    "Genshin"
+  ],
+  "author": "realhuhu",
+  "license": "GPL",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.8.12",
+    "@grpc/proto-loader": "^0.7.5",
+    "iconv-lite": "^0.6.3"
+  }
+}

@@ -1,9 +1,8 @@
 import fs from "node:fs";
 import YAML from 'yaml'
 import path from "path";
-import plugin from '../../lib/plugins/plugin.js'
 import {exec} from "child_process";
-import {create_client, setup_server, setup_client} from "./core/client/client.js";
+import {create_client, setup_server, setup_client} from "./utils/client.js";
 
 
 global.py_plugin_path = path.join(process.cwd(), "plugins", "py-plugin");
@@ -17,9 +16,7 @@ global.py_plugin_client = create_client(py_plugin_config)
 setup_server().then(msg => {
   logger.mark(msg)
   setup_client()
-}).catch(err => {
-  logger.error(err)
-})
+}).catch(logger.error)
 
 export class PyPlugin extends plugin {
   constructor() {
@@ -47,7 +44,6 @@ export class PyPlugin extends plugin {
         },
       ]
     })
-
   }
 
   async py_help(e) {
@@ -58,9 +54,8 @@ export class PyPlugin extends plugin {
   async py_manage(e) {
     if (!e.isMaster) return
     let command = e.msg.match(/(?<=#?n?py)(下载|卸载|启用|禁用|更新全部|更新|全部)/g)[0]
-    let plugin = e.msg.replace(/#?(n)?py(下载|卸载|启用|禁用|更新|全部|更新全部)插件/, "").replace(/\s*/g,"")
+    let plugin = e.msg.replace(/#?(n)?py(下载|卸载|启用|禁用|更新|全部|更新全部)插件/, "").replace(/\s*/g, "")
     let err, index
-    console.log(command, plugin)
     switch (command) {
       case "下载":
         if (py_plugin_config.host !== "127.0.0.1") {
@@ -188,7 +183,6 @@ export class PyPlugin extends plugin {
     }
   }
 
-
   async poetry_run(...args) {
     return new Promise(resolve => {
       exec(
@@ -211,3 +205,4 @@ export class PyPlugin extends plugin {
     })
   }
 }
+
