@@ -8,7 +8,7 @@
 
 ​	如果是v2版本云崽，输入`npm install iconv-lite @grpc/grpc-js @grpc/proto-loader`
 
-​	如果是v3版本云崽，输入`pnpm add iconv-lite @grpc/grpc-js @grpc/proto-loader -w`
+​	如果是v3版本云崽，输入`pnpm install --filter=py-plugin `
 
 ### 安装python
 

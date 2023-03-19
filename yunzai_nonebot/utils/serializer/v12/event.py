@@ -115,4 +115,3 @@ def event_to_v12(event: hola_pb2.Event) -> v12.event.Event:
             message_id=str(event.message_id),
         )
 
-    raise SerializeEventError(event)
