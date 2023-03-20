@@ -1,14 +1,8 @@
-# ！！！Windows系统不要用git执行命令，用cmd或Powershell执行命令！！！
+# ！！！Windows系统不要用git执行命令，用Powershell执行命令！！！
+
+# 3月19日提示：如果你在3月19日更新了py-plugin版本，请先在py-plugin目录输入poetry install
 
 # 1.前期准备
-
-### 安装nodejs 依赖
-
-​	cd到云崽根目录
-
-​	如果是v2版本云崽，输入`npm install iconv-lite @grpc/grpc-js @grpc/proto-loader`
-
-​	如果是v3版本云崽，输入`pnpm install --filter=py-plugin `
 
 ### 安装python
 
@@ -54,9 +48,9 @@ poetry可执行文件位于```$HOME/.local/bin```，将其添加到环境变量�
 
 等待安装完成，输入`poetry`查看是否有输出，有则说明poetry安装完成
 
-# 2.使用
+# 2. 插件使用
 
-### 2.1 安装
+### 2.1 拉取代码
 
 ​	进入云崽根目录，输入
 
@@ -64,9 +58,19 @@ poetry可执行文件位于```$HOME/.local/bin```，将其添加到环境变量�
 git clone https://github.com/realhuhu/py-plugin.git ./plugins/py-plugin/
 ```
 
-​	然后安装python依赖，首先进入py-plugin目录，然后有两种选择：
+### 2.2 安装nodejs 依赖
 
-**方法一（推荐）：**	
+​	cd到云崽根目录
+
+​	如果是v2版本云崽，输入`npm install iconv-lite @grpc/grpc-js @grpc/proto-loader`
+
+​	如果是v3版本云崽，输入`pnpm install --filter=py-plugin `	
+
+### 2.3 安装nodejs 依赖
+
+​	首先进入py-plugin目录，然后有两种选择：
+
+​	**方法一（推荐）：**	
 
 ```shell
 poetry install
@@ -78,7 +82,7 @@ poetry install
 Creating virtualenv py-plugin-8_cve6GP-py3.8 in /root/.cache/pypoetry/virtualenvs
 ```
 
-**方法二：**
+​	**方法二：**
 
 ```shell
 poetry run pip install -r requirements.txt --trusted-host mirrors.aliyun.com
@@ -90,17 +94,15 @@ poetry run pip install -r requirements.txt --trusted-host mirrors.aliyun.com
 
 ### 2.2.1 获取插件
 
-​	插件可以通过clone到plugins文件夹或者poetry run pip install的方式安装，内置的两个表情制作插件采用了前一种方式。
+​	插件可以通过clone到plugins文件夹或者poetry run pip install的方式安装
 
 ​	可以在github搜索或前往[nonebot商店](https://v2.nonebot.dev/store)获取插件
 
 ​	获取插件后，需要将插件名称添加到config.yaml中，重启云崽即可
 
-​	未来将支持通过命令下载/卸载和启动/禁用插件
-
 #### 命令安装（推荐）
 
-对于可以pip install或nb plugin install的插件，可以使用```#py下载插件```指令进行安装
+​	对于可以pip install或nb plugin install的插件，可以使用```#py下载插件```指令进行安装
 
 ![image-20221120202102903](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211202021020.png)
 
@@ -150,36 +152,64 @@ nonebot机器人的命令以/开头，注意替换为#
 
 ### 2.2.2 指令
 
+​	#py帮助：查看py的指令
+
 ​	#py下载插件+插件名称：自动运行poetry run pip install 插件，并将插件添加到config.yaml的plugins下，之后重启服务器
+
+​	#py卸载插件+插件名称：自动运行poetry run pip uninstall 插件，并将将插件从config.yaml的plugins下删除，之后重启服务器
 
 ​	#py禁用插件+插件名称：将插件从config.yaml的plugins下删除，之后重启服务器
 
 ​	#py启用插件+插件名称：将插件添加到config.yaml的plugins下，之后重启服务器
 
+​	#py全部插件：查看config.yaml的plugins下所有插件
+
+​	#py更新插件+插件名称：更新指定插件，**不支持git安装的插件**
+
+​	#py更新全部插件+插件名称：更新全部插件，**不支持git安装的插件**
+
+​	#py重启：重新启动py服务器
+
+​	#py查看配置，查看当前的config.yaml
+
+​	#py修改配置+指令：修改配置。如`#py修改配置config.nickname=["云崽","yunzai"]`
+
+
+
 ### 2.2.3 配置文件
 
 ```yaml
-log_level: INFO #大于等于log_level的日志才会打印
-command_start: #命令前缀，可以写多个
+log_level: INFO #日志等级
+command_start:
   - "#"
 command_sep:
   - "."
-nickname: #机器人的名字
+nickname:
   - 云崽
   - yunzai
-superusers: #机器人主人
+superusers:
   - 123456
   - 654321
-need_at: no #是否需要@机器人或加上机器人名字才能触发指令，默认no
-plugins: #运行哪些插件
-  - nonebot-plugin-petpet
-  - nonebot-plugin-memes
-  # 加载哪些插件就继续往下加
-host: 127.0.0.1 #python服务器启动的地址
-port: 50052 #python服务器启动的端口
-independent: false #py服务器是否独立运行，开启此项后需要你手动启动py服务器，然后启动云崽
-encoding: gbk #如果输出乱码，可以开启这项试试看，主要是windows平台
-setup_check: utf-8 #启动时是否检查资源
+need_at: no #是否需要@机器人或加上机器人名字，默认no
+plugins: #加载哪些插件就往下加
+host: 127.0.0.1
+port: 50052
+
+#输出编码，默认windows使用gbk，其它平台使用utf-8
+#开启后强制使用你指定的编码
+#encoding:
+
+#是否分开启动py服务器与云崽本体，默认不分开
+#开启后需要你手动启动py服务器，再启动云崽
+#independent: true
+
+#开机时检查，执行on_startup注册的函数，如petpet开机时会检查更新素材，默认会检查
+#开启下面选项跳过检查
+#setup_check: false
+
+#关机时检查，执行on_shutdown注册的函数，默认会检查
+#开启下面选项跳过检查
+#shutdown_check: false
 ```
 
 若插件支持配置，在config.yaml中配置即可
@@ -188,34 +218,7 @@ setup_check: utf-8 #启动时是否检查资源
 
 ![image-20221117164106239](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202211171641279.png)
 
-# 3.部分插件安装方法
-
-**直接 #py下载插件[插件名] 或 进入py-plugin目录输入 poetry run pip install [插件名]**
-
-| 插件名称                                                     | 备注                                       |
-| ------------------------------------------------------------ | ------------------------------------------ |
-| [nonebot-plugin-status](https://github.com/cscs181/QQ-GitHub-Bot/tree/master/src/plugins/nonebot_plugin_status) |                                            |
-| [haruka-bot](https://github.com/SK-415/HarukaBot)            |                                            |
-| [nonebot-plugin-picsearcher](https://github.com/synodriver/nonebot_plugin_picsearcher)                               | 需要配置，如exhentai的cookie，具体见原插件 |
-| [nonebot-plugin-biliav](https://github.com/knva/nonebot_plugin_biliav) |                                            |
-| [nonebot-plugin-abbrreply](https://github.com/anlen123/nonebot_plugin_abbrreply) | 无需命令前缀                               |
-| [nonebot-plugin-guess](https://github.com/ffreemt/nonebot-plugin-guess-game) | 自带题库少，需要自定义题目                 |
-| [nonebot-plugin-r6s](https://github.com/abrahum/nonebot_plugin_r6s) |                                            |
-
-太多了，懒得写了...
-
-**git clone安装**
-
-*崩坏三*
-
-在py的plugins文件夹git clone -b nonebot https://github.com/chingkingm/honkai_mys.git
-到plugins/honkai_mys 把config_default.yaml复制一份，命名为config.yaml，填上自己cookie
-在py plugin文件夹输入poetry run pip install genshinhelper sqlitedict
-最后在config.yaml加上插件honkai_mys就行了
-
-也许还有其它插件，懒得找了...
-
-# 4.常见问题
+# 3. 常见问题
 
 如果启动时报错，先重启一两遍看看能不能正常运行，如果还是报错按下面方法修复
 
@@ -236,8 +239,6 @@ cnpm install @grpc/grpc-js @grpc/proto-loader
 如果还是报错，可能是node版本问题，建议重装node
 
 #### 2.poetry install 报错
-
-![image-1](https://cos.miao.seutools.com/readme/error-http.jpg)
 
 原因：需要安装 Microsoft Visual C++ 14.0 以上
 
@@ -305,46 +306,4 @@ sudo make && sudo make install
 
 # 5.使用远程
 
-在config.yaml中将host改为159.75.113.47即可，需要使用什么插件就在config.yaml的plugins添加  
-### 支持的插件
-
-  - [nonebot-plugin-memes](https://github.com/noneplugin/nonebot-plugin-memes)
-  - [nonebot-plugin-petpet](https://github.com/noneplugin/nonebot-plugin-petpet)
-  - [nonebot-plugin-minesweeper](https://github.com/noneplugin/nonebot-plugin-minesweeper)
-  - [nonebot-plugin-remake](https://github.com/noneplugin/nonebot-plugin-remake)
-  - [nonebot-plugin-abstract](https://github.com/CherryCherries/nonebot-plugin-abstract)
-  - [nonebot-plugin-gspanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)
-  - [nonebot-plugin-reborn](https://github.com/Aziteee/nonebot_plugin_reborn)
-  - [nonebot-plugin-sky](https://github.com/Kaguya233qwq/nonebot_plugin_sky)
-  - [nonebot-plugin-roll](https://github.com/MinatoAquaCrews/nonebot_plugin_roll)
-  - [nonebot-plugin-analysis-bilibili](https://github.com/mengshouer/nonebot_plugin_analysis_bilibili)
-  - [nonebot-plugin-miragetank](https://github.com/RafuiiChan/nonebot_plugin_miragetank)
-  - [nonebot-plugin-wordle](https://github.com/noneplugin/nonebot-plugin-wordle)
-  - [nonebot-plugin-wordsnorote](https://github.com/GC-ZF/nonebot_plugin_wordsnorote)
-  - [nonebot-plugin-abstract](https://github.com/CherryCherries/nonebot-plugin-abstract)
-  - [nonebot-plugin-tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot)
-  - [nonebot-plugin-groupmate-waifu](https://github.com/KarisAya/nonebot_plugin_groupmate_waifu)
-  - [nonebot-plugin-atri](https://github.com/FYWinds/nonebot-plugin-atri)
-  - [nonebot-plugin-withdraw](https://github.com/noneplugin/nonebot-plugin-withdraw)
-  - [nonebot-plugin-abbrreply](https://github.com/anlen123/nonebot_plugin_abbrreply)
-  - [nonebot-plugin-emojimix](https://github.com/noneplugin/nonebot-plugin-emojimix)
-  - [nonebot-plugin-arktools](https://github.com/NumberSir/nonebot_plugin_arktools)
-  - [nonebot-plugin-arkrecord](https://github.com/zheuziihau/nonebot_plugin_arkrecord)
-  - [nonebot-plugin-cchess](https://github.com/noneplugin/nonebot-plugin-cchess)
-  - [nonebot-plugin-animeres](https://github.com/Melodyknit/nonebot_plugin_animeres)
-  - [nonebot-plugin-epicfree](https://github.com/monsterxcn/nonebot_plugin_epicfree)
-### 不支持的插件
-
-  - [nonebot-plugin-mystool](https://github.com/Ljzd-PRO/nonebot-plugin-mystool)  无法分bot存储数据
-  - [honkai-mys](https://github.com/chingkingm/honkai_mys) 无法分bot存储数据
-  - [nonebot-plugin-trpglogger](https://github.com/thereisnodice/TRPGLogger) 无法分bot存储数据
-  - [nonebot-plugin-cocdicer](https://github.com/abrahum/nonebot_plugin_cocdicer) 不支持onebot12
-  - [nonebot-plugin-directlinker](https://github.com/ninthseason/nonebot-plugin-directlinker) 不支持群文件搜索
-  - [nonebot-plugin-myb-exchange](https://github.com/CMHopeSunshine/LittlePaimon/tree/Bot/src/plugins/nonebot_plugin_myb_exchange) 无法分bot发消息
-  - [LittlePaimon](https://github.com/CMHopeSunshine/LittlePaimon/tree/nonebot2) 无法分bot发消息
-  - [nonebot-plugin-novelai](https://github.com/sena-nana/nonebot-plugin-novelai) 没钱买账号
-  - [GenshinUID](https://github.com/KimigaiiWuyi/GenshinUID/tree/nonebot2-beta1) 我绑不上cookie
-
-
-### 未来支持的插件
-  - [YetAnotherPicSearch](https://github.com/NekoAria/YetAnotherPicSearch) 待修复bug
+​	待更新
