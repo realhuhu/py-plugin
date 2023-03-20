@@ -109,10 +109,12 @@ class GRPCDriver(Driver):
 
 def hijack_driver(config_path: Path):
     fields = Config.__fields__
-    yaml = dict(OmegaConf.load(config_path))
-    for k, v in yaml.items():
+    yaml = {}
+    for k, v in dict(OmegaConf.load(config_path)).items():
         if field := fields.get(k):
-            yaml[k] = field.default.__class__(v)
+            yaml[k.lower()] = field.default.__class__(v)
+        else:
+            yaml[k.lower()] = v
     yaml["plugins"] = yaml.get("plugins") or []
     logger.info(yaml)
     config = Config.parse_obj(yaml)
