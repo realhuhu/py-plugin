@@ -56,9 +56,6 @@ class GRPCDriver(Driver):
         logger.info("开机中..")
         await self.servicer.server.start()
 
-        for plugin in set(filter(lambda x: x, self.config.plugins)):
-            nonebot.load_plugin(plugin.replace("-", "_"))
-
         if self.config.dict().get("setup_check") is not False:
             logger.info("检查与更新插件资源...")
             await self.startup()
