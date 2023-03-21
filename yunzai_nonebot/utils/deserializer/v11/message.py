@@ -113,8 +113,8 @@ def make_forward(bot, nodes) -> List[GRPCTyping.ForwardSegment]:
     for node in nodes:
         data = node["data"]
         forward_list.append(hola_pb2.ForwardSegment(
-            name=data["name"],
-            uin=data["uin"],
+            name=data.get("name") or "2661467107",
+            uin=str(data.get("uin") or "云崽"),
             content=convert(bot, Message(data["content"]))
         ))
     return forward_list
