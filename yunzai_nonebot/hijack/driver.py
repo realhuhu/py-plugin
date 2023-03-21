@@ -98,8 +98,10 @@ class GRPCDriver(Driver):
                 try:
                     grpc_request_type = grpc_request.WhichOneof("to_server_type")
                     if grpc_request_type == "event":
+                        logger.debug(f"收到消息:{grpc_request}")
                         asyncio.create_task(self.adapter.bots[self_id].handle_event(grpc_request.event))
                     elif grpc_request_type == "result":
+                        logger.debug(f"收到请求结果:{grpc_request}")
                         asyncio.create_task(result_store.set(grpc_request.result.request_id, grpc_request.result))
                 except Exception:
                     logger.error(traceback.format_exc())

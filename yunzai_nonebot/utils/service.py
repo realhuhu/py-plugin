@@ -57,6 +57,7 @@ class Servicer(hola_pb2_grpc.Pipe):
             self.connections[self_id] = asyncio.create_task(self.handler(self_id, request_iterator))
             logger.success(f"{init.head.self_id}已连接")
             async for response in AsyncQueue(self_id):
+                logger.debug(f"发出请求:{response}")
                 yield response
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)
