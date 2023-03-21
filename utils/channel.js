@@ -1,16 +1,52 @@
 import {parse_sender, parse_message} from "./receiver.js";
 import {setup_client} from "./client.js";
 
+
 const parse_user = x => {
   return {
     user_id: x.user_id,
-    nickname: x.nickname
+    nickname: x.nickname,
+    sex: x.sex,
+    age: x.age,
   }
 }
+
+const parse_friend = x => {
+  return {
+    user_id: x.user_id,
+    nickname: x.nickname,
+    sex: x.sex,
+    remark: x.remark,
+  }
+}
+
+const parse_member = x => {
+  return {
+    group_id: x.group_id,
+    user_id: x.user_id,
+    nickname: x.nickname,
+    card: x.card,
+    sex: x.sex,
+    age: x.age,
+    area: x.area,
+    join_time: x.join_time,
+    last_sent_time: x.last_sent_time,
+    level: x.level,
+    role: x.role,
+    title: x.title,
+    title_expire_time: x.title_expire_time,
+    shutup_timestamp: x.shutup_time,
+  }
+}
+
 const parse_group = x => {
   return {
     group_id: x.group_id,
-    group_name: x.group_name
+    group_name: x.group_name,
+    group_create_time: x.create_time,
+    group_level: x.grade,
+    member_count: x.member_count,
+    max_member_count: x.max_member_count,
   }
 }
 
@@ -173,22 +209,22 @@ const create_result = async (request, raw) => {
       data = raw
       break
     case "get_user_info":
-      data = parse_user(raw)
+      data = {user: parse_user(raw)}
       break
     case "get_friend_list":
-      data = {friend_list: [...raw.values()].map(parse_user)}
+      data = {friend_list: [...raw.values()].map(parse_friend)}
       break
     case "get_group_info":
-      data = parse_group(raw)
+      data = {group: parse_group(raw)}
       break
     case "get_group_list":
       data = {group_list: [...raw.values()].map(parse_group)}
       break
     case "get_group_member_info":
-      data = parse_user(raw)
+      data = {member: parse_member(raw)}
       break
     case "get_group_member_list":
-      data = {member_list: [...raw.values()].map(parse_user)}
+      data = {member_list: [...raw.values()].map(parse_member)}
       break
     case "delete_message":
     case "send_like":

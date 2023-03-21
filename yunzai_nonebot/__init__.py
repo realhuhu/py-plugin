@@ -4,7 +4,8 @@ from pathlib import Path
 import nonebot
 from nonebot import *
 
-from .hijack import hijack_driver, hijack_logger, hijack_adapter, hijack_params, hijack_event, hijack_matcher
+from .hijack import hijack_driver, hijack_logger, hijack_adapter, hijack_params, hijack_event, hijack_matcher, \
+    hijack_plugin
 
 
 def init(config_path: Path):
@@ -23,6 +24,7 @@ def init(config_path: Path):
     adapter = hijack_adapter()
     driver.register_adapter(adapter)
     hijack_matcher()
+    hijack_plugin()
 
 
 def run(*args, **kwargs):

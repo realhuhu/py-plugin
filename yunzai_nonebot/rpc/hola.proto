@@ -115,14 +115,45 @@ message Result {
     }
 }
 //--------model---------//
-message User {
-    int64 user_id = 1;
-    string nickname = 2;
-}
 
 message Group {
     int64 group_id = 1;
     string group_name = 2;
+    int64 group_create_time = 3;
+    int64 group_level = 4;
+    int64 member_count = 5;
+    int64 max_member_count = 6;
+}
+
+message User {
+    int64 user_id = 1;
+    string nickname = 2;
+    string sex = 3;
+    string age = 4;
+}
+
+message Friend {
+    int64 user_id = 1;
+    string nickname = 2;
+    string sex = 3;
+    string remark = 4;
+}
+
+message Member {
+    int64 group_id = 1;
+    int64 user_id = 2;
+    string nickname = 3;
+    string card = 4;
+    string sex = 5;
+    int64 age = 6;
+    string area = 7;
+    int64 join_time = 8;
+    int64 last_sent_time = 9;
+    int64 level = 10;
+    string role = 11;
+    string title = 12;
+    int64 title_expire_time = 13;
+    int64 shutup_timestamp = 14;
 }
 
 message Sender {
@@ -553,21 +584,19 @@ message GetUserInfoRequest {//v11{get_stranger_info} v12{get_user_info}
     int64 user_id = 1;
 }
 message GetUserInfoResult {
-    int64 user_id = 1;
-    string nickname = 2;
+    User user = 1;
 }
 
 message GetFriendListRequest {} //v11{get_friend_list} v12{get_friend_list}
 message GetFriendListResult {
-    repeated User friend_list = 1;
+    repeated Friend friend_list = 1;
 }
 
 message GetGroupInfoRequest {//v11{get_group_info} v12{get_group_info}
     int64 group_id = 1;
 }
 message GetGroupInfoResult {
-    int64 group_id = 1;
-    string group_name = 2;
+    Group group = 1;
 }
 
 message GetGroupListRequest {} //v11{get_group_list} v12{get_group_list}
@@ -580,15 +609,14 @@ message GetGroupMemberInfoRequest {//v11{get_group_member_info} v12{get_group_me
     int64 user_id = 2;
 }
 message GetGroupMemberInfoResult {
-    int64 user_id = 1;
-    string nickname = 2;
+    Member member = 1;
 }
 
 message GetGroupMemberListRequest {//v11{get_group_member_list} v12{get_group_member_list}
     int64 group_id = 1;
 }
 message GetGroupMemberListResult {
-    repeated User group_member_list = 1;
+    repeated Member group_member_list = 1;
 }
 
 message SendForwardMessageRequest {

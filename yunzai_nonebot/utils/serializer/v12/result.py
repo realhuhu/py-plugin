@@ -19,7 +19,7 @@ def result_to_v12(result: hola_pb2.Result):
             "user_displayname": "PyBot"
         }
     if result_type == "get_user_info":
-        result = result.get_user_info
+        result = result.get_user_info.user
         return {
             "user_id": str(result.user_id),
             "user_name": result.nickname,
@@ -35,7 +35,7 @@ def result_to_v12(result: hola_pb2.Result):
             } for friend in result.friend_list
         ]
     if result_type == "get_group_info":
-        result = result.get_group_info
+        result = result.get_group_info.group
         return {
             "group_id": str(result.group_id),
             "group_name": result.group_name,
@@ -49,7 +49,7 @@ def result_to_v12(result: hola_pb2.Result):
             } for group in result.group_list
         ]
     if result_type == "get_group_member_info":
-        result = result.get_group_member_info
+        result = result.get_group_member_info.member
         return {
             "user_id": str(result.user_id),
             "user_name": result.nickname,

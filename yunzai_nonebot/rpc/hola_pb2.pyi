@@ -113,6 +113,18 @@ class ForwardSegment(_message.Message):
     uin: str
     def __init__(self, name: _Optional[str] = ..., uin: _Optional[str] = ..., content: _Optional[_Iterable[_Union[SendibleMessageSegment, _Mapping]]] = ...) -> None: ...
 
+class Friend(_message.Message):
+    __slots__ = ["nickname", "remark", "sex", "user_id"]
+    NICKNAME_FIELD_NUMBER: _ClassVar[int]
+    REMARK_FIELD_NUMBER: _ClassVar[int]
+    SEX_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    nickname: str
+    remark: str
+    sex: str
+    user_id: int
+    def __init__(self, user_id: _Optional[int] = ..., nickname: _Optional[str] = ..., sex: _Optional[str] = ..., remark: _Optional[str] = ...) -> None: ...
+
 class FriendAddNoticeEvent(_message.Message):
     __slots__ = ["self_id", "time", "user_id"]
     SELF_ID_FIELD_NUMBER: _ClassVar[int]
@@ -168,8 +180,8 @@ class GetFriendListRequest(_message.Message):
 class GetFriendListResult(_message.Message):
     __slots__ = ["friend_list"]
     FRIEND_LIST_FIELD_NUMBER: _ClassVar[int]
-    friend_list: _containers.RepeatedCompositeFieldContainer[User]
-    def __init__(self, friend_list: _Optional[_Iterable[_Union[User, _Mapping]]] = ...) -> None: ...
+    friend_list: _containers.RepeatedCompositeFieldContainer[Friend]
+    def __init__(self, friend_list: _Optional[_Iterable[_Union[Friend, _Mapping]]] = ...) -> None: ...
 
 class GetGroupInfoRequest(_message.Message):
     __slots__ = ["group_id"]
@@ -178,12 +190,10 @@ class GetGroupInfoRequest(_message.Message):
     def __init__(self, group_id: _Optional[int] = ...) -> None: ...
 
 class GetGroupInfoResult(_message.Message):
-    __slots__ = ["group_id", "group_name"]
-    GROUP_ID_FIELD_NUMBER: _ClassVar[int]
-    GROUP_NAME_FIELD_NUMBER: _ClassVar[int]
-    group_id: int
-    group_name: str
-    def __init__(self, group_id: _Optional[int] = ..., group_name: _Optional[str] = ...) -> None: ...
+    __slots__ = ["group"]
+    GROUP_FIELD_NUMBER: _ClassVar[int]
+    group: Group
+    def __init__(self, group: _Optional[_Union[Group, _Mapping]] = ...) -> None: ...
 
 class GetGroupListRequest(_message.Message):
     __slots__ = []
@@ -204,12 +214,10 @@ class GetGroupMemberInfoRequest(_message.Message):
     def __init__(self, group_id: _Optional[int] = ..., user_id: _Optional[int] = ...) -> None: ...
 
 class GetGroupMemberInfoResult(_message.Message):
-    __slots__ = ["nickname", "user_id"]
-    NICKNAME_FIELD_NUMBER: _ClassVar[int]
-    USER_ID_FIELD_NUMBER: _ClassVar[int]
-    nickname: str
-    user_id: int
-    def __init__(self, user_id: _Optional[int] = ..., nickname: _Optional[str] = ...) -> None: ...
+    __slots__ = ["member"]
+    MEMBER_FIELD_NUMBER: _ClassVar[int]
+    member: Member
+    def __init__(self, member: _Optional[_Union[Member, _Mapping]] = ...) -> None: ...
 
 class GetGroupMemberListRequest(_message.Message):
     __slots__ = ["group_id"]
@@ -220,8 +228,8 @@ class GetGroupMemberListRequest(_message.Message):
 class GetGroupMemberListResult(_message.Message):
     __slots__ = ["group_member_list"]
     GROUP_MEMBER_LIST_FIELD_NUMBER: _ClassVar[int]
-    group_member_list: _containers.RepeatedCompositeFieldContainer[User]
-    def __init__(self, group_member_list: _Optional[_Iterable[_Union[User, _Mapping]]] = ...) -> None: ...
+    group_member_list: _containers.RepeatedCompositeFieldContainer[Member]
+    def __init__(self, group_member_list: _Optional[_Iterable[_Union[Member, _Mapping]]] = ...) -> None: ...
 
 class GetMessageRequest(_message.Message):
     __slots__ = ["message_id"]
@@ -262,20 +270,26 @@ class GetUserInfoRequest(_message.Message):
     def __init__(self, user_id: _Optional[int] = ...) -> None: ...
 
 class GetUserInfoResult(_message.Message):
-    __slots__ = ["nickname", "user_id"]
-    NICKNAME_FIELD_NUMBER: _ClassVar[int]
-    USER_ID_FIELD_NUMBER: _ClassVar[int]
-    nickname: str
-    user_id: int
-    def __init__(self, user_id: _Optional[int] = ..., nickname: _Optional[str] = ...) -> None: ...
+    __slots__ = ["user"]
+    USER_FIELD_NUMBER: _ClassVar[int]
+    user: User
+    def __init__(self, user: _Optional[_Union[User, _Mapping]] = ...) -> None: ...
 
 class Group(_message.Message):
-    __slots__ = ["group_id", "group_name"]
+    __slots__ = ["group_create_time", "group_id", "group_level", "group_name", "max_member_count", "member_count"]
+    GROUP_CREATE_TIME_FIELD_NUMBER: _ClassVar[int]
     GROUP_ID_FIELD_NUMBER: _ClassVar[int]
+    GROUP_LEVEL_FIELD_NUMBER: _ClassVar[int]
     GROUP_NAME_FIELD_NUMBER: _ClassVar[int]
+    MAX_MEMBER_COUNT_FIELD_NUMBER: _ClassVar[int]
+    MEMBER_COUNT_FIELD_NUMBER: _ClassVar[int]
+    group_create_time: int
     group_id: int
+    group_level: int
     group_name: str
-    def __init__(self, group_id: _Optional[int] = ..., group_name: _Optional[str] = ...) -> None: ...
+    max_member_count: int
+    member_count: int
+    def __init__(self, group_id: _Optional[int] = ..., group_name: _Optional[str] = ..., group_create_time: _Optional[int] = ..., group_level: _Optional[int] = ..., member_count: _Optional[int] = ..., max_member_count: _Optional[int] = ...) -> None: ...
 
 class GroupAdminNoticeEvent(_message.Message):
     __slots__ = ["group_id", "self_id", "sub_type", "time", "user_id"]
@@ -448,6 +462,38 @@ class LocationSegment(_message.Message):
     lon: str
     title: str
     def __init__(self, lat: _Optional[str] = ..., lon: _Optional[str] = ..., title: _Optional[str] = ..., content: _Optional[str] = ...) -> None: ...
+
+class Member(_message.Message):
+    __slots__ = ["age", "area", "card", "group_id", "join_time", "last_sent_time", "level", "nickname", "role", "sex", "shutup_timestamp", "title", "title_expire_time", "user_id"]
+    AGE_FIELD_NUMBER: _ClassVar[int]
+    AREA_FIELD_NUMBER: _ClassVar[int]
+    CARD_FIELD_NUMBER: _ClassVar[int]
+    GROUP_ID_FIELD_NUMBER: _ClassVar[int]
+    JOIN_TIME_FIELD_NUMBER: _ClassVar[int]
+    LAST_SENT_TIME_FIELD_NUMBER: _ClassVar[int]
+    LEVEL_FIELD_NUMBER: _ClassVar[int]
+    NICKNAME_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    SEX_FIELD_NUMBER: _ClassVar[int]
+    SHUTUP_TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
+    TITLE_EXPIRE_TIME_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    age: int
+    area: str
+    card: str
+    group_id: int
+    join_time: int
+    last_sent_time: int
+    level: int
+    nickname: str
+    role: str
+    sex: str
+    shutup_timestamp: int
+    title: str
+    title_expire_time: int
+    user_id: int
+    def __init__(self, group_id: _Optional[int] = ..., user_id: _Optional[int] = ..., nickname: _Optional[str] = ..., card: _Optional[str] = ..., sex: _Optional[str] = ..., age: _Optional[int] = ..., area: _Optional[str] = ..., join_time: _Optional[int] = ..., last_sent_time: _Optional[int] = ..., level: _Optional[int] = ..., role: _Optional[str] = ..., title: _Optional[str] = ..., title_expire_time: _Optional[int] = ..., shutup_timestamp: _Optional[int] = ...) -> None: ...
 
 class MusicSegment(_message.Message):
     __slots__ = ["id", "type"]
@@ -1029,12 +1075,16 @@ class ToServer(_message.Message):
     def __init__(self, head: _Optional[_Union[Head, _Mapping]] = ..., event: _Optional[_Union[Event, _Mapping]] = ..., result: _Optional[_Union[Result, _Mapping]] = ...) -> None: ...
 
 class User(_message.Message):
-    __slots__ = ["nickname", "user_id"]
+    __slots__ = ["age", "nickname", "sex", "user_id"]
+    AGE_FIELD_NUMBER: _ClassVar[int]
     NICKNAME_FIELD_NUMBER: _ClassVar[int]
+    SEX_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
+    age: str
     nickname: str
+    sex: str
     user_id: int
-    def __init__(self, user_id: _Optional[int] = ..., nickname: _Optional[str] = ...) -> None: ...
+    def __init__(self, user_id: _Optional[int] = ..., nickname: _Optional[str] = ..., sex: _Optional[str] = ..., age: _Optional[str] = ...) -> None: ...
 
 class VideoSegment(_message.Message):
     __slots__ = ["content", "file", "timeout", "url"]

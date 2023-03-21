@@ -78,7 +78,7 @@ export const setup_server = () => new Promise((resolve, reject) => {
         py_logger(iconv.decode(data, encoding));
         if (data.toString().includes("Py started")) {
           py_plugin_client.Option({code: 100}, function (err, response) {
-            response.code === "100" ? resolve("[py-plugin] python服务器启动成功") : reject(err || response)
+            response && response.code === "100" ? resolve("[py-plugin] python服务器启动成功") : reject(err || response)
           });
         }
       });
