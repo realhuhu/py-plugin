@@ -19,6 +19,9 @@ class OneBot(Bot):
         self.v12 = v12.bot.Bot(adapter, self_id, "yunzai", "yunzai")
 
     async def send(self, event: OneEvent, message: Union[str, Message, MessageSegment], **kwargs: Any) -> Any:
+        if kwargs.pop("at_sender", None):
+            message = v11.MessageSegment.at(event.v11.sender.user_id) + message
+
         return await self.adapter._call_api(
             self.v11,
             "send_msg",
