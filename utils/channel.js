@@ -187,7 +187,7 @@ const create_result = async (request, raw) => {
   let data
   switch (type) {
     case "send_message":
-      data = {message_id: raw.message_id, time: raw.time}
+      data = {message_id: raw?.message_id, time: raw?.time}
       break
     case "get_message":
       data = {

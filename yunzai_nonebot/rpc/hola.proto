@@ -431,7 +431,7 @@ message ContactSegment {
 
 message MusicSegment {
     string type = 1;//音乐来源 {qq|163|xm}
-    string id = 2;//歌曲ID
+    int64 id = 2;//歌曲ID
 }//(发送)
 
 message CustomMusicSegment {

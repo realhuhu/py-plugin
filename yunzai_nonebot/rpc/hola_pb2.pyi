@@ -499,9 +499,9 @@ class MusicSegment(_message.Message):
     __slots__ = ["id", "type"]
     ID_FIELD_NUMBER: _ClassVar[int]
     TYPE_FIELD_NUMBER: _ClassVar[int]
-    id: str
+    id: int
     type: str
-    def __init__(self, type: _Optional[str] = ..., id: _Optional[str] = ...) -> None: ...
+    def __init__(self, type: _Optional[str] = ..., id: _Optional[int] = ...) -> None: ...
 
 class OptionCode(_message.Message):
     __slots__ = ["code"]
