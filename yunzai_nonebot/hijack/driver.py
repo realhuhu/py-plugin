@@ -112,7 +112,7 @@ class GRPCDriver(Driver):
 def hijack_driver(config_path: Path):
     fields = Config.__fields__
     yaml = {}
-    for k, v in dict(OmegaConf.load(config_path)).items():
+    for k, v in OmegaConf.to_object(OmegaConf.load(config_path)).items():
         if field := fields.get(k):
             yaml[k.lower()] = field.default.__class__(v)
         else:
