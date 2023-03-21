@@ -117,21 +117,21 @@ def result_to_v11(result: hola_pb2.Result):
         result = result.get_group_member_list
         return [
             {
-                "group_id": group_member.group_id,
-                "user_id": group_member.user_id,
-                "nickname": group_member.nickname,
-                "card": group_member.card,
-                "sex": group_member.sex,
-                "age": group_member.age,
-                "area": group_member.area,
-                "join_time": group_member.join_time,
-                "last_sent_time": group_member.last_sent_time,
-                "level": group_member.level,
-                "role": group_member.role,
-                "title": group_member.title,
-                "title_expire_time": group_member.title_expire_time,
-                "shutup_timestamp": group_member.shutup_timestamp,
-            } for group_member in result.group_member_list
+                "group_id": member.group_id,
+                "user_id": member.user_id,
+                "nickname": member.nickname,
+                "card": member.card,
+                "sex": member.sex,
+                "age": member.age,
+                "area": member.area,
+                "join_time": member.join_time,
+                "last_sent_time": member.last_sent_time,
+                "level": member.level,
+                "role": member.role,
+                "title": member.title,
+                "title_expire_time": member.title_expire_time,
+                "shutup_timestamp": member.shutup_timestamp,
+            } for member in result.member_list
         ]
     if result_type == "send_forward_message":
         result = result.send_forward_message

@@ -226,10 +226,10 @@ class GetGroupMemberListRequest(_message.Message):
     def __init__(self, group_id: _Optional[int] = ...) -> None: ...
 
 class GetGroupMemberListResult(_message.Message):
-    __slots__ = ["group_member_list"]
-    GROUP_MEMBER_LIST_FIELD_NUMBER: _ClassVar[int]
-    group_member_list: _containers.RepeatedCompositeFieldContainer[Member]
-    def __init__(self, group_member_list: _Optional[_Iterable[_Union[Member, _Mapping]]] = ...) -> None: ...
+    __slots__ = ["member_list"]
+    MEMBER_LIST_FIELD_NUMBER: _ClassVar[int]
+    member_list: _containers.RepeatedCompositeFieldContainer[Member]
+    def __init__(self, member_list: _Optional[_Iterable[_Union[Member, _Mapping]]] = ...) -> None: ...
 
 class GetMessageRequest(_message.Message):
     __slots__ = ["message_id"]

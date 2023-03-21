@@ -616,7 +616,7 @@ message GetGroupMemberListRequest {//v11{get_group_member_list} v12{get_group_me
     int64 group_id = 1;
 }
 message GetGroupMemberListResult {
-    repeated Member group_member_list = 1;
+    repeated Member member_list = 1;
 }
 
 message SendForwardMessageRequest {
