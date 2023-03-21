@@ -306,4 +306,7 @@ sudo make && sudo make install
 
 # 5.使用远程
 
-​	待更新
+​	在config.yaml中将host改为159.75.113.47，port改成50053即可，需要使用什么插件就在config.yaml的plugins添加 。[支持的插件](https://gitee.com/realhuhu/py-plugin/issues/I6655A)
+
+![截图_20230321232514](https://typora-1304907527.cos.ap-nanjing.myqcloud.com/202303212325967.png)
+
