@@ -4,6 +4,13 @@ import path from "path";
 import {exec} from "child_process";
 import {create_client, setup_server, setup_client} from "./utils/client.js";
 
+if (typeof segment === "undefined") {
+  try {
+    global.segment = (await import("icqq")).segment
+  } catch {
+    global.segment = (await import("oicq")).segment
+  }
+}
 
 global.py_plugin_path = path.join(process.cwd(), "plugins", "py-plugin");
 if (!fs.existsSync(path.join(py_plugin_path, "config.yaml"))) {
