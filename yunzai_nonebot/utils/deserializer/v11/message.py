@@ -1,6 +1,6 @@
 from typing import List
 
-from nonebot.adapters.onebot.v11 import Message, Bot
+from nonebot.adapters.onebot.v11 import Message, Bot, MessageSegment
 from yunzai_nonebot.rpc import hola_pb2, typing as GRPCTyping
 from .utils import format_file
 
@@ -111,10 +111,17 @@ def convert(bot: Bot, message: Message) -> List[GRPCTyping.SendibleMessageSegmen
 def make_forward(bot, nodes) -> List[GRPCTyping.ForwardSegment]:
     forward_list = []
     for node in nodes:
-        data = node["data"]
-        forward_list.append(hola_pb2.ForwardSegment(
-            name=data.get("name") or "2661467107",
-            uin=str(data.get("uin") or "云崽"),
-            content=convert(bot, Message(data["content"]))
-        ))
+        if isinstance(node, MessageSegment):
+            forward_list.append(hola_pb2.ForwardSegment(
+                name=node.data.get("user_id") or "2661467107",
+                uin=str(node.data.get("nickname") or "云崽"),
+                content=convert(bot, node.data.get("content"))
+            ))
+        else:
+            data = node["data"]
+            forward_list.append(hola_pb2.ForwardSegment(
+                name=data.get("name") or "2661467107",
+                uin=str(data.get("uin") or "云崽"),
+                content=convert(bot, Message(data["content"]))
+            ))
     return forward_list
