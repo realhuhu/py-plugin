@@ -92,6 +92,9 @@ def _check_at_me(bot, event: v11.event.MessageEvent) -> None:
 
 
 def _check_nickname(bot, event: v11.event.MessageEvent) -> None:
+    if len(event.message) == 0:
+        return
+
     first_msg_seg = event.message[0]
     if first_msg_seg.type != "text":
         return
