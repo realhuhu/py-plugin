@@ -8,7 +8,6 @@ def result_to_v11(result: hola_pb2.Result):
         result = result.send_message
         return {
             "message_id": result.message_id,
-            "time": result.time
         }
     if result_type == "delete_message":
         return None
@@ -137,5 +136,4 @@ def result_to_v11(result: hola_pb2.Result):
         result = result.send_forward_message
         return {
             "message_id": result.message_id,
-            "time": result.time
         }
