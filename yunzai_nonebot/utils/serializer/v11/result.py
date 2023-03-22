@@ -1,5 +1,5 @@
 from yunzai_nonebot.rpc import hola_pb2
-from .utils import sender_parser, message_parser
+from .utils import sender_parser, message_parser, message_id_to_int
 
 
 def result_to_v11(result: hola_pb2.Result):
@@ -7,14 +7,14 @@ def result_to_v11(result: hola_pb2.Result):
     if result_type == "send_message":
         result = result.send_message
         return {
-            "message_id": result.message_id,
+            "message_id": message_id_to_int(result.message_id),
         }
     if result_type == "delete_message":
         return None
     if result_type == "get_message":
         result = result.get_message
         return {
-            "message_id": result.message_id,
+            "message_id": message_id_to_int(result.message_id),
             "real_id": result.real_id,
             "time": result.time,
             "sender": sender_parser(result.sender),
@@ -135,5 +135,5 @@ def result_to_v11(result: hola_pb2.Result):
     if result_type == "send_forward_message":
         result = result.send_forward_message
         return {
-            "message_id": result.message_id,
+            "message_id": message_id_to_int(result.message_id),
         }
