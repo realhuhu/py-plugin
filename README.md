@@ -154,6 +154,10 @@ nonebot机器人的命令以/开头，注意替换为#
 
 ​	#py帮助：查看py的指令
 
+​	#py信息：查看py解释器的文件夹
+
+​	#py信息+插件名称：查看插件安装位置
+
 ​	#py下载插件+插件名称：自动运行poetry run pip install 插件，并将插件添加到config.yaml的plugins下，之后重启服务器
 
 ​	#py卸载插件+插件名称：自动运行poetry run pip uninstall 插件，并将将插件从config.yaml的plugins下删除，之后重启服务器

@@ -38,6 +38,10 @@ export class PyPlugin extends plugin {
           fnc: 'py_help'
         },
         {
+          reg: "#?n?py信息.*",
+          fnc: 'py_info'
+        },
+        {
           reg: "#?n?py(下载|卸载|启用|禁用|更新|全部|更新全部)插件.*",
           fnc: 'py_manage'
         },
@@ -58,11 +62,26 @@ export class PyPlugin extends plugin {
     e.reply("py下载|卸载|启用|禁用|更新插件+插件名\npy更新全部插件\npy全部插件\npy重启\npy查看|修改配置")
   }
 
+  async py_info(e) {
+    let plugin = e.msg.replace(/#?n?py信息/, "").replace(/\s*/g, "")
+    let res
+    if (!plugin) {
+      e.reply(`python文件夹:${(await this.poetry("env", "list", "--full-path")).msg}`)
+    } else {
+      res = await this.poetry("run", "pip", "show", plugin)
+      if (res.err) {
+        e.reply(`出错了:${res.err}，请确认插件名正确`)
+      } else {
+        e.reply(res.msg)
+      }
+    }
+  }
+
   async py_manage(e) {
     if (!e.isMaster) return
     let command = e.msg.match(/(?<=#?n?py)(下载|卸载|启用|禁用|更新全部|更新|全部)/g)[0]
     let plugin = e.msg.replace(/#?(n)?py(下载|卸载|启用|禁用|更新|全部|更新全部)插件/, "").replace(/\s*/g, "")
-    let err, index
+    let res, index
     switch (command) {
       case "下载":
         if (py_plugin_config.host !== "127.0.0.1") {
@@ -70,9 +89,9 @@ export class PyPlugin extends plugin {
           return
         }
         e.reply(`下载中:${plugin}`)
-        err = await this.poetry_run("pip", "install", plugin)
-        if (err) {
-          e.reply(`出错了:${err}`)
+        res = await this.poetry("run", "pip", "install", plugin)
+        if (res.err) {
+          e.reply(`出错了:${res.err}`)
           return
         }
         e.reply(`下载完成:${plugin}`)
@@ -88,9 +107,9 @@ export class PyPlugin extends plugin {
           return
         }
         e.reply(`卸载中:${plugin}`)
-        err = await this.poetry_run("pip", "uninstall", plugin, "-y")
-        if (err) {
-          e.reply(`出错了:${err}`)
+        res = await this.poetry("run", "pip", "uninstall", plugin, "-y")
+        if (res.err) {
+          e.reply(`出错了:${res.err}`)
           return
         }
         e.reply(`卸载完成:${plugin}`)
@@ -124,9 +143,9 @@ export class PyPlugin extends plugin {
           return
         }
         e.reply(`更新中:${plugin}`)
-        err = await this.poetry_run("pip", "install", "--upgrade", plugin)
-        if (err) {
-          e.reply(`出错了:${err}`)
+        res = await this.poetry("run", "pip", "install", "--upgrade", plugin)
+        if (res.err) {
+          e.reply(`出错了:${res.err}`)
           return
         }
         e.reply(`更新完成:${plugin}`)
@@ -142,7 +161,7 @@ export class PyPlugin extends plugin {
         }
         e.reply(`更新全部插件:\n${py_plugin_config.plugins.join("\n")}`)
         let result = await Promise.all(py_plugin_config.plugins.map(plugin => new Promise(resolve => {
-          this.poetry_run("pip", "install", "--upgrade", plugin).then(err => resolve({plugin, err}))
+          this.poetry("run", "pip", "install", "--upgrade", plugin).then(res => resolve({plugin, err: res.err}))
         })))
 
         let msg = `更新完成:\n${result.filter(x => !x.err).map(x => x.plugin).join("\n")}`
@@ -190,13 +209,16 @@ export class PyPlugin extends plugin {
     }
   }
 
-  async poetry_run(...args) {
+  async poetry(...args) {
     return new Promise(resolve => {
       exec(
-        `poetry run ${args.join(" ")}`,
+        `poetry ${args.join(" ")}`,
         {cwd: py_plugin_path},
         (error, stdout, stderr) => {
-          resolve(error && error.message.replace(/WARNING.*?\r\n/g, ""))
+          resolve({
+            err: error && error.message.replace(/WARNING.*?\r\n/g, ""),
+            msg: stdout
+          })
         }
       );
     })
