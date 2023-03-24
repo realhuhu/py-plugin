@@ -16,6 +16,13 @@ class OneAdapter(V11Adapter, V12Adapter):
         return "OneAdapter"
 
     async def _call_api(self, bot: Bot, api: str, **data: Any) -> Any:
+        if api == "get_group_at_all_remain":
+            return {
+                "can_at_all": True,
+                "remain_at_all_count_for_group": 100,
+                "remain_at_all_count_for_uin": 100,
+            }
+
         if isinstance(bot, V11Bot):
             request_type, request = v11_to_request(bot, api, **data)
             request_id = await AsyncQueue(bot.self_id).put(request_type, request)
