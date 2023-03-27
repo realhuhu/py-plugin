@@ -1,6 +1,6 @@
 # ！！！Windows系统不要用git执行命令，用Powershell执行命令！！！
 
-# 3月19日提示：如果你在3月19日更新了py-plugin版本，请先在py-plugin目录输入poetry install
+# 3月19日提示：如果你在3月19日更新了py-plugin版本，请先在py-plugin目录输入poetry run pip install nonebot2 nonebot-adapter-onebot
 
 # 1.前期准备
 

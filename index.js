@@ -63,6 +63,7 @@ export class PyPlugin extends plugin {
   }
 
   async py_info(e) {
+    if (!e.isMaster) return
     let plugin = e.msg.replace(/#?n?py信息/, "").replace(/\s*/g, "")
     let res
     if (!plugin) {
