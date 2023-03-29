@@ -72,17 +72,23 @@ class GRPCDriver(Driver):
 
     async def startup(self):
         for handler in self.startup_funcs:
-            if asyncio.iscoroutinefunction(handler):
-                await handler()
-            else:
-                handler()
+            try:
+                if asyncio.iscoroutinefunction(handler):
+                    await handler()
+                else:
+                    handler()
+            except:
+                logger.warning(traceback.format_exc())
 
     async def shutdown(self):
         for handler in self.shutdown_funcs:
-            if asyncio.iscoroutinefunction(handler):
-                await handler()
-            else:
-                handler()
+            try:
+                if asyncio.iscoroutinefunction(handler):
+                    await handler()
+                else:
+                    handler()
+            except:
+                logger.warning(traceback.format_exc())
 
     def register_adapter(self, adapter: Type["OneAdapter"], **kwargs) -> None:
         self.adapter = adapter(self, **kwargs)

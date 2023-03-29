@@ -130,6 +130,11 @@ export const parse_message = async message => {
         }
       default:
         logger.warn(`[py-plugin][parse-message] 无法识别的消息:${segment}`)
+        return {
+          text: {
+            data: "[py-plugin未知消息]",
+          }
+        }
     }
   }).filter(x => x)
 }
